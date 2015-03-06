@@ -68,7 +68,7 @@ preferences {
 def selectMotionSensors() {
 
 	/* Get the list of remote sensors available 
-    */
+ 	*/
 	ecobee.generateRemoteSensorEvents("", 'true')
 
 	def ecobeeSensors = new JsonSlurper().parseText(ecobee.currentRemoteSensorData.toString())
@@ -106,7 +106,7 @@ def selectMotionSensors() {
 			input(name: "motionSensors", title:"", type: "enum", required:false, multiple:true, description: "Tap to choose", metadata:[values:sensors])			
 		}
 	}
-    return chosenSensors
+	return chosenSensors
 }
 
 
@@ -143,7 +143,7 @@ def selectTempSensors() {
 			input(name: "tempSensors", title:"", type: "enum", required:false, multiple:true, description: "Tap to choose", metadata:[values:sensors])			
 		}
 	}
-    return chosenSensors
+	return chosenSensors
 }
 
     
@@ -293,6 +293,7 @@ private def sendNotifDelayNotInRange() {
 }
 
 private updateMotionSensors(evt) {
+	log.debug "updateMotionSensors>evt name=$evt.name, evt.value= $evt.value"
 
 	def ecobeeSensors = ecobee.currentRemoteSensorOccData.toString().split(",,")
 	log.debug "updateTempSensors>ecobeeRemoteSensorOccData= $ecobeeSensors"
@@ -328,12 +329,11 @@ private updateMotionSensors(evt) {
 			log.debug "device $device, found $dni,statusChanged=${isChange}, value= ${status}"
 
 			device.sendEvent(name: "motion", value: status, isStateChange:isChange, displayed: isDisplayed)
-        }
+        	}
  		else {
 
-            log.debug "updateMotionSensors>couldn't find Motion Dectector device $ecobeeSensorName for dni $dni, probably not selected originally"
-
-        }
+			log.debug "updateMotionSensors>couldn't find Motion Dectector device $ecobeeSensorName for dni $dni, probably not selected originally"
+		}
 		
 	}
 	
@@ -342,6 +342,7 @@ private updateMotionSensors(evt) {
 
 private updateTempSensors(evt) {
 
+	log.debug "updateTempSensors>evt name=$evt.name, evt.value= $evt.value"
 
 	def ecobeeSensors = ecobee.currentRemoteSensorTmpData.toString().split(",,")
 
@@ -368,8 +369,8 @@ private updateTempSensors(evt) {
 
  		def device = getChildDevice(dni)
 
-        if (device)
-        {
+		if (device)
+        	{
 
 	 		log.debug "updateTempSensors>ecobeeSensorId= $ecobeeSensorId"
 	 		log.debug "updateTempSensors>ecobeeSensorName= $ecobeeSensorName"
@@ -382,12 +383,10 @@ private updateTempSensors(evt) {
 			log.debug "device $device, found $dni,statusChanged=${isChange}, value= ${tempValue.toString()}"
 
 			device.sendEvent(name: "temperature",  value:tempValue, unit: getTemperatureScale(), isStateChange:isChange,displayed: isDisplayed)
-        }
-        else {
-
-            log.debug "updateTempSensors>couldn't find Temperature Sensor device $ecobeeSensorName for dni $dni, probably not selected originally"
-
-        }
+        	}
+        	else {
+			log.debug "updateTempSensors>couldn't find Temperature Sensor device $ecobeeSensorName for dni $dni, probably not selected originally"
+		}
 		
 	}
 	
