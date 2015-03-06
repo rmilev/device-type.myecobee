@@ -176,7 +176,8 @@ private def createMotionSensors() {
 		{
 			log.debug "initialize>found ${d.displayName} with id $dni already exists"
 		}
-		return d
+/*		return d
+*/
 
 	}
 
@@ -207,7 +208,8 @@ private def createTempSensors() {
 			log.debug "initialize>found ${d.displayName} with id $dni already exists"
 		}
 
-		return d
+/*		return d
+*/
 	}
 
 	log.debug "created ${devices.size()} MyEcobee's Temp Sensors"
@@ -273,6 +275,8 @@ def pollHandler() {
 	ecobee.poll()
 	log.trace "pollHandler>about to call generateRemoteSensorEvents()"
     ecobee.generateRemoteSensorEvents("", 'true')
+	updateTempSensors(evt)    
+	updateMotionSensors(evt)    
 	log.trace "pollHandler>end"
 }
 
@@ -285,11 +289,16 @@ private def sendNotifDelayNotInRange() {
 
 private updateMotionSensors(evt) {
 
-	def ecobeeSensors = evt.value.toString().minus('[').minus(']').split(',,')
+	def ecobeeSensors = ecobee.currentRemoteSensorOccData.toString().split(",,")
 	log.debug "updateTempSensors>ecobeeRemoteSensorOccData= $ecobeeSensors"
     
+	if (ecobeeSensors.size() <1){
+    
+		log.debug "updateMotionSensors>no values found"
+		return
+	}
 	for (i in 0..ecobeeSensors.size()-1) {
-		def ecobeeSensorDetails = ecobeeSensors.split(',')
+		def ecobeeSensorDetails = ecobeeSensors[i].split(',')
 		def ecobeeSensorId = ecobeeSensorDetails[0]
 		def ecobeeSensorName = ecobeeSensorDetails[1]
 		def ecobeeSensorType = ecobeeSensorDetails[2]
@@ -297,16 +306,23 @@ private updateMotionSensors(evt) {
 
 		def dni = [ app.id, ecobeeSensorName, getMotionSensorChildName(), ecobeeSensorId ].join('.')
         
-		log.debug "updateRemoteSensors>looking for $dni"
+		log.debug "updateMotionSensors>looking for $dni"
 
 		def device = getChildDevice(dni)
 
 		if (device)
 		{
- 			def status = (ecobeeSensorValue=='true' ) ? "active" : "inactive"
-			log.debug "device $device $dni, statusChanged=$status"
+	 		log.debug "updateTempSensors>ecobeeSensorId= $ecobeeSensorId"
+	 		log.debug "updateTempSensors>ecobeeSensorName= $ecobeeSensorName"
+	 		log.debug "updateTempSensors>ecobeeSensorType= $ecobeeSensorType"
+	 		log.debug "updateTempSensors>ecobeeSensorValue= $ecobeeSensorValue"
 
-			device.sendEvent(name: "motion", value: status, isStateChange:true)
+			def status = (ecobeeSensorValue=='true' ) ? "active" : "inactive"
+			def isChange = device.isStateChange(device, "motion", status)
+			def isDisplayed = isChange
+			log.debug "device $device, found $dni,statusChanged=${isChange}, value= ${status}"
+
+			device.sendEvent(name: "motion", value: status, isStateChange:isChange, displayed: isDisplayed)
         }
  		else {
 
@@ -322,23 +338,23 @@ private updateMotionSensors(evt) {
 private updateTempSensors(evt) {
 
 
-	def ecobeeSensors = evt.value.toString().minus('[').minus(']').split(',,')
+	def ecobeeSensors = ecobee.currentRemoteSensorTmpData.toString().split(",,")
 
 	log.debug "updateTempSensors>ecobeeRemoteSensorTmpData= $ecobeeSensors"
     
 	if (ecobeeSensors.size() <1){
     
-		log.debug "updateTempSensors>not values found"
+		log.debug "updateTempSensors>no values found"
 		return
 	}
     
 	for (i in 0..ecobeeSensors.size()-1) {
 				
-		def ecobeeSensorDetails = ecobeeSensors.split(',')
+		def ecobeeSensorDetails = ecobeeSensors[i].split(',')
 		def ecobeeSensorId = ecobeeSensorDetails[0]
 		def ecobeeSensorName = ecobeeSensorDetails[1]
 		def ecobeeSensorType = ecobeeSensorDetails[2]
-		def ecobeeSensorValue = ecobeeSensorDetails[3]
+		int ecobeeSensorValue = ecobeeSensorDetails[3].toInteger()
 
 
 		def dni = [ app.id, ecobeeSensorName, getTempSensorChildName(), ecobeeSensorId ].join('.')
@@ -350,12 +366,17 @@ private updateTempSensors(evt) {
         if (device)
         {
 
+	 		log.debug "updateTempSensors>ecobeeSensorId= $ecobeeSensorId"
+	 		log.debug "updateTempSensors>ecobeeSensorName= $ecobeeSensorName"
+	 		log.debug "updateTempSensors>ecobeeSensorType= $ecobeeSensorType"
+	 		log.debug "updateTempSensors>ecobeeSensorValue= $ecobeeSensorValue"
+            
 			float tempValue = getTemperature(ecobeeSensorValue).toFloat().round(1)
-			def isChange = isTemperatureStateChange(device, name, tempValue.toString())
+			def isChange = device.isTemperatureStateChange(device, "temperature", tempValue.toString())
 			def isDisplayed = isChange
-			log.debug "device $device, found $dni,statusChanged=${isChange} (${tempValue.toString()})"
+			log.debug "device $device, found $dni,statusChanged=${isChange}, value= ${tempValue.toString()}"
 
-			device.sendEvent(name: "temperature",  value:tempValue.toString(), unit: getTemperatureScale(), displayed: isDisplayed)
+			device.sendEvent(name: "temperature",  value:tempValue, unit: getTemperatureScale(), isStateChange:isChange,displayed: isDisplayed)
         }
         else {
 
