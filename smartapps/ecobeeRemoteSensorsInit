@@ -66,6 +66,11 @@ preferences {
 
 
 def selectMotionSensors() {
+
+	/* Get the list of remote sensors available 
+    */
+	ecobee.generateRemoteSensorEvents("", 'true')
+
 	def ecobeeSensors = new JsonSlurper().parseText(ecobee.currentRemoteSensorData.toString())
 
 	log.debug "selectMotionSensors>ecobeeSensors data = $ecobeeSensors"
@@ -274,7 +279,7 @@ def pollHandler() {
 	log.trace "pollHandler>begin"
 	ecobee.poll()
 	log.trace "pollHandler>about to call generateRemoteSensorEvents()"
-    ecobee.generateRemoteSensorEvents("", 'true')
+	ecobee.generateRemoteSensorEvents("", 'true')
 	updateTempSensors(evt)    
 	updateMotionSensors(evt)    
 	log.trace "pollHandler>end"
@@ -430,8 +435,3 @@ def fToC(temp) {
 def getChildNamespace() { "smartthings" }
 def getMotionSensorChildName() { "Motion Detector" }
 def getTempSensorChildName() { "Temperature Sensor" }
-
-
-
-
-
