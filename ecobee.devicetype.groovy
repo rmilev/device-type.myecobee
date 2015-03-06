@@ -1150,7 +1150,7 @@ private def build_body_request(method, tstatType="registered", thermostatId, tst
 		} else {
 			// If tstatType is different than managementSet, it is assumed to be locationSet specific (ex./Toronto/Campus/BuildingA)
 			selection = (tstatType.trim().toUpperCase() == 'MANAGEMENTSET') ? 
-            	// get all EMS thermostats from the root
+				// get all EMS thermostats from the root
 				[selection: [selectionType: 'managementSet', selectionMatch: '/',
 					includeEquipmentStatus: 'true']
 				] : // Or Specific to a location
@@ -1489,7 +1489,7 @@ void createVacation(thermostatId, vacationName, targetCoolTemp, targetHeatTemp,
 		startTime: vacationStartTime,
 		endDate: vacationEndDate,
 		endTime: vacationEndTime
-		]
+	]
 	def bodyReq = build_body_request('createVacation',null,thermostatId,vacationParams)
 	if (settings.trace) {
 		log.debug "createVacation> about to call api with body = ${bodyReq} for ${thermostatId} "
@@ -2206,7 +2206,6 @@ void controlPlug(thermostatId, plugName, plugState, plugSettings = []) {
 	if ((settings.holdType != null) && (settings.holdType.trim() != "")) {
 		bodyReq = bodyReq + '"holdType":"' + settings.holdType.trim() + '"'
 	} else {
-    
 		bodyReq = bodyReq + '"holdType":"indefinite"'
 	}
 	// add the plugSettings if any
@@ -2237,7 +2236,7 @@ void controlPlug(thermostatId, plugName, plugState, plugSettings = []) {
 				if ((plugSettings != null) && (plugSettings != '')) {
 					plugEvents = plugEvents + [plugSettings: plugSettings]
 				}
-                generateEvent(plugEvents)
+				generateEvent(plugEvents)
 			} else {
 				log.error "controlPlug>error=${statusCode.toString()}, message = ${message}"
 				sendEvent name: "verboseTrace", value:
@@ -2360,12 +2359,12 @@ void getReportData(thermostatId, startDateTime, endDateTime, startInterval, endI
 					}
 					reportData = data.reportList?.rowList[0].toString().minus('[').minus(']')
 					if (includeSensorData=='true') {
-						reportSensorMetadata == new JsonBuilder(data.sensorList?.sensors[0])  // metadata is in Json format
+						reportSensorMetadata = new JsonBuilder(data.sensorList?.sensors[0])  // metadata is in Json format
 						reportSensorData = data.sensorList?.data[0].toString().minus('[').minus(']')
 					}   
 				}   
 				generateEvent(['reportData':reportData,'reportSensorMetadata':reportSensorMetadata,
-                	'reportSensorData':reportSensorData])
+					'reportSensorData':reportSensorData])
 				if (settings.trace) {
 					log.debug "getReportData> startDate= ${data.startDate}"
 					log.debug "getReportData> endDate= ${data.endDate}"
@@ -2660,15 +2659,15 @@ void generateRemoteSensorEvents(thermostatId,postData='false') {
     
 	def testData = [
     
- 		[id: "rs01", name: "My RSensor", type: "ecobee3_remote_sensor", 
-			capability:[[id: "rs01", type: "temperature", value: "720" ],
- 		[id: "rs01", type: "occupancy", value: "true"]]
-        ],
- 		[id: "rs02", name: "My RSensor2", type: "ecobee3_remote_sensor", 
-			capability:[[id: "rs02", type: "temperature", value: "750" ],
-		[id: "rs02", type: "occupancy", value: "false"]]
+ 			[id: "rs01", name: "My RSensor", type: "ecobee3_remote_sensor", 
+				capability:[[id: "rs01", type: "temperature", value: "720" ],
+ 			[id: "rs01", type: "occupancy", value: "true"]]
+        	],
+ 			[id: "rs02", name: "My RSensor2", type: "ecobee3_remote_sensor", 
+				capability:[[id: "rs02", type: "temperature", value: "750" ],
+			[id: "rs02", type: "occupancy", value: "false"]]
 		]
-    ]
+	]
 	def remoteData = []
 	def remoteTempData = ""
 	def remoteHumData = ""
@@ -2713,7 +2712,7 @@ void generateRemoteSensorEvents(thermostatId,postData='false') {
 						}
  						remoteTempData = remoteTempData + data.thermostatList[0].remoteSensors[i].capability[j].id + "," +
 							data.thermostatList[0].remoteSensors[i].name + "," +
-                        	data.thermostatList[0].remoteSensors[i].capability[j].type + "," + valueInt.toString() + ",,"
+							data.thermostatList[0].remoteSensors[i].capability[j].type + "," + valueInt.toString() + ",,"
 					}                        
 					totalTemp = totalTemp + valueInt
 					maxTemp = Math.max(valueInt,maxTemp)
@@ -2726,7 +2725,7 @@ void generateRemoteSensorEvents(thermostatId,postData='false') {
 						}
 						remoteHumData = remoteHumData + data.thermostatList[0].remoteSensors[i].capability[j].id + "," + 
 							data.thermostatList[0].remoteSensors[i].name + "," +
-                        	data.thermostatList[0].remoteSensors[i].capability[j].type + "," + data.thermostatList[0].remoteSensors[i].capability[j].value + ",,"
+							data.thermostatList[0].remoteSensors[i].capability[j].type + "," + data.thermostatList[0].remoteSensors[i].capability[j].value + ",,"
 					}                        
 					valueInt =data.thermostatList[0].remoteSensors[i].capability[j].value.toInteger()
 					totalHum = totalHum + valueInt
@@ -2740,7 +2739,7 @@ void generateRemoteSensorEvents(thermostatId,postData='false') {
 						}
 						remoteOccData = remoteOccData + data.thermostatList[0].remoteSensors[i].capability[j].id + "," + 
 							data.thermostatList[0].remoteSensors[i].name + "," +
-                        	data.thermostatList[0].remoteSensors[i].capability[j].type + "," + data.thermostatList[0].remoteSensors[i].capability[j].value + ",,"
+							data.thermostatList[0].remoteSensors[i].capability[j].type + "," + data.thermostatList[0].remoteSensors[i].capability[j].value + ",,"
 					}                        
 				} 
 				                        
@@ -2796,7 +2795,7 @@ void getThermostatInfo(thermostatId=settings.thermostatId) {
 		log.debug "getThermostatInfo> about to call api with body = ${bodyReq} for thermostatId = ${thermostatId}..."
 	}
 	def statusCode=true
-    int j=0    
+	int j=0    
 	while ((statusCode) && (j++ <2)) { // retries once if api call fails
 
 		api('thermostatInfo', bodyReq) {resp ->
@@ -2837,7 +2836,7 @@ void getThermostatInfo(thermostatId=settings.thermostatId) {
 				def thermostatSettings = data.thermostatList[0].settings
 				if (settings.trace) {
 					sendEvent name: "verboseTrace", value:
-                    	"getTstatInfo> thermostatId=${thermostatId},name=${thermostatName},hvacMode=${thermostatSettings.hvacMode}," +
+						"getTstatInfo> thermostatId=${thermostatId},name=${thermostatName},hvacMode=${thermostatSettings.hvacMode}," +
 						"fan=${runtimeSettings.desiredFanMode},fanMinOnTime=${thermostatSettings.fanMinOnTime},desiredHeat=${runtimeSettings.desiredHeat},desiredCool=${runtimeSettings.desiredCool}," +
 						"current Humidity= ${runtimeSettings.actualHumidity},desiredHumidity=${runtimeSettings.desiredHumidity},humidifierMode=${thermostatSettings.humidifierMode}," +
 						"desiredDehumidity= ${runtimeSettings.desiredDehumidity},dehumidifierMode=${thermostatSettings.dehumidifierMode}"
