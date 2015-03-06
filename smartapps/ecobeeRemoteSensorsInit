@@ -175,12 +175,10 @@ private def createMotionSensors() {
 		} else {
 			log.debug "initialize>found ${d.displayName} with id $dni already exists"
 		}
-		/*		return d
-		 */
 
 	}
 
-	log.debug "created ${devices.size()} MyEcobee's Motion Sensors"
+	send "ecobeeRemoteSensorsInit>created ${devices.size()} MyEcobee's Motion Sensors"
 }
 
 private def createTempSensors() {
@@ -203,11 +201,9 @@ private def createTempSensors() {
 			log.debug "initialize>found ${d.displayName} with id $dni already exists"
 		}
 
-		/*		return d
-		 */
 	}
 
-	log.debug "created ${devices.size()} MyEcobee's Temp Sensors"
+	send "ecobeeRemoteSensorsInit>created ${devices.size()} MyEcobee's Temp Sensors"
 
 }
 
@@ -225,7 +221,7 @@ private def deleteSensors() {
 			((it.device.deviceNetworkId.contains(getMotionSensorChildName())) && (!motionSensors.contains(it.device.deviceNetworkId)))
 		}
 	}
-	log.debug "deleting ${delete.size()} MyEcobee's Motion Sensors, delete=$delete"
+	send "ecobeeRemoteSensorsInit>deleting ${delete.size()} MyEcobee's Motion Sensors"
 	delete.each {
 		deleteChildDevice(it.deviceNetworkId)
 	}
@@ -241,7 +237,7 @@ private def deleteSensors() {
 			((it.device.deviceNetworkId.contains(getTempSensorChildName())) && (!tempSensors.contains(it.device.deviceNetworkId)))
 		}
 	}
-	log.debug "deleting ${delete.size()} MyEcobee's Temp Sensors, delete=$delete"
+	send "ecobeeRemoteSensorsInit>deleting ${delete.size()} MyEcobee's Temp Sensors"
 	delete.each {
 		deleteChildDevice(it.deviceNetworkId)
 	}
@@ -269,7 +265,7 @@ def initialize() {
 		runIn(30, "sendNotifDelayNotInRange")
 		return
 	}
-	log.debug "Scheduling pollHandler every ${delay} minutes"
+	send "ecobeeRemoteSensorsInit>scheduling pollHandler every ${delay} minutes"
 
 	schedule("0 0/${delay} * * * ?", pollHandler)
 	log.debug "initialize>end"
