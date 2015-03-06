@@ -329,7 +329,7 @@ private updateMotionSensors(evt) {
 			log.debug "device $device, found $dni,statusChanged=${isChange}, value= ${status}"
 
 			device.sendEvent(name: "motion", value: status, isStateChange:isChange, displayed: isDisplayed)
-        	}
+		}
  		else {
 
 			log.debug "updateMotionSensors>couldn't find Motion Dectector device $ecobeeSensorName for dni $dni, probably not selected originally"
@@ -370,7 +370,7 @@ private updateTempSensors(evt) {
  		def device = getChildDevice(dni)
 
 		if (device)
-        	{
+        {
 
 	 		log.debug "updateTempSensors>ecobeeSensorId= $ecobeeSensorId"
 	 		log.debug "updateTempSensors>ecobeeSensorName= $ecobeeSensorName"
@@ -383,8 +383,8 @@ private updateTempSensors(evt) {
 			log.debug "device $device, found $dni,statusChanged=${isChange}, value= ${tempValue.toString()}"
 
 			device.sendEvent(name: "temperature",  value:tempValue, unit: getTemperatureScale(), isStateChange:isChange,displayed: isDisplayed)
-        	}
-        	else {
+		}
+		else {
 			log.debug "updateTempSensors>couldn't find Temperature Sensor device $ecobeeSensorName for dni $dni, probably not selected originally"
 		}
 		
