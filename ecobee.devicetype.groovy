@@ -17,8 +17,6 @@
  *  for the specific language governing permissions and limitations under the License.
  * 
  */
-import groovy.json.JsonBuilder
-import java.net.URLEncoder
 
 // for the UI
 preferences {
@@ -98,7 +96,7 @@ metadata {
 		attribute "climateName", "string"
 		attribute "setClimate", "string"
         
-        // Report Runtime events
+		// Report Runtime events
         
 		attribute "auxHeat1RuntimeInPeriod", "string"
 		attribute "auxHeat2RuntimeInPeriod", "string"
@@ -207,9 +205,9 @@ metadata {
 		command "generateReportSensorStatsEvents"
 		command "getThermostatRevision"
 		command "generateRemoteSensorEvents"
-}        
+	}        
 
-simulator {
+	simulator {
 		// TODO: define status and reply messages here
 	}
 	tiles {
@@ -222,7 +220,7 @@ simulator {
 			state "default", label: '${currentValue}%'
 		}
 		valueTile("temperature", "device.temperature", width: 2, height: 2,
-			canChangeIcon: true) {
+			canChangeIcon: false) {
 //		If one prefers Celsius over Farenheits, just comment out the temperature in Farenheits 
 //		and remove the comment below to have the right color scale in Celsius.
 //		This issue will be solved as soon as Smartthings supports dynamic tiles
@@ -511,15 +509,23 @@ void setHeatingSetpoint(temp) {
 	setHold(thermostatId, device.currentValue("coolingSetpoint"), temp,
 		null, null)
 	sendEvent(name: 'heatingSetpoint', value: temp,unit: getTemperatureScale())
-	sendEvent("name":"thermostatSetpoint", "value": temp, unit: getTemperatureScale())     
+	def currentMode = device.currentValue("thermostatMode")
+	if (currentMode=='heat') {
+		sendEvent("name":"thermostatSetpoint", "value": temp,unit: getTemperatureScale())     
+	}
 }
+
 void setCoolingSetpoint(temp) {
 	def thermostatId= determine_tstat_id("") 	    
 	setHold(settings.thermostatId, temp, device.currentValue("heatingSetpoint"),
 		null, null)
 	sendEvent(name: 'coolingSetpoint', value: temp,unit: getTemperatureScale())
-	sendEvent("name":"thermostatSetpoint", "value": temp,unit: getTemperatureScale())     
+	def currentMode = device.currentValue("thermostatMode")
+	if (currentMode=='cool') {
+		sendEvent("name":"thermostatSetpoint", "value": temp,unit: getTemperatureScale())     
+	}
 }
+
 void off() {
 	setThermostatMode('off')
 }
@@ -1053,7 +1059,7 @@ private void api(method, args, success = {}) {
 			login()
 		}
 	}
-	def args_encoded = URLEncoder.encode(args.toString(), "UTF-8")
+	def args_encoded = java.net.URLEncoder.encode(args.toString(), "UTF-8")
 	def methods = [
 		'thermostatSummary': 
 			[uri:"${URI_ROOT}/thermostatSummary?format=json&body=${args_encoded}", 
@@ -1158,7 +1164,7 @@ private def build_body_request(method, tstatType="registered", thermostatId, tst
 					includeEquipmentStatus: 'true']
 				]
 		}
-		selectionJson = new JsonBuilder(selection)
+		selectionJson = new groovy.json.JsonBuilder(selection)
 		return selectionJson
 	} else if (method == 'thermostatInfo') {
 		selection = [selection: [selectionType: 'thermostats',
@@ -1173,12 +1179,12 @@ private def build_body_request(method, tstatType="registered", thermostatId, tst
 			includeSensors: 'true'
 			]
 		]
-		selectionJson = new JsonBuilder(selection)
+		selectionJson = new groovy.json.JsonBuilder(selection)
 		return selectionJson
 	} else {
 		selection = [selectionType: 'thermostats', selectionMatch: thermostatId]
 	}
-	selectionJson = new JsonBuilder(selection)
+	selectionJson = new groovy.json.JsonBuilder(selection)
 	if ((method != 'setThermostatSettings') && (tstatSettings != null) && (tstatSettings != [])) {
 		def function_clause = ((tstatParams != null) && (tsatParams != [])) ? 
 			[type:method, params: tstatParams] : 
@@ -1186,22 +1192,22 @@ private def build_body_request(method, tstatType="registered", thermostatId, tst
 		def bodyWithSettings = [functions: [function_clause], selection: selection,
 				thermostat: [settings: tstatSettings]
 			]
-		def bodyWithSettingsJson = new JsonBuilder(bodyWithSettings)
+		def bodyWithSettingsJson = new groovy.json.JsonBuilder(bodyWithSettings)
 		return bodyWithSettingsJson
 	} else if (method == 'setThermostatSettings') {
 		def bodyWithSettings = [selection: selection,thermostat: [settings: tstatSettings]
 			]
-		def bodyWithSettingsJson = new JsonBuilder(bodyWithSettings)
+		def bodyWithSettingsJson = new groovy.json.JsonBuilder(bodyWithSettings)
 		return bodyWithSettingsJson
 	} else if ((tstatParams != null) && (tsatParams != [])) {
 		def function_clause = [type: method, params: tstatParams]
 		def simpleBody = [functions: [function_clause], selection: selection]
-		def simpleBodyJson = new JsonBuilder(simpleBody)
+		def simpleBodyJson = new groovy.json.JsonBuilder(simpleBody)
 		return simpleBodyJson
 	} else {
 		def function_clause = [type: method]
 		def simpleBody = [functions: [function_clause], selection: selection]
-		def simpleBodyJson = new JsonBuilder(simpleBody)
+		def simpleBodyJson = new groovy.json.JsonBuilder(simpleBody)
 		return simpleBodyJson
     }    
 }
@@ -1773,7 +1779,7 @@ void iterateUpdateGroup(thermostatId, groupSettings = []) {
 //	For more details, see https://beta.ecobee.com/home/developer/api/documentation/v1/objects/Group.shtml
 void updateGroup(groupRef, groupName, thermostatId, groupSettings = []) {
 	String updateGroupParams
-	def groupSettingsJson = new JsonBuilder(groupSettings)
+	def groupSettingsJson = new groovy.json.JsonBuilder(groupSettings)
 	def groupSet = groupSettingsJson.toString().minus('{').minus('}')
 
 	thermostatId = determine_tstat_id(thermostatId)
@@ -2185,7 +2191,7 @@ void updateClimate(thermostatId, climateName, deleteClimateFlag,
 // plugState is the state to be set
 // plugSettings are the different settings at https://www.ecobee.com/home/developer/api/documentation/v1/functions/ControlPlug.shtml
 void controlPlug(thermostatId, plugName, plugState, plugSettings = []) {
-	def plugSettingsJson = new JsonBuilder(plugSettings)
+	def plugSettingsJson = new groovy.json.JsonBuilder(plugSettings)
 	def plugSet = plugSettingsJson.toString().minus('{').minus('}')
 
 	thermostatId = determine_tstat_id(thermostatId)
@@ -2359,7 +2365,7 @@ void getReportData(thermostatId, startDateTime, endDateTime, startInterval, endI
 					}
 					reportData = data.reportList?.rowList[0].toString().minus('[').minus(']')
 					if (includeSensorData=='true') {
-						reportSensorMetadata = new JsonBuilder(data.sensorList?.sensors[0])  // metadata is in Json format
+						reportSensorMetadata = new groovy.json.JsonBuilder(data.sensorList?.sensors[0])  // metadata is in Json format
 						reportSensorData = data.sensorList?.data[0].toString().minus('[').minus(']')
 					}   
 				}   
@@ -2748,7 +2754,7 @@ void generateRemoteSensorEvents(thermostatId,postData='false') {
         
 	}                        
 
-	def remoteDataJson = new JsonBuilder(remoteData)
+	def remoteDataJson = new groovy.json.JsonBuilder(remoteData)
 
 	if (nbTempSensorInUse >0) {
 		avgTemp = totalTemp / nbTempSensorInUse
@@ -2802,7 +2808,7 @@ void getThermostatInfo(thermostatId=settings.thermostatId) {
 			statusCode = resp.data.status.code
 			def message = resp.data.status.message
 			if (!statusCode) {
-				data.thermostatList = resp.data.thermostatList
+				data?.thermostatList = resp.data.thermostatList
 				def thermostatName = data.thermostatList[0].name
 				// divide the temperature by 10 before for display or calculations later.
 				data.thermostatList[0].runtime.actualTemperature = data.thermostatList[0].runtime
@@ -2897,9 +2903,9 @@ void getThermostatSummary(tstatType) {
 			statusCode = resp.data.status.code
 			def message = resp.data.status.message
 			if (!statusCode) {
-				data.revisionList = resp.data.revisionList
-				data.statusList = resp.data.statusList
-				data.thermostatCount = data.revisionList.size()
+				data?.revisionList = resp.data.revisionList
+				data?.statusList = resp.data.statusList
+				data?.thermostatCount = data.revisionList.size()
 				for (i in 0..data.thermostatCount - 1) {
 					def thermostatDetails = data.revisionList[i].split(':')
 					def thermostatId = thermostatDetails[0]
@@ -3014,7 +3020,7 @@ private void refreshParentTokens() {
 		log.debug "refreshParentTokens>begin data.auth = ${data.auth}"
 	}
 	if (settings.trace) {
-		log.debug "refreshParentTokens>auth=$auth, about to call parent.setParentAuthTokens"
+		log.debug "refreshParentTokens>about to call parent.setParentAuthTokens"
 	}         
 	parent.setParentAuthTokens(data.auth)
 	if (settings.trace) {
@@ -3060,7 +3066,7 @@ void getEcobeePinAndAuth() {
 		if (settings.trace) {
 			log.debug "getEcobeePinAndAuth> response = ${resp.data}"
 		}
-		data.auth = resp.data
+		data?.auth = resp.data
 		data.auth.code = resp.data.code
 		data.auth.expires_in = resp.data.expires_in
 		data.auth.interval = resp.data.interval
@@ -3111,7 +3117,7 @@ void setAuthTokens() {
 		"code=${data.auth.code}&" +
 		"client_id=${get_appKey()}"
 	]
-	if (data.auth.access_token == null) {
+	if (data?.auth?.access_token == null) {
 		def successTokens = {resp ->
 			data.auth.access_token = resp.data.access_token
 			data.auth.refresh_token = resp.data.refresh_token
