@@ -8,7 +8,7 @@
  *      JLH - 01-23-2014 - Update for Correct SmartApp URL Format
  *      JLH - 02-15-2014 - Fuller use of ecobee API
  *		Y.Racine Nov 2014 - Simplified the Service Manager as much as possible to reduce tight coupling with 
- *							its child device types (device handlers) for better performance and reliability.
+ *							its child device types for better performance and reliability.
  *      linkedIn profile: ca.linkedin.com/pub/yves-racine-m-sc-a/0/406/4b/
  **/
 definition(
