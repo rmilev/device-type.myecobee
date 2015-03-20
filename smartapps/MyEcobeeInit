@@ -1,4 +1,4 @@
- /**
+  /**
  *	My ecobee Init (Service Manager)
  *
  *	Author: scott
@@ -8,7 +8,7 @@
  *      JLH - 01-23-2014 - Update for Correct SmartApp URL Format
  *      JLH - 02-15-2014 - Fuller use of ecobee API
  *		Y.Racine Nov 2014 - Simplified the Service Manager as much as possible to reduce tight coupling with 
- *							its child device types for better performance and reliability.
+ *							its child device types (device handlers) for better performance and reliability.
  *      linkedIn profile: ca.linkedin.com/pub/yves-racine-m-sc-a/0/406/4b/
  **/
 definition(
@@ -352,17 +352,17 @@ def initialize() {
 	def pollTimer = 20
 
 	log.trace "setting poll to ${pollTimer}"
-	schedule("0 0/${pollTimer.toInteger()} * * * ?", pollHandler)
+	schedule("0 0/${pollTimer.toInteger()} * * * ?", takeAction)
 }
 
-def pollHandler() {
-	log.trace "pollHandler>begin"
+def takeAction() {
+	log.trace "takeAction>begin"
 	def devices = thermostats.collect { dni ->
 		def d = getChildDevice(dni)
-		log.debug "pollHandler>Looping thru thermostats, found id $dni, about to poll"
+		log.debug "takeAction>Looping thru thermostats, found id $dni, about to poll"
 		d.poll()
 	}
-	log.trace "pollHandler>end"
+	log.trace "takeAction>end"
 }
 
 
