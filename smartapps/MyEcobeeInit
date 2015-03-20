@@ -1,4 +1,4 @@
-  /**
+ /**
  *	My ecobee Init (Service Manager)
  *
  *	Author: scott
@@ -347,7 +347,7 @@ def initialize() {
 	delete_child_devices()	
 	create_child_devices()
     
-	pollHandler()
+	takeAction()
 	// set up internal poll timer
 	def pollTimer = 20
 
