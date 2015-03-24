@@ -1,5 +1,5 @@
 /**
- *  ecobeeRemoteSensorsInit
+ *  ecobee3RemoteSensorsInit
  *
  *  Copyright 2015 Yves Racine
  *  linkedIn profile: ca.linkedin.com/pub/yves-racine-m-sc-a/0/406/4b/
@@ -15,7 +15,7 @@
  *
  */
 definition(
-	name: "ecobeeRemoteSensorsInit",
+	name: "ecobee3RemoteSensorsInit",
 	namespace: "yracine",
 	author: "Yves Racine",
 	description: "Create individual ST sensors for all selected ecobee3's remote sensors and update them on a regular basis (interval chosen by the user).",
@@ -41,7 +41,7 @@ preferences {
 			input "ecobee", "capability.thermostat", title: "Which ecobee thermostat?"
 
 		}
-		section("Polling at which interval in minutes (range=[5..59],default =30 min.)?") {
+		section("Polling ecobee3's remote3 sensor(s) at which interval in minutes (range=[5..59],default =30 min.)?") {
 			input "givenInterval", "number", title: "Interval", required: false
 		}
 
