@@ -227,7 +227,7 @@ def scheduleSetup() {
 				input "desiredHeatTemp" + i, "decimal", title: "Heat Temp, default=72°F/21°C", required: false
 			}
 			section("Schedule " + i + " set Room thermostats Only Indicator") {
-				input "setRoomThermostatsOnlyFlag" + i, "Boolean", title: "Set room thermostats only (default=false,main & room thermostats are set)", metadata: [values: ["true", "false"]], required: false
+				input "setRoomThermostatsOnlyFlag" + i, "Boolean", title: "Set room thermostats only (default=false,main & room thermostats setpoints are set)", metadata: [values: ["true", "false"]], required: false
 			}
 			section("Schedule " + i + " Max temp adjustment at the main thermostat based on temp Sensors") {
 				input "givenMaxTempDiff" + i, "decimal",  title: "Max Temp adjustment (default= +/-5°F/2°C)", required: false
@@ -718,9 +718,7 @@ private def turn_off_all_other_vents(ventSwitchesOnSet) {
 				foundVentSwitch = ventSwitchesOnSet.find{it == vent1Switch}
 				if (foundVentSwitch ==null) {
 					vent1Switch.off()
-					if (detailedNotif == 'true') {
-						send("ScheduleTstatMultiZoneSetup>in zone ${zoneName},room ${roomName},turned off ${vent1Switch} in room ${roomName} as requested to create the desired zone(s)")
-					}
+					log.debug("ScheduleTstatMultiZoneSetup>in zone ${zoneName},room ${roomName},turned off ${vent1Switch} in room ${roomName} as requested to create the desired zone(s)")
 				}                
 			}
 			key = "vent2Switch$indiceRoom"
@@ -730,9 +728,7 @@ private def turn_off_all_other_vents(ventSwitchesOnSet) {
 				foundVentSwitch = ventSwitchesOnSet.find{it == vent2Switch}
             			if (foundVentSwitch==null) {
 					vent2Switch.off()
-					if (detailedNotif == 'true') {
-						send("ScheduleTstatMultiZoneSetup>in zone ${zoneName},room ${roomName},turned off ${vent2Switch} in room ${roomName} as requested to create the desired zone(s)")
-					}
+					log.debug("ScheduleTstatMultiZoneSetup>in zone ${zoneName},room ${roomName},turned off ${vent2Switch} in room ${roomName} as requested to create the desired zone(s)")
 				}                
 			}
 			key = "vent3Switch$indiceRoom"
@@ -742,9 +738,7 @@ private def turn_off_all_other_vents(ventSwitchesOnSet) {
 				log.debug "turn_off_all_other_vents>in zone=${zoneName},room ${roomName},found= ${vent3Switch}"
 				if (foundVentSwitch==null) {
 					vent3Switch.off()
-					if (detailedNotif == 'true') {
-						send("ScheduleTstatMultiZoneSetup>in zone ${zoneName},room ${roomName},turned off ${vent3Switch} in room ${roomName} as requested to create the desired zone(s)")
-					}
+					log.debug("ScheduleTstatMultiZoneSetup>in zone ${zoneName},room ${roomName},turned off ${vent3Switch} in room ${roomName} as requested to create the desired zone(s)")
 				}                
 			}
 			key = "vent4Switch$indiceRoom"
@@ -754,9 +748,7 @@ private def turn_off_all_other_vents(ventSwitchesOnSet) {
 				foundVentSwitch = ventSwitchesOnSet.find{it == vent4Switch}
 				if (foundVentSwitch==null) {
 					vent4Switch.off()
-					if (detailedNotif == 'true') {
-						send("ScheduleTstatMultiZoneSetup>in zone ${zoneName},room ${roomName},turned off ${vent4Switch} in room ${roomName} as requested to create the desired zone(s)")
-					}
+					log.debug("ScheduleTstatMultiZoneSetup>in zone ${zoneName},room ${roomName},turned off ${vent4Switch} in room ${roomName} as requested to create the desired zone(s)")
 				}                
 			}
 			key = "vent5Switch$indiceRoom"
@@ -766,9 +758,7 @@ private def turn_off_all_other_vents(ventSwitchesOnSet) {
 				foundVentSwitch = ventSwitchesOnSet.find{it == vent5Switch}
 				if (foundVentSwitch==null) {
 					vent5Switch.off()
-					if (detailedNotif == 'true') {
-						send("ScheduleTstatMultiZoneSetup>in zone ${zoneName},room ${roomName},turned off ${vent5Switch} in room ${roomName} as requested to create the desired zone(s)")
-					}
+					log.debug("ScheduleTstatMultiZoneSetup>in zone ${zoneName},room ${roomName},turned off ${vent5Switch} in room ${roomName} as requested to create the desired zone(s)")
 				}                
 			}
             
