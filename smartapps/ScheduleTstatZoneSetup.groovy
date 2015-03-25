@@ -718,7 +718,7 @@ private def turn_off_all_other_vents(ventSwitchesOnSet) {
 				foundVentSwitch = ventSwitchesOnSet.find{it == vent1Switch}
 				if (foundVentSwitch ==null) {
 					vent1Switch.off()
-					log.debug("ScheduleTstatMultiZoneSetup>in zone ${zoneName},room ${roomName},turned off ${vent1Switch} in room ${roomName} as requested to create the desired zone(s)")
+					log.debug("turn_off_all_other_vents>in zone ${zoneName},room ${roomName},turned off ${vent1Switch} in room ${roomName} as requested to create the desired zone(s)")
 				}                
 			}
 			key = "vent2Switch$indiceRoom"
@@ -728,7 +728,7 @@ private def turn_off_all_other_vents(ventSwitchesOnSet) {
 				foundVentSwitch = ventSwitchesOnSet.find{it == vent2Switch}
             			if (foundVentSwitch==null) {
 					vent2Switch.off()
-					log.debug("ScheduleTstatMultiZoneSetup>in zone ${zoneName},room ${roomName},turned off ${vent2Switch} in room ${roomName} as requested to create the desired zone(s)")
+					log.debug("turn_off_all_other_vents>in zone ${zoneName},room ${roomName},turned off ${vent2Switch} in room ${roomName} as requested to create the desired zone(s)")
 				}                
 			}
 			key = "vent3Switch$indiceRoom"
@@ -738,7 +738,7 @@ private def turn_off_all_other_vents(ventSwitchesOnSet) {
 				log.debug "turn_off_all_other_vents>in zone=${zoneName},room ${roomName},found= ${vent3Switch}"
 				if (foundVentSwitch==null) {
 					vent3Switch.off()
-					log.debug("ScheduleTstatMultiZoneSetup>in zone ${zoneName},room ${roomName},turned off ${vent3Switch} in room ${roomName} as requested to create the desired zone(s)")
+					log.debug("turn_off_all_other_vents>in zone ${zoneName},room ${roomName},turned off ${vent3Switch} in room ${roomName} as requested to create the desired zone(s)")
 				}                
 			}
 			key = "vent4Switch$indiceRoom"
@@ -758,7 +758,7 @@ private def turn_off_all_other_vents(ventSwitchesOnSet) {
 				foundVentSwitch = ventSwitchesOnSet.find{it == vent5Switch}
 				if (foundVentSwitch==null) {
 					vent5Switch.off()
-					log.debug("ScheduleTstatMultiZoneSetup>in zone ${zoneName},room ${roomName},turned off ${vent5Switch} in room ${roomName} as requested to create the desired zone(s)")
+					log.debug("turn_off_all_other_vents>in zone ${zoneName},room ${roomName},turned off ${vent5Switch} in room ${roomName} as requested to create the desired zone(s)")
 				}                
 			}
             
