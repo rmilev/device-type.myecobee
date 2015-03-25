@@ -281,7 +281,7 @@ def initialize() {
 				startTimeToday = startTimeToday + 1
 			}        
 			String inLocalTime = startTimeToday.format("yyyy-MM-dd HH:mm", location.timeZone)
-			log.debug "initialize>found schedule ${scheduleName}, scheduling setZoneSettings at ${inLocalTime},currTime= ${currTime},begintime UTC=${startTime} (${startTimeToday.time}"
+			log.debug "initialize>found schedule ${scheduleName}, scheduling setZoneSettings at ${inLocalTime},currTime= ${currTime},begintime UTC=${startTime} (${startTimeToday.time})"
 			schedule(startTimeToday, setZoneSettings)
 		}            
 	}
