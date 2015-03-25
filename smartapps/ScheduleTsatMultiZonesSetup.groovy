@@ -653,7 +653,7 @@ private def adjust_thermostat_setpoint_in_zone(indiceSchedule) {
 		temp_diff = (temp_diff <0-max_temp_diff)?max_temp_diff:(temp_diff >max_temp_diff)?max_temp_diff:temp_diff // determine the temp_diff based on max_temp_diff
 		float targetTstatTemp = (desiredHeat - temp_diff).round(1)
 		thermostat?.setHeatingSetpoint(targetTstatTemp)
-		send("ScheduleTstatMultiZoneSetup>schedule ${scheduleName},in zones=${zones},heating setPoint now =${targetTstatTemp}°,adjusted by avg temp diff (${temp_diff.toString()}°) between all temp sensors in zone")
+		send("ScheduleTstatMultiZoneSetup>schedule ${scheduleName},in zones=${zones},heating setPoint now =${targetTstatTemp}°,adjusted by avg temp diff (${temp_diff}°) between all temp sensors in zone")
 
 	} else if (mode == 'cool') {
 
@@ -686,7 +686,7 @@ private def adjust_thermostat_setpoint_in_zone(indiceSchedule) {
 		temp_diff = (temp_diff <0-max_temp_diff)?max_temp_diff:(temp_diff >max_temp_diff)?max_temp_diff:temp_diff // determine the temp_diff based on max_temp_diff
 		float targetTstatTemp = (desiredCool - temp_diff).round(1)
 		thermostat?.setCoolingSetpoint(targetTstatTemp)
-		send("ScheduleTstatMultiZoneSetup>schedule ${scheduleName}, in zones=${zones},cooling setPoint now =${targetTstatTemp}°,adjusted by avg temp diff (${temp_diff.toString()}°) between all temp sensors in zone")
+		send("ScheduleTstatMultiZoneSetup>schedule ${scheduleName}, in zones=${zones},cooling setPoint now =${targetTstatTemp}°,adjusted by avg temp diff (${temp_diff}°) between all temp sensors in zone")
 	}
 
 }
