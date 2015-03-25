@@ -270,9 +270,6 @@ def initialize() {
 		def key = "begintime$i"
 		def startTime = settings[key]
 		def startTimeToday = timeToday(startTime)
-		key = "endtime$i"
-		def endTime = settings[key]
-		def endTimeToday = timeToday(endTime,location.timeZone)
 		key = "scheduleName$i"
 		def scheduleName = settings[key]
 
