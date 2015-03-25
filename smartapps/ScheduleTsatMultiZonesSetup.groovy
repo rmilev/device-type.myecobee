@@ -339,8 +339,8 @@ def setZoneSettings() {
 			}
 		}
 
-    } /* end for */ 
-    if (ventSwitchesOn != []) {
+	} /* end for */ 	
+	if (ventSwitchesOn != []) {
 		log.debug "setZoneSettings>list of Vents turned on= ${ventSwitchesOn}"
 		turn_off_all_other_vents(ventSwitchesOn)
 	}
@@ -836,7 +836,7 @@ private def control_vent_switches_in_zone(mode, indiceSchedule) {
 			} /* end for rooms */                
 		}
 	} /* end for zones */
-    return ventSwitchesOnSet
+	return ventSwitchesOnSet
 }
 
 
