@@ -265,11 +265,24 @@ def updated() {
 
 def initialize() {
 	subscribe(app, appTouch)
+	def currTime = now()
 	for (i in 1..4) {
 		def key = "begintime$i"
 		def startTime = settings[key]
-        if (startTime != null) {
-			schedule(timeToday(startTime, location.timeZone), setZoneSettings)
+		def startTimeToday = timeToday(startTime,location.timeZone)
+		key = "endtime$i"
+		def endTime = settings[key]
+		def endTimeToday = timeToday(endTime,location.timeZone)
+		key = "scheduleName$i"
+		def scheduleName = settings[key]
+
+		if (startTime != null) {
+			if (startTimeToday.time < currTime) {
+				startTimeToday = startTimeToday + 1
+			}        
+			String inLocalTime = startTimeToday.format("yyyy-MM-dd HH:mm", location.timeZone)
+			log.debug "initialize>found schedule ${scheduleName}, scheduling setZoneSettings at ${inLocalTime},currTime= ${currTime},begintime UTC=${startTime} (${startTimeToday.time}"
+			schedule(startTimeToday, setZoneSettings)
 		}            
 	}
 
