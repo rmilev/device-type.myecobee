@@ -269,7 +269,7 @@ def initialize() {
 	for (i in 1..4) {
 		def key = "begintime$i"
 		def startTime = settings[key]
-		def startTimeToday = timeToday(startTime,location.timeZone)
+		def startTimeToday = timeToday(startTime)
 		key = "endtime$i"
 		def endTime = settings[key]
 		def endTimeToday = timeToday(endTime,location.timeZone)
@@ -280,8 +280,9 @@ def initialize() {
 			if (startTimeToday.time < currTime) {
 				startTimeToday = startTimeToday + 1
 			}        
-			String inLocalTime = startTimeToday.format("yyyy-MM-dd HH:mm", location.timeZone)
-			log.debug "initialize>found schedule ${scheduleName}, scheduling setZoneSettings at ${inLocalTime},currTime= ${currTime},begintime UTC=${startTime} (${startTimeToday.time})"
+			String startInLocalTime = startTimeToday.format("yyyy-MM-dd HH:mm", location.timeZone)
+			String nowInLocalTime = new Date().format("yyyy-MM-dd HH:mm", location.timeZone)
+			log.debug "initialize>ScheduleTstatMultiZoneSetup>scheduled ${scheduleName} at ${startInLocalTime}, now = ${nowInLocalTime}, startTime UTC =${startTimeToday}"
 			schedule(startTimeToday, setZoneSettings)
 		}            
 	}
@@ -626,7 +627,7 @@ private def adjust_thermostat_setpoint_in_zone(indiceSchedule) {
 
 	float temp_diff = (avg_indoor_temp - currentTemp).round(1)
 	if (detailedNotif == 'true') {
-		send("ScheduleTstatMultiZoneSetup>schedule ${scheduleName}:avg temp= ${avg_indoor_temp},main Tstat's currentTemp= ${currentTemp},temp adjustment=${temp_diff}")
+		send("ScheduleTstatMultiZoneSetup>schedule ${scheduleName}:avg temp= ${avg_indoor_temp},main Tstat's currentTemp= ${currentTemp},temp adjustment=${temp_diff.abs()}")
 	}
 	desiredCool = (scale=='C') ? 23:75					// by default, 23°C/75°F is the target cool temp
 
@@ -666,7 +667,7 @@ private def adjust_thermostat_setpoint_in_zone(indiceSchedule) {
 		temp_diff = (temp_diff <0-max_temp_diff)?max_temp_diff:(temp_diff >max_temp_diff)?max_temp_diff:temp_diff // determine the temp_diff based on max_temp_diff
 		float targetTstatTemp = (desiredHeat - temp_diff).round(1)
 		thermostat?.setHeatingSetpoint(targetTstatTemp)
-		send("ScheduleTstatMultiZoneSetup>schedule ${scheduleName},in zones=${zones},heating setPoint now =${targetTstatTemp}°,adjusted by avg temp diff (${temp_diff}°) between all temp sensors in zone")
+		send("ScheduleTstatMultiZoneSetup>schedule ${scheduleName},in zones=${zones},heating setPoint now =${targetTstatTemp}°,adjusted by avg temp diff (${temp_diff.abs()}°) between all temp sensors in zone")
 
 	} else if (mode == 'cool') {
 
