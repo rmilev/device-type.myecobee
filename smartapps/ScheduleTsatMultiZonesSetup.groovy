@@ -602,12 +602,17 @@ private def adjust_thermostat_setpoint_in_zone(indiceSchedule) {
 			if (detailedNotif == 'true') {
 				send("ScheduleTstatMultiZoneSetup>schedule ${scheduleName},zone ${zoneName}: all room Tstats set and setRoomThermostatsOnlyFlag= true, continue...")
 			}
+            
 		} else {
 
 			def indoorTemps = getAllTempsForAverage(indiceZone)
 			indoor_all_zones_temps = indoor_all_zones_temps + indoorTemps
 		}
 	}
+	if (setRoomThermostatsOnly) {
+		log.debug("adjust_thermostat_setpoint_in_zone>schedule ${scheduleName}: schedule ${scheduleName},all room Tstats set and setRoomThermostatsOnlyFlag= true,exiting")
+		return				    
+	}    
 	//	Now will do an avg temp calculation based on all temp sensors to apply the desired temp settings at the main Tstat correctly
 
 	float currentTemp = thermostat?.currentTemperature.toFloat()
