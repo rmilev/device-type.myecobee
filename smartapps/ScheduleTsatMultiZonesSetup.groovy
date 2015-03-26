@@ -731,7 +731,7 @@ private def turn_off_all_other_vents(ventSwitchesOnSet) {
 				foundVentSwitch = ventSwitchesOnSet.find{it == vent1Switch}
 				if (foundVentSwitch ==null) {
 					vent1Switch.off()
-					log.debug("turn_off_all_other_vents>in zone ${zoneName},room ${roomName},turned off ${vent1Switch} in room ${roomName} as requested to create the desired zone(s)")
+					log.debug("turn_off_all_other_vents>in zone ${zoneName},turned off ${vent1Switch} in room ${roomName} as requested to create the desired zone(s)")
 				}                
 			}
 			key = "vent2Switch$indiceRoom"
@@ -741,7 +741,7 @@ private def turn_off_all_other_vents(ventSwitchesOnSet) {
 				foundVentSwitch = ventSwitchesOnSet.find{it == vent2Switch}
             			if (foundVentSwitch==null) {
 					vent2Switch.off()
-					log.debug("turn_off_all_other_vents>in zone ${zoneName},room ${roomName},turned off ${vent2Switch} in room ${roomName} as requested to create the desired zone(s)")
+					log.debug("turn_off_all_other_vents>in zone ${zoneName},turned off ${vent2Switch} in room ${roomName} as requested to create the desired zone(s)")
 				}                
 			}
 			key = "vent3Switch$indiceRoom"
@@ -751,7 +751,7 @@ private def turn_off_all_other_vents(ventSwitchesOnSet) {
 				log.debug "turn_off_all_other_vents>in zone=${zoneName},room ${roomName},found= ${vent3Switch}"
 				if (foundVentSwitch==null) {
 					vent3Switch.off()
-					log.debug("turn_off_all_other_vents>in zone ${zoneName},room ${roomName},turned off ${vent3Switch} in room ${roomName} as requested to create the desired zone(s)")
+					log.debug("turn_off_all_other_vents>in zone ${zoneName},turned off ${vent3Switch} in room ${roomName} as requested to create the desired zone(s)")
 				}                
 			}
 			key = "vent4Switch$indiceRoom"
@@ -761,7 +761,7 @@ private def turn_off_all_other_vents(ventSwitchesOnSet) {
 				foundVentSwitch = ventSwitchesOnSet.find{it == vent4Switch}
 				if (foundVentSwitch==null) {
 					vent4Switch.off()
-					log.debug("ScheduleTstatMultiZoneSetup>in zone ${zoneName},room ${roomName},turned off ${vent4Switch} in room ${roomName} as requested to create the desired zone(s)")
+					log.debug("ScheduleTstatMultiZoneSetup>in zone ${zoneName},turned off ${vent4Switch} in room ${roomName} as requested to create the desired zone(s)")
 				}                
 			}
 			key = "vent5Switch$indiceRoom"
@@ -771,7 +771,7 @@ private def turn_off_all_other_vents(ventSwitchesOnSet) {
 				foundVentSwitch = ventSwitchesOnSet.find{it == vent5Switch}
 				if (foundVentSwitch==null) {
 					vent5Switch.off()
-					log.debug("turn_off_all_other_vents>in zone ${zoneName},room ${roomName},turned off ${vent5Switch} in room ${roomName} as requested to create the desired zone(s)")
+					log.debug("turn_off_all_other_vents>in zone ${zoneName},turned off ${vent5Switch} in room ${roomName} as requested to create the desired zone(s)")
 				}                
 			}
             
@@ -808,7 +808,7 @@ private def control_vent_switches_in_zone(mode, indiceSchedule) {
 				vent1Switch.on()
 				ventSwitchesOnSet.add(vent1Switch)
 				if (detailedNotif == 'true') {
-					send("ScheduleTstatMultiZoneSetup>${scheduleName}:in zone ${zoneName},room ${roomName}, turn ${mode} ${vent1Switch} in room ${roomName} as requested to create the desired zone")
+					send("ScheduleTstatMultiZoneSetup>${scheduleName}:in zone ${zoneName},turn ${mode} ${vent1Switch} in room ${roomName} as requested to create the desired zone")
 				}
 			}
 			key = "vent2Switch$indiceRoom"
@@ -817,7 +817,7 @@ private def control_vent_switches_in_zone(mode, indiceSchedule) {
 				vent2Switch.on()
 				ventSwitchesOnSet.add(vent2Switch)
 				if (detailedNotif == 'true') {
-					send("ScheduleTstatMultiZoneSetup>${scheduleName}:in zone ${zoneName},room ${roomName},turn ${mode} ${vent2Switch} in room ${roomName} as requested to create the desired zone")
+					send("ScheduleTstatMultiZoneSetup>${scheduleName}:in zone ${zoneName},turn ${mode} ${vent2Switch} in room ${roomName} as requested to create the desired zone")
 				}
 			}
 			key = "vent3Switch$indiceRoom"
@@ -826,7 +826,7 @@ private def control_vent_switches_in_zone(mode, indiceSchedule) {
 				vent3Switch.on()
 				ventSwitchesOnSet.add(vent3Switch)
 				if (detailedNotif == 'true') {
-					send("ScheduleTstatMultiZoneSetup>${scheduleName}:in zone ${zoneName},room ${roomName},turn ${mode} ${vent3Switch} in room ${roomName} as requested to create the desired zone")
+					send("ScheduleTstatMultiZoneSetup>${scheduleName}:in zone ${zoneName},turn ${mode} ${vent3Switch} in room ${roomName} as requested to create the desired zone")
 				}
 			}
 			key = "vent4Switch$indiceRoom"
@@ -835,7 +835,7 @@ private def control_vent_switches_in_zone(mode, indiceSchedule) {
 				vent4Switch.on()
 				ventSwitchesOnSet.add(vent4Switch)
 				if (detailedNotif == 'true') {
-					send("ScheduleTstatMultiZoneSetup>${scheduleName}:in zone ${zoneName},room ${roomName},turn ${mode} ${vent4Switch} in room ${roomName} as requested to create the desired zone")
+					send("ScheduleTstatMultiZoneSetup>${scheduleName}:in zone ${zoneName},turn ${mode} ${vent4Switch} in room ${roomName} as requested to create the desired zone")
 				}
 			}
 			key = "vent5Switch$indiceRoom"
@@ -844,7 +844,7 @@ private def control_vent_switches_in_zone(mode, indiceSchedule) {
 				vent5Switch.on()	
 				ventSwitchesOnSet.add(vent5Switch)
 				if (detailedNotif == 'true') {
-					send("ScheduleTstatMultiZoneSetup>${scheduleName}:in zone ${zoneName},room ${roomName},turn ${mode} ${vent5Switch} in room ${roomName} as requested to create the desired zone")
+					send("ScheduleTstatMultiZoneSetup>${scheduleName}:in zone ${zoneName},turn ${mode} ${vent5Switch} in room ${roomName} as requested to create the desired zone")
 				}
 			} /* end for rooms */                
 		}
