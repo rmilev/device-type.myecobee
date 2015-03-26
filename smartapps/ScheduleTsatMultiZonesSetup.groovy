@@ -107,7 +107,10 @@ def roomsSetup() {
 				input "residentsQuietThreshold" + i, title: "Threshold in minutes for motion detection (default=15 min)", "number", description: "residentsQuietThreshold " + i, required: false
 
 			}
+			section() {
+				paragraph "**** Done for room $i **** "
 
+			}                
 		}
 
 	}
@@ -158,6 +161,10 @@ def zonesSetup() {
 					options: rooms,
 					multiple: true
 			}
+			section() {
+				paragraph "**** Done for zone $i **** "
+
+			}                
 		}            
 	}
 }
@@ -232,6 +239,10 @@ def scheduleSetup() {
 			section("Schedule " + i + " Max temp adjustment at the main thermostat based on temp Sensors") {
 				input "givenMaxTempDiff" + i, "decimal",  title: "Max Temp adjustment (default= +/-5°F/2°C)", required: false
 			}
+			section() {
+				paragraph "**** Done for schedule $i **** "
+
+			}                
 		}
 	}        
 }
