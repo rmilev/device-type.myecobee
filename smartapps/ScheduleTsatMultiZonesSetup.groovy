@@ -275,7 +275,6 @@ def updated() {
 }
 
 def initialize() {
-	subscribe(app, appTouch)
 	def currTime = now()
 	for (i in 1..4) {
 		def key = "begintime$i"
@@ -288,12 +287,17 @@ def initialize() {
 			if (startTimeToday.time < currTime) {
 				startTimeToday = startTimeToday + 1
 			}        
+			int startHourInLocal = startTimeToday.format("HH", location.timeZone).toInteger()           
+			int startMinutesInLocal = startTimeToday.format("mm", location.timeZone).toInteger()           
 			String startInLocalTime = startTimeToday.format("yyyy-MM-dd HH:mm", location.timeZone)
 			String nowInLocalTime = new Date().format("yyyy-MM-dd HH:mm", location.timeZone)
-			log.debug "initialize>ScheduleTstatMultiZoneSetup>scheduled ${scheduleName} at ${startInLocalTime}, now = ${nowInLocalTime}, startTime UTC =${startTimeToday}"
-			schedule(startTimeToday, setZoneSettings)
+			log.debug "initialize>scheduled ${scheduleName} at ${startInLocalTime}, now = ${nowInLocalTime}, startTime UTC =${startTimeToday}"
+
+			schedule("${startMinutesInLocal} ${startHourInLocal} * * * ?", setZoneSettings) 
+//			schedule(startTimeToday, setZoneSettings)  // using a cron format instead, seems more reliable
 		}            
 	}
+	subscribe(app, appTouch)
 
 }
 
