@@ -308,8 +308,8 @@ def setZoneSettings() {
 		def key = "begintime$indiceSchedule"
 		def startTime = settings[key]
 		if (startTime == null) {
-        	continue
-        }
+        		continue
+        	}
 		def startTimeToday = timeToday(startTime,location.timeZone)
 		key = "scheduleName$indiceSchedule"
 		def scheduleName = settings[key]
@@ -378,7 +378,7 @@ private def isRoomOccupied(sensor, indiceRoom) {
 
 private def getSensorTempForAverage(indiceRoom, typeSensor='tempSensor') {
 	def key 
-    def currentTemp=null
+	def currentTemp=null
     
 	if (typeSensor == 'tempSensor') {
 		key = "tempSensor$indiceRoom"
