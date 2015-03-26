@@ -291,10 +291,10 @@ def initialize() {
 			int startMinutesInLocal = startTimeToday.format("mm", location.timeZone).toInteger()           
 			String startInLocalTime = startTimeToday.format("yyyy-MM-dd HH:mm", location.timeZone)
 			String nowInLocalTime = new Date().format("yyyy-MM-dd HH:mm", location.timeZone)
-			log.debug "initialize>scheduled ${scheduleName} at ${startInLocalTime}, now = ${nowInLocalTime}, startTime UTC =${startTimeToday}"
+			log.debug "initialize>scheduled ${scheduleName} at ${startInLocalTime}, (${startHourInLocal}:${startMinutesInLocal}) now = ${nowInLocalTime}, startTime UTC =${startTimeToday}"
 
-			schedule("${startMinutesInLocal} ${startHourInLocal} * * * ?", setZoneSettings) 
-//			schedule(startTimeToday, setZoneSettings)  // using a cron format instead, seems more reliable
+			schedule("0 ${startMinutesInLocal} ${startHourInLocal} * * ?", setZoneSettings) 
+//			schedule(startTimeToday, setZoneSettings)
 		}            
 	}
 	subscribe(app, appTouch)
