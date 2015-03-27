@@ -1,5 +1,5 @@
 /**
- *  ScheduleTsatMultiZonesSetup
+ *  ScheduleTsatMultiZones
  *
  *  Copyright 2015 Yves Racine
  *
@@ -14,7 +14,7 @@
  *
  */
 definition(
-	name: "ScheduleTstatMultiZonesSetup",
+	name: "ScheduleTstatMultiZones",
 	namespace: "yracine",
 	author: "Yves Racine",
 	description: "Enable Heating/Cooling Zoned Solutions for thermostats coupled with z-wave vents (optional) for better temp settings control throughout your home",
@@ -39,7 +39,7 @@ def generalSetup() {
 
 	dynamicPage(name: "generalSetup", uninstall: true, nextPage: roomsSetup) {
 		section("About") {
-			paragraph "ScheduleTstatMultiZoneSetup, the smartapp that enables Heating/Cooling zoned settings at selected thermostat(s) coupled with z-wave vents (optional) for better temp settings control throughout your home"
+			paragraph "ScheduleTstatMultiZones, the smartapp that enables Heating/Cooling zoned settings at selected thermostat(s) coupled with z-wave vents (optional) for better temp settings control throughout your home"
 			paragraph "Version 0.9\n\n" +
 				"If you like this app, please support the developer via PayPal:\n\nyracine@yahoo.com\n\n" +
 				"Copyright©2015 Yves Racine"
@@ -49,11 +49,14 @@ def generalSetup() {
 		section("Main thermostat at home") {
 			input "thermostat", "capability.thermostat", title: "Which main thermostat?"
 		}
-		section("Rooms") {
+		section("Rooms count") {
 			input "roomsCount", title: "Rooms count (max=16)?", "number"
 		}
-		section("Zones") {
-			input "zonesCount", title: " Zones count (max=8)?", "number"
+		section("Zones count") {
+			input "zonesCount", title: "Zones count (max=8)?", "number"
+		}
+		section("Schedules count") {
+			input "schedulesCount", title: "Schedules count (max=12)?", "number"
 		}
 
 	}
@@ -194,7 +197,7 @@ def scheduleSetup() {
 
 
 	dynamicPage(name: "scheduleSetup", title: "Schedule Setup", uninstall: true, nextPage: Notifications) {
-		for (i in 1..4) {
+		for (int i = 1;((i <= settings.schedulesCount) && (i <= 12)); i++) {
 			section("Schedule " + i + " Setup") {
 				input "scheduleName" + i, title: "Schedule Name", "string", description: "Schedule Name " + i
 			}
@@ -275,14 +278,26 @@ def updated() {
 }
 
 def initialize() {
+	state.lastScheduleLastName=""
+	state.lastStartTime=null 
+    
+	Integer delay =5 				// wake up every 5 minutes to apply zone settings if any
+	log.debug "Scheduling setZoneSettings every ${delay} minutes to check for zone settings to be applied"
+
+	runEvery5Minutes(setZoneSettings)
+
+	subscribe(app, appTouch)
+    
+/*	Commented out as not a reliable way to do scheduling
+	schedule("0 0/${delay} * * * ?", setZoneSettings)
+
 	def currTime = now()
 	for (i in 1..4) {
+		key = "scheduleName$i"
+		def scheduleName = settings[key]
 		def key = "begintime$i"
 		def startTime = settings[key]
 		def startTimeToday = timeToday(startTime)
-		key = "scheduleName$i"
-		def scheduleName = settings[key]
-
 		if (startTime != null) {
 			if (startTimeToday.time < currTime) {
 				startTimeToday = startTimeToday + 1
@@ -293,11 +308,12 @@ def initialize() {
 			String nowInLocalTime = new Date().format("yyyy-MM-dd HH:mm", location.timeZone)
 			log.debug "initialize>scheduled ${scheduleName} at ${startInLocalTime}, (${startHourInLocal}:${startMinutesInLocal}) now = ${nowInLocalTime}, startTime UTC =${startTimeToday}"
 
-			schedule("0 ${startMinutesInLocal} ${startHourInLocal} * * ?", setZoneSettings) 
+//			schedule("${startMinutesInLocal} ${startHourInLocal} * * * ?", setZoneSettings) 
 //			schedule(startTimeToday, setZoneSettings)
+
 		}            
 	}
-	subscribe(app, appTouch)
+*/
 
 }
 
@@ -318,17 +334,17 @@ def setZoneSettings() {
 	}
 
 	def ventSwitchesOn = []
-	for (indiceSchedule in 1..4) {
+	for (int i = 1;((i <= settings.schedulesCount) && (i <= 12)); i++) {
         
-		def key = "begintime$indiceSchedule"
+		def key = "begintime$i"
 		def startTime = settings[key]
 		if (startTime == null) {
         		continue
         	}
 		def startTimeToday = timeToday(startTime,location.timeZone)
-		key = "scheduleName$indiceSchedule"
+		key = "scheduleName$i"
 		def scheduleName = settings[key]
-		key = "endtime$indiceSchedule"
+		key = "endtime$i"
 		def endTime = settings[key]
 		def endTimeToday = timeToday(endTime,location.timeZone)
 		if (endTimeToday.time < startTimeToday.time) {
@@ -337,10 +353,14 @@ def setZoneSettings() {
         
 		log.debug "setZoneSettings>found schedule ${scheduleName},currTime= ${currTime}, begintime=${startTime} (${startTimeToday.time}), endTime=${endTime} (${endTimeToday.time})"
         
-		if ((currTime >= startTimeToday.time) && (currTime <= endTimeToday.time)) {
+		if ((currTime >= startTimeToday.time) && (currTime <= endTimeToday.time) && (state.lastScheduleName != scheduleName) &&
+			(state.lastStartTime != startTimeToday)) {
         
+			state.lastScheduleName = scheduleName
+			state.lastStartTime = startTimeToday
+            
 			log.debug "setZoneSettings>schedule ${scheduleName},currTime= ${currTime}, current time seems OK for execution, need to check the day of Week"
-			def doChange = IsRightDayForChange(indiceSchedule)
+			def doChange = IsRightDayForChange(i)
 
 			log.debug "setZoneSettings>schedule ${scheduleName}, doChange=$doChange"
 			// If we have hit the condition to schedule this then let's do it
@@ -352,10 +372,10 @@ def setZoneSettings() {
 				}
         
 				// set the zoned vent switches to 'on'
-				def ventSwitchesZoneSet= control_vent_switches_in_zone('on', indiceSchedule)
+				def ventSwitchesZoneSet= control_vent_switches_in_zone('on', i)
 				log.debug "setZoneSettings>schedule ${scheduleName},List of Vents turned 'on'= ${ventSwitchesZoneSet}"
 				// adjust the temperature at the thermostat(s)
-				adjust_thermostat_setpoint_in_zone(indiceSchedule)
+				adjust_thermostat_setpoint_in_zone(i)
  				ventSwitchesOn = ventSwitchesOn + ventSwitchesZoneSet              
 			} else {
 				String nowInLocalTime = new Date().format("yyyy-MM-dd HH:mm", location.timeZone)
