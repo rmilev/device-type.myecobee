@@ -1,5 +1,5 @@
 /**
- *  ScheduleTsatMultiZones
+ *  ScheduleTsatZones
  *
  *  Copyright 2015 Yves Racine
  *
@@ -14,7 +14,7 @@
  *
  */
 definition(
-	name: "ScheduleTstatMultiZones",
+	name: "ScheduleTstatZones",
 	namespace: "yracine",
 	author: "Yves Racine",
 	description: "Enable Heating/Cooling Zoned Solutions for thermostats coupled with z-wave vents (optional) for better temp settings control throughout your home",
@@ -39,7 +39,7 @@ def generalSetup() {
 
 	dynamicPage(name: "generalSetup", uninstall: true, nextPage: roomsSetup) {
 		section("About") {
-			paragraph "ScheduleTstatMultiZones, the smartapp that enables Heating/Cooling zoned settings at selected thermostat(s) coupled with z-wave vents (optional) for better temp settings control throughout your home"
+			paragraph "ScheduleTstatZones, the smartapp that enables Heating/Cooling zoned settings at selected thermostat(s) coupled with z-wave vents (optional) for better temp settings control throughout your home"
 			paragraph "Version 0.9\n\n" +
 				"If you like this app, please support the developer via PayPal:\n\nyracine@yahoo.com\n\n" +
 				"Copyright©2015 Yves Racine"
@@ -329,7 +329,7 @@ def setZoneSettings() {
 	log.debug "setZoneSettings>location.mode = $location.mode, location.modes = $location.modes"
 	if (location.mode.toUpperCase().contains("AWAY")) {
 
-		send("ScheduleTstatMultiZoneSetup>no settings are applied when current ST hello mode is Away, exiting")
+		send("ScheduleTstaZones>no settings are applied when current ST hello mode is Away, exiting")
 		return
 	}
 
@@ -368,7 +368,7 @@ def setZoneSettings() {
 			if (doChange) {
 
 				if (detailedNotif == 'true') {
-					send("ScheduleTstatMultiZoneSetup>running schedule ${scheduleName},about to set zone settings as requested")
+					send("ScheduleTstaZones>running schedule ${scheduleName},about to set zone settings as requested")
 				}
         
 				// set the zoned vent switches to 'on'
@@ -380,7 +380,7 @@ def setZoneSettings() {
 			} else {
 				String nowInLocalTime = new Date().format("yyyy-MM-dd HH:mm", location.timeZone)
 				if (detailedNotif == 'true') {
-					send("ScheduleTstatMultiZoneSetup>schedule: ${scheduleName}: change not scheduled at this time ${nowInLocalTime}...")
+					send("ScheduleTstaZones>schedule: ${scheduleName}: change not scheduled at this time ${nowInLocalTime}...")
 				}
 			}
 		}
@@ -445,7 +445,7 @@ private def setRoomTstatSettings(indiceZone, indiceRoom) {
 	key = "roomName$indiceRoom"
 	def roomName = settings[key]
 
-	log.debug("ScheduleTstatMultiZoneSetup>in room ${roomName},about to apply zone's temp settings at ${roomTstat}")
+	log.debug("ScheduleTstaZones>in room ${roomName},about to apply zone's temp settings at ${roomTstat}")
 	String mode = thermostat?.currentThermostatMode.toString() // get the mode at the main thermostat
 	if (mode == 'heat') {
 		roomTstat.heat()
@@ -459,7 +459,7 @@ private def setRoomTstatSettings(indiceZone, indiceRoom) {
 			}
 		}
 		if (!setClimate) {
-			log.debug("ScheduleTstatMultiZoneSetup>in room ${roomName},about to apply zone's temp settings")
+			log.debug("ScheduleTstatZones>in room ${roomName},about to apply zone's temp settings")
 			key = "desiredHeatTemp$indiceZone"
 			def heatTemp = settings[key]
 			if (heatTemp == null) {
@@ -470,7 +470,7 @@ private def setRoomTstatSettings(indiceZone, indiceRoom) {
 			}
 			log.debug("setRoomTstatSettings>in room ${roomName},${roomTstat}'s desiredHeat=${desiredHeat}")
 			roomTstat.setHeatingSetpoint(desiredHeat)
-			send("ScheduleTstatMultiZoneSetup>in room ${roomName}, ${roomTstat}'s heating setPoint now =${desiredHeat}°")
+			send("ScheduleTstatZones>in room ${roomName}, ${roomTstat}'s heating setPoint now =${desiredHeat}°")
 		}
 	} else if (mode == 'cool') {
 
@@ -481,14 +481,14 @@ private def setRoomTstatSettings(indiceZone, indiceRoom) {
 				setClimate = true
 			} catch (any) {
 				if (detailedNotif == 'true') {
-					send("ScheduleTstatMultiZoneSetup>in room ${roomName}, not able to set climate ${climateName} for cooling at the thermostat ${roomTstat}")
+					send("ScheduleTstatZones>in room ${roomName}, not able to set climate ${climateName} for cooling at the thermostat ${roomTstat}")
 				}
 				log.debug("setRoomTstatSettings>in room ${roomName},not able to set climate ${climateName} for cooling at the thermostat ${roomTstat}")
 
 			}
 		}
 		if (!setClimate) {
-			log.debug("ScheduleTstatMultiZoneSetup>in room ${roomName},about to apply zone's temp settings")
+			log.debug("ScheduleTstatZones>in room ${roomName},about to apply zone's temp settings")
 			key = "desiredCoolTemp$indiceZone"
 			def coolTemp = settings[key]
 			if (coolTemp == null) {
@@ -500,7 +500,7 @@ private def setRoomTstatSettings(indiceZone, indiceRoom) {
 			}
 			log.debug("setRoomTstatSettings>in room ${roomName}, ${roomTstat}'s desiredCool=${desiredCool}")
 			roomTstat.setCoolingSetpoint(desiredCool)
-			send("ScheduleTstatMultiZoneSetup>in room ${roomName}, ${roomTstat}'s cooling setPoint now =${desiredCool}°")
+			send("ScheduleTstatZones>in room ${roomName}, ${roomTstat}'s cooling setPoint now =${desiredCool}°")
 		}
 	}
 }
@@ -635,7 +635,7 @@ private def adjust_thermostat_setpoint_in_zone(indiceSchedule) {
 		if (setRoomThermostatsOnly == 'true') { // Does not want to set the main thermostat, only the room ones
 
 			if (detailedNotif == 'true') {
-				send("ScheduleTstatMultiZoneSetup>schedule ${scheduleName},zone ${zoneName}: all room Tstats set and setRoomThermostatsOnlyFlag= true, continue...")
+				send("ScheduleTstatZones>schedule ${scheduleName},zone ${zoneName}: all room Tstats set and setRoomThermostatsOnlyFlag= true, continue...")
 			}
             
 		} else {
@@ -654,7 +654,7 @@ private def adjust_thermostat_setpoint_in_zone(indiceSchedule) {
 	String mode = thermostat?.currentThermostatMode.toString()
 	//	This is the avg indoor temp based on indoor temp sensors in all rooms in the zone
 	if (detailedNotif == 'true') {
-		send("ScheduleTstatMultiZoneSetup>schedule ${scheduleName},all temps collected from sensors=${indoor_all_zones_temps}")
+		send("ScheduleTstatZones>schedule ${scheduleName},all temps collected from sensors=${indoor_all_zones_temps}")
 	}
 	if (indoor_all_zones_temps != [] ) {
 		avg_indoor_temp = (indoor_all_zones_temps.sum() / indoor_all_zones_temps.size()).round(1)
@@ -664,7 +664,7 @@ private def adjust_thermostat_setpoint_in_zone(indiceSchedule) {
 
 	float temp_diff = (avg_indoor_temp - currentTemp).round(1)
 	if (detailedNotif == 'true') {
-		send("ScheduleTstatMultiZoneSetup>schedule ${scheduleName}:avg temp= ${avg_indoor_temp},main Tstat's currentTemp= ${currentTemp},temp adjustment=${temp_diff.abs()}")
+		send("ScheduleTstatZones>schedule ${scheduleName}:avg temp= ${avg_indoor_temp},main Tstat's currentTemp= ${currentTemp},temp adjustment=${temp_diff.abs()}")
 	}
 	desiredCool = (scale=='C') ? 23:75					// by default, 23°C/75°F is the target cool temp
 
@@ -693,7 +693,7 @@ private def adjust_thermostat_setpoint_in_zone(indiceSchedule) {
 				thermostat.setClimate("", climateName)
 			} catch (any) {
 				if (detailedNotif == 'true') {
-					send("ScheduleTstatMultiZoneSetup>schedule ${scheduleName}:not able to set climate ${climateName} for heating at the thermostat ${thermostat}")
+					send("ScheduleTstatZones>schedule ${scheduleName}:not able to set climate ${climateName} for heating at the thermostat ${thermostat}")
 				}
 				log.error("adjust_thermostat_setpoint_in_zone>schedule ${scheduleName}:not able to set climate  ${climateName} for heating at the thermostat ${thermostat}")
 			}
@@ -704,7 +704,7 @@ private def adjust_thermostat_setpoint_in_zone(indiceSchedule) {
 		temp_diff = (temp_diff <0-max_temp_diff)?max_temp_diff:(temp_diff >max_temp_diff)?max_temp_diff:temp_diff // determine the temp_diff based on max_temp_diff
 		float targetTstatTemp = (desiredHeat - temp_diff).round(1)
 		thermostat?.setHeatingSetpoint(targetTstatTemp)
-		send("ScheduleTstatMultiZoneSetup>schedule ${scheduleName},in zones=${zones},heating setPoint now =${targetTstatTemp}°,adjusted by avg temp diff (${temp_diff.abs()}°) between all temp sensors in zone")
+		send("ScheduleTstatZones>schedule ${scheduleName},in zones=${zones},heating setPoint now =${targetTstatTemp}°,adjusted by avg temp diff (${temp_diff.abs()}°) between all temp sensors in zone")
 
 	} else if (mode == 'cool') {
 
@@ -726,7 +726,7 @@ private def adjust_thermostat_setpoint_in_zone(indiceSchedule) {
 				thermostat?.setClimate("", climateName)
 			} catch (any) {
 				if (detailedNotif == 'true') {
-					send("ScheduleTstatMultiZoneSetup>schedule ${scheduleName},not able to set climate ${climateName} for cooling at the thermostat(s) ${thermostat}")
+					send("ScheduleTstatZones>schedule ${scheduleName},not able to set climate ${climateName} for cooling at the thermostat(s) ${thermostat}")
 				}
 				log.error("adjust_thermostat_setpoint_in_zone>schedule ${scheduleName},not able to set climate ${climateName} associated for cooling at the thermostat ${thermostat}")
 			}
@@ -737,7 +737,7 @@ private def adjust_thermostat_setpoint_in_zone(indiceSchedule) {
 		temp_diff = (temp_diff <0-max_temp_diff)?max_temp_diff:(temp_diff >max_temp_diff)?max_temp_diff:temp_diff // determine the temp_diff based on max_temp_diff
 		float targetTstatTemp = (desiredCool - temp_diff).round(1)
 		thermostat?.setCoolingSetpoint(targetTstatTemp)
-		send("ScheduleTstatMultiZoneSetup>schedule ${scheduleName}, in zones=${zones},cooling setPoint now =${targetTstatTemp}°,adjusted by avg temp diff (${temp_diff}°) between all temp sensors in zone")
+		send("ScheduleTstatZones>schedule ${scheduleName}, in zones=${zones},cooling setPoint now =${targetTstatTemp}°,adjusted by avg temp diff (${temp_diff}°) between all temp sensors in zone")
 	}
 
 }
@@ -801,7 +801,7 @@ private def turn_off_all_other_vents(ventSwitchesOnSet) {
 				foundVentSwitch = ventSwitchesOnSet.find{it == vent4Switch}
 				if (foundVentSwitch==null) {
 					vent4Switch.off()
-					log.debug("ScheduleTstatMultiZoneSetup>in zone ${zoneName},turned off ${vent4Switch} in room ${roomName} as requested to create the desired zone(s)")
+					log.debug("turn_off_all_other_vents>in zone ${zoneName},turned off ${vent4Switch} in room ${roomName} as requested to create the desired zone(s)")
 				}                
 			}
 			key = "vent5Switch$indiceRoom"
@@ -848,7 +848,7 @@ private def control_vent_switches_in_zone(mode, indiceSchedule) {
 				vent1Switch.on()
 				ventSwitchesOnSet.add(vent1Switch)
 				if (detailedNotif == 'true') {
-					send("ScheduleTstatMultiZoneSetup>${scheduleName}:in zone ${zoneName},turn ${mode} ${vent1Switch} in room ${roomName} as requested to create the desired zone")
+					send("ScheduleTstatZones>${scheduleName}:in zone ${zoneName},turn ${mode} ${vent1Switch} in room ${roomName} as requested to create the desired zone")
 				}
 			}
 			key = "vent2Switch$indiceRoom"
@@ -857,7 +857,7 @@ private def control_vent_switches_in_zone(mode, indiceSchedule) {
 				vent2Switch.on()
 				ventSwitchesOnSet.add(vent2Switch)
 				if (detailedNotif == 'true') {
-					send("ScheduleTstatMultiZoneSetup>${scheduleName}:in zone ${zoneName},turn ${mode} ${vent2Switch} in room ${roomName} as requested to create the desired zone")
+					send("ScheduleTstatZones>${scheduleName}:in zone ${zoneName},turn ${mode} ${vent2Switch} in room ${roomName} as requested to create the desired zone")
 				}
 			}
 			key = "vent3Switch$indiceRoom"
@@ -866,7 +866,7 @@ private def control_vent_switches_in_zone(mode, indiceSchedule) {
 				vent3Switch.on()
 				ventSwitchesOnSet.add(vent3Switch)
 				if (detailedNotif == 'true') {
-					send("ScheduleTstatMultiZoneSetup>${scheduleName}:in zone ${zoneName},turn ${mode} ${vent3Switch} in room ${roomName} as requested to create the desired zone")
+					send("ScheduleTstatZones>${scheduleName}:in zone ${zoneName},turn ${mode} ${vent3Switch} in room ${roomName} as requested to create the desired zone")
 				}
 			}
 			key = "vent4Switch$indiceRoom"
@@ -875,7 +875,7 @@ private def control_vent_switches_in_zone(mode, indiceSchedule) {
 				vent4Switch.on()
 				ventSwitchesOnSet.add(vent4Switch)
 				if (detailedNotif == 'true') {
-					send("ScheduleTstatMultiZoneSetup>${scheduleName}:in zone ${zoneName},turn ${mode} ${vent4Switch} in room ${roomName} as requested to create the desired zone")
+					send("ScheduleTstatZones>${scheduleName}:in zone ${zoneName},turn ${mode} ${vent4Switch} in room ${roomName} as requested to create the desired zone")
 				}
 			}
 			key = "vent5Switch$indiceRoom"
@@ -884,7 +884,7 @@ private def control_vent_switches_in_zone(mode, indiceSchedule) {
 				vent5Switch.on()	
 				ventSwitchesOnSet.add(vent5Switch)
 				if (detailedNotif == 'true') {
-					send("ScheduleTstatMultiZoneSetup>${scheduleName}:in zone ${zoneName},turn ${mode} ${vent5Switch} in room ${roomName} as requested to create the desired zone")
+					send("ScheduleTstatZones>${scheduleName}:in zone ${zoneName},turn ${mode} ${vent5Switch} in room ${roomName} as requested to create the desired zone")
 				}
 			} /* end for rooms */                
 		}
