@@ -827,9 +827,9 @@ private def adjust_vent_settings_in_zone(indiceSchedule) {
 			def tempAtSensor =getSensorTempForAverage(indiceRoom)			
 			if (tempAtSensor != null) {
 				float temp_diff_at_sensor = tempAtSensor.toFloat().round(1) - desiredTemp 
-				log.debug("adjust_vent_settings_in_zone>schedule ${scheduleName}, in zone ${zoneName},temp_diff_at_sensor=${temp_diff_at_sensor}, avg_tem_diff=${avg_temp_diff}")
-				def switchLevel = ((temp_diff_at_sensor / avg_temp_diff) * 100).abs().round() 
-				switchLevel =( switchLevel >0)?((switchLevel<100)? switchLevel: 100):0
+				log.debug("adjust_vent_settings_in_zone>schedule ${scheduleName}, in zone ${zoneName}, room ${roomName}, temp_diff_at_sensor=${temp_diff_at_sensor}, avg_temp_diff=${avg_temp_diff}")
+				def switchLevel = ((temp_diff_at_sensor / avg_temp_diff) * 100).round() 			                
+				switchLevel =( switchLevel >=0)?((switchLevel<100)? switchLevel: 100):100+switchLevel
 				if (switchLevel >=10) {	
 					closeAllVentsInZone=false
 				}                    
