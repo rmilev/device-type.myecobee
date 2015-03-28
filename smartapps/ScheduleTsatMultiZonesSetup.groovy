@@ -386,7 +386,7 @@ def setZoneSettings() {
 			if (doChange) {
 
 				if (detailedNotif == 'true') {
-					send("ScheduleTstaZones>running schedule ${scheduleName},about to set zone settings as requested")
+					send("ScheduleTstatZones>running schedule ${scheduleName},about to set zone settings as requested")
 				}
         
 				// set the zoned vent switches to 'on'
@@ -398,7 +398,7 @@ def setZoneSettings() {
 			} else {
 				String nowInLocalTime = new Date().format("yyyy-MM-dd HH:mm", location.timeZone)
 				if (detailedNotif == 'true') {
-					send("ScheduleTstaZones>schedule: ${scheduleName}: change not scheduled at this time ${nowInLocalTime}...")
+					send("ScheduleTstatZones>schedule: ${scheduleName}: change not scheduled at this time ${nowInLocalTime}...")
 				}
 			}
 		}
