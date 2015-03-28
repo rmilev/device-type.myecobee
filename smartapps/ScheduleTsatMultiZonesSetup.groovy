@@ -195,6 +195,11 @@ def scheduleSetup() {
 	}
 	log.debug "zones: $zones"
 
+	
+	def enumModes=[]
+	location.modes.each {
+    	enumModes << it.name
+	}    
 
 	dynamicPage(name: "scheduleSetup", title: "Schedule Setup", uninstall: true, nextPage: Notifications) {
 		for (int i = 1;((i <= settings.schedulesCount) && (i <= 12)); i++) {
@@ -241,6 +246,9 @@ def scheduleSetup() {
 			}
 			section("Schedule " + i + " Max temp adjustment at the main thermostat based on temp Sensors") {
 				input "givenMaxTempDiff" + i, "decimal",  title: "Max Temp adjustment (default= +/-5°F/2°C)", required: false
+			}
+			section("Schedule " + i + " set for specific mode(s) (default=all)")  {
+				input "selectedMode" + i, "enum", title: "Choose Mode", options: enumModes, required: false, multiple:true
 			}
 			section() {
 				paragraph "**** Done for schedule $i **** "
@@ -326,24 +334,34 @@ def appTouch(evt) {
 def setZoneSettings() {
 
 	def currTime = now()
-	log.debug "setZoneSettings>location.mode = $location.mode, location.modes = $location.modes"
-	if (location.mode.toUpperCase().contains("AWAY")) {
-
-		send("ScheduleTstaZones>no settings are applied when current ST hello mode is Away, exiting")
-		return
-	}
 
 	def ventSwitchesOn = []
 	for (int i = 1;((i <= settings.schedulesCount) && (i <= 12)); i++) {
         
-		def key = "begintime$i"
+		def key = "selectedMode$i"
+		def selectedModes = settings[key]
+		key = "scheduleName$i"
+		def scheduleName = settings[key]
+
+		Boolean foundMode=false        
+		selectedModes.each {
+        
+			if (it==location.mode) {
+				foundMode=true            
+			}            
+		}        
+        
+		if ((selectedModes != null) && (!foundMode)) {
+        
+			log.debug "setZoneSettings>schedule=${scheduleName} does not apply,location.mode= $location.mode, selectedModes=${selectedModes},foundMode=${foundMode}, continue"
+			continue			
+		}
+		key = "begintime$i"
 		def startTime = settings[key]
 		if (startTime == null) {
         		continue
         	}
 		def startTimeToday = timeToday(startTime,location.timeZone)
-		key = "scheduleName$i"
-		def scheduleName = settings[key]
 		key = "endtime$i"
 		def endTime = settings[key]
 		def endTimeToday = timeToday(endTime,location.timeZone)
