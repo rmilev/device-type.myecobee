@@ -887,7 +887,7 @@ private def adjust_vent_settings_in_zone(indiceSchedule) {
 		}
 		log.debug "adjust_vent_settings_in_zone>in zone=${zoneName},set all ventSwitches at ${switchLevel}% to avoid closing all of them"
 		if (detailedNotif == 'true') {
-			send("ScheduleTstatZones>schedule ${scheduleName},set all ventSwitches at switchLevel to ${switchLevel}% to avoid closing all of them")
+			send("ScheduleTstatZones>schedule ${scheduleName},set all ventSwitches at ${switchLevel}% to avoid closing all of them")
 		}
 	}    
 }
