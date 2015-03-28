@@ -400,7 +400,7 @@ metadata {
 			state "default", label: 'OutTemp ${currentValue}°', unit: "C"
 		}
 		valueTile("weatherRelativeHumidity", "device.weatherRelativeHumidity",
-			inactiveLabel: false, width: 1, height: 1.5, decoration: "flat") {
+			inactiveLabel: false, width: 1, height: 1, decoration: "flat") {
 			state "default", label: 'OutHum ${currentValue}%', unit: "humidity"
 		}
 		valueTile("weatherTempHigh", "device.weatherTempHigh", inactiveLabel: false,
