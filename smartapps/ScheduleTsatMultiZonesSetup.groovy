@@ -232,10 +232,10 @@ def scheduleSetup() {
 				input "begintime" + i, "time", title: "Beginning time to trigger the zoned heating/cooling settings (format: 24H:MM)"
 				input "endtime" + i, "time", title: "End time(format: 24H:MM)"
 			}
-			section("Schedule " + i + " ,select the program at ecobee thermostat to be applied") {
+			section("Schedule " + i + " ,select the program at ecobee thermostat to be applied (optional, only for ecobee)") {
 				input "givenClimate" + i, "enum", title: "Which ecobee program? ", options: ecobeePrograms, required: false
 			}
-			section("Or desired cool Temp in the selected zone(s)") {
+			section("Desired cool Temp in the selected zone(s)") {
 				input "desiredCoolTemp" + i, "decimal", title: "Cool Temp, default = 75°F/23°C", required: false
 			}
 			section("And desired heat Temp in the selected zone(s)") {
