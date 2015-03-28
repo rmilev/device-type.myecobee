@@ -369,11 +369,15 @@ def setZoneSettings() {
 			endTimeToday = endTimeToday + 1
 		}        
         
-		log.debug "setZoneSettings>found schedule ${scheduleName},currTime= ${currTime}, begintime=${startTime} (${startTimeToday.time}), endTime=${endTime} (${endTimeToday.time})"
+		String startInLocalTime = startTimeToday.format("yyyy-MM-dd HH:mm", location.timeZone)
+		String nowInLocalTime = new Date().format("yyyy-MM-dd HH:mm", location.timeZone)
+		log.debug "setZoneSettings>found schedule ${scheduleName},nowInLocalTime= ${nowInLocalTime},startInLocalTime= ${startInLocalTime}, currTime= ${currTime}, begintime=${startTime} (${startTimeToday.time}), endTime=${endTime} (${endTimeToday.time})"
         
 		if ((currTime >= startTimeToday.time) && (currTime <= endTimeToday.time) && (state.lastScheduleName != scheduleName) &&
 			(state.lastStartTime != startTimeToday)) {
         
+			// let's set the given schedule
+            
 			state.lastScheduleName = scheduleName
 			state.lastStartTime = startTimeToday
             
@@ -390,17 +394,23 @@ def setZoneSettings() {
 				}
         
 				// set the zoned vent switches to 'on'
-				def ventSwitchesZoneSet= control_vent_switches_in_zone('on', i)
+				def ventSwitchesZoneSet= control_vent_switches_in_zone(i)
 				log.debug "setZoneSettings>schedule ${scheduleName},List of Vents turned 'on'= ${ventSwitchesZoneSet}"
 				// adjust the temperature at the thermostat(s)
 				adjust_thermostat_setpoint_in_zone(i)
  				ventSwitchesOn = ventSwitchesOn + ventSwitchesZoneSet              
 			} else {
-				String nowInLocalTime = new Date().format("yyyy-MM-dd HH:mm", location.timeZone)
 				if (detailedNotif == 'true') {
 					send("ScheduleTstatZones>schedule: ${scheduleName}: change not scheduled at this time ${nowInLocalTime}...")
 				}
 			}
+		}
+		else if ((state.lastScheduleName == scheduleName) && (currTime >= startTimeToday.time) && (currTime <= endTimeToday.time)) {
+        
+			// let's set adjust the vent settings according to desired Temp
+            
+			adjust_vent_settings_in_zone(i)
+        
 		}
 
 	} /* end for */ 	
@@ -662,18 +672,17 @@ private def adjust_thermostat_setpoint_in_zone(indiceSchedule) {
 			indoor_all_zones_temps = indoor_all_zones_temps + indoorTemps
 		}
 	}
-	if (setRoomThermostatsOnly) {
+	if (setRoomThermostatsOnly=='true') {
 		log.debug("adjust_thermostat_setpoint_in_zone>schedule ${scheduleName}: schedule ${scheduleName},all room Tstats set and setRoomThermostatsOnlyFlag= true,exiting")
 		return				    
 	}    
 	//	Now will do an avg temp calculation based on all temp sensors to apply the desired temp settings at the main Tstat correctly
 
+	thermostat?.poll()
 	float currentTemp = thermostat?.currentTemperature.toFloat()
 	String mode = thermostat?.currentThermostatMode.toString()
 	//	This is the avg indoor temp based on indoor temp sensors in all rooms in the zone
-	if (detailedNotif == 'true') {
-		send("ScheduleTstatZones>schedule ${scheduleName},all temps collected from sensors=${indoor_all_zones_temps}")
-	}
+	log.debug("adjust_thermostat_setpoint_in_zone>schedule ${scheduleName},all temps collected from sensors=${indoor_all_zones_temps}")
 	if (indoor_all_zones_temps != [] ) {
 		avg_indoor_temp = (indoor_all_zones_temps.sum() / indoor_all_zones_temps.size()).round(1)
 	} else {
@@ -715,7 +724,6 @@ private def adjust_thermostat_setpoint_in_zone(indiceSchedule) {
 				}
 				log.error("adjust_thermostat_setpoint_in_zone>schedule ${scheduleName}:not able to set climate  ${climateName} for heating at the thermostat ${thermostat}")
 			}
-			thermostat.poll()
 			desiredHeat = thermostat.currentHeatingSetpoint
 			log.debug("adjust_thermostat_setpoint_in_zone>schedule ${scheduleName},according to climateName ${climateName}, desiredHeat=${desiredHeat}")
 		}
@@ -748,7 +756,6 @@ private def adjust_thermostat_setpoint_in_zone(indiceSchedule) {
 				}
 				log.error("adjust_thermostat_setpoint_in_zone>schedule ${scheduleName},not able to set climate ${climateName} associated for cooling at the thermostat ${thermostat}")
 			}
-			thermostat.poll()
 			desiredCool = thermostat.currentCoolingSetpoint
 			log.debug("adjust_thermostat_setpoint_in_zone>schedule ${scheduleName},according to climateName ${climateName}, desiredCool=${desiredCool}")
 		}
@@ -758,6 +765,103 @@ private def adjust_thermostat_setpoint_in_zone(indiceSchedule) {
 		send("ScheduleTstatZones>schedule ${scheduleName}, in zones=${zones},cooling setPoint now =${targetTstatTemp}°,adjusted by avg temp diff (${temp_diff}°) between all temp sensors in zone")
 	}
 
+}
+
+
+private def adjust_vent_settings_in_zone(indiceSchedule) {
+	float desiredTemp, avg_indoor_temp, avg_temp_diff
+
+	def key = "scheduleName$indiceSchedule"
+	def scheduleName = settings[key]
+
+	key = "includedZones$indiceSchedule"
+	def zones = settings[key]
+	key = "setRoomThermostatsOnlyFlag$indiceSchedule"
+	def setRoomThermostatsOnlyFlag = settings[key]
+	def setRoomThermostatsOnly = (setRoomThermostatsOnlyFlag) ?: 'false'
+	def indoor_all_zones_temps=[]
+    
+	log.debug("adjust_vent_settings_in_zone>schedule ${scheduleName}: zones= ${zones}")
+
+	if (setRoomThermostatsOnly=='true') {
+		log.debug("adjust_vent_settings_in_zone>schedule ${scheduleName}: schedule ${scheduleName},all room Tstats set and setRoomThermostatsOnlyFlag= true,exiting")
+		return				    
+	}    
+	thermostat.poll()
+	String mode = thermostat?.currentThermostatMode.toString()
+	desiredTemp = (mode=='heat')? thermostat.currentHeatingSetpoint.toFloat().round(1) :
+			thermostat.currentCoolingSetpoint.toFloat().round(1)
+    
+	log.debug("adjust_vent_settings_in_zone>schedule ${scheduleName}, desiredTemp=${desiredTemp}")
+    
+	for (zone in zones) {
+
+		def zoneDetails=zone.split(':')
+		log.debug("adjust_vent_settings_in_zone>zone=${zone}: zoneDetails= ${zoneDetails}")
+		def indiceZone = zoneDetails[0]
+		def zoneName = zoneDetails[1]
+		def indoorTemps = getAllTempsForAverage(indiceZone)
+
+		if (detailedNotif == 'true') {
+			log.debug("adjust_vent_settings_in_zone>schedule ${scheduleName}, in zone ${zoneName}, all temps collected from sensors=${indoorTemps}")
+		}
+		float currentTemp = thermostat?.currentTemperature.toFloat()
+		if (indoorTemps != [] ) {
+			avg_indoor_temp = (indoorTemps.sum() / indoorTemps.size()).round(1)
+			avg_temp_diff = (avg_indoor_temp - desiredTemp).round(1)
+			            
+		} else {
+			log.debug("adjust_vent_settings_in_zone>schedule ${scheduleName}, in zone ${zoneName}, no data from temp sensors, exiting")
+		}        
+		key = "includedRooms$indiceZone"
+		def rooms = settings[key]
+		for (room in rooms) {
+			def roomDetails=room.split(':')
+			def indiceRoom = roomDetails[0]
+			def roomName = roomDetails[1]
+			if ((roomName == null) || (roomName.trim() == "")) {
+				continue
+			}
+			def tempAtSensor =getSensorTempForAverage(indiceRoom)			
+			if (tempAtSensor != null) {
+				float temp_diff_at_sensor = tempAtSensor.toFloat().round(1) - desiredTemp 
+				log.debug("adjust_vent_settings_in_zone>schedule ${scheduleName}, in zone ${zoneName},temp_diff_at_sensor=${temp_diff_at_sensor}, avg_tem_diff=${avg_temp_diff}")
+				def switchLevel = ((temp_diff_at_sensor / avg_temp_diff) * 100).abs().round() 
+				switchLevel =( switchLevel >0)?((switchLevel<100)? switchLevel: 100):0				
+				key = "vent1Switch$indiceRoom"
+				def vent1Switch = settings[key]
+				if (vent1Switch != null) {
+					setVentSwitchLevel(indiceRoom, vent1Switch, switchLevel)                
+					log.debug "adjust_vent_settings_in_zone>in zone=${zoneName},room ${roomName},set ${vent1Switch} at switchLevel =${switchLevel}%"
+				}           
+				key = "vent2Switch$indiceRoom"
+				def vent2Switch = settings[key]
+				if (vent2Switch != null) {
+					setVentSwitchLevel(indiceRoom, vent2Switch, switchLevel)                
+					log.debug "adjust_vent_settings_in_zone>in zone=${zoneName},room ${roomName},set ${vent2Switch} at switchLevel =${switchLevel}%"
+				}           
+				key = "vent3Switch$indiceRoom"
+				def vent3Switch = settings[key]
+				if (vent3Switch != null) {
+					setVentSwitchLevel(indiceRoom, vent3Switch, switchLevel)                
+					log.debug "adjust_vent_settings_in_zone>in zone=${zoneName},room ${roomName},set ${vent3Switch} at switchLevel =${switchLevel}%"
+				}           
+				key = "vent4Switch$indiceRoom"
+				def vent4Switch = settings[key]
+				if (vent4Switch != null) {
+					setVentSwitchLevel(indiceRoom, vent4Switch, switchLevel)                
+					log.debug "adjust_vent_settings_in_zone>in zone=${zoneName},room ${roomName},set ${vent4Switch} at switchLevel =${switchLevel}%"
+				}           
+				key = "vent5Switch$indiceRoom"
+				def vent5Switch = settings[key]
+				if (vent5Switch != null) {
+					setVentSwitchLevel(indiceRoom, vent5Switch, switchLevel)                
+					log.debug "adjust_vent_settings_in_zone>in zone=${zoneName},room ${roomName},set ${vent5Switch} at switchLevel =${switchLevel}%"
+				}  
+			}                
+		} /* end for rooms */			                
+    } /* end for zones */
+	
 }
 
 private def turn_off_all_other_vents(ventSwitchesOnSet) {
@@ -797,7 +901,7 @@ private def turn_off_all_other_vents(ventSwitchesOnSet) {
 			if (vent2Switch != null) {
 				log.debug "turn_off_all_other_vents>in zone=${zoneName},room ${roomName},found= ${vent2Switch}"
 				foundVentSwitch = ventSwitchesOnSet.find{it == vent2Switch}
-            			if (foundVentSwitch==null) {
+            	if (foundVentSwitch==null) {
 					vent2Switch.off()
 					log.debug("turn_off_all_other_vents>in zone ${zoneName},turned off ${vent2Switch} in room ${roomName} as requested to create the desired zone(s)")
 				}                
@@ -835,11 +939,28 @@ private def turn_off_all_other_vents(ventSwitchesOnSet) {
             
 		}  /* end for rooms */          
 	} /* end for zones */
+
+}
+
+
+private def setVentSwitchLevel(indiceRoom, ventSwitch, switchLevel=100) {
+
+	def key = "roomName$indiceRoom"
+	def roomName = settings[key]
+
+	try {
+		ventSwitch.setLevel(switchLevel)
+		log.debug("ScheduleTstatZones>set ${ventSwitch} at level ${switchLevel} in room ${roomName} to reach desired temperature")
+	} catch (any) {
+		log.error "setVentSwitchLevel>in room ${roomName}, not able to set ${ventSwitch} at ${switchLevel}"
+
+	}
+    
 }
 
 
 
-private def control_vent_switches_in_zone(mode, indiceSchedule) {
+private def control_vent_switches_in_zone(indiceSchedule, switchLevel=100) {
 	def key = "scheduleName$indiceSchedule"
 	def scheduleName = settings[key]
 
@@ -863,49 +984,34 @@ private def control_vent_switches_in_zone(mode, indiceSchedule) {
 			key = "vent1Switch$indiceRoom"
 			def vent1Switch = settings[key]
 			if (vent1Switch != null) {
-				vent1Switch.on()
 				ventSwitchesOnSet.add(vent1Switch)
-				if (detailedNotif == 'true') {
-					send("ScheduleTstatZones>${scheduleName}:in zone ${zoneName},turn ${mode} ${vent1Switch} in room ${roomName} as requested to create the desired zone")
-				}
+				setVentSwitchLevel(indiceRoom, vent1Switch, switchLevel)
 			}
 			key = "vent2Switch$indiceRoom"
 			def vent2Switch = settings[key]
 			if (vent2Switch != null) {
-				vent2Switch.on()
 				ventSwitchesOnSet.add(vent2Switch)
-				if (detailedNotif == 'true') {
-					send("ScheduleTstatZones>${scheduleName}:in zone ${zoneName},turn ${mode} ${vent2Switch} in room ${roomName} as requested to create the desired zone")
-				}
+				setVentSwitchLevel(indiceRoom, vent2Switch, switchLevel)
 			}
 			key = "vent3Switch$indiceRoom"
 			def vent3Switch = settings[key]
 			if (vent3Switch != null) {
-				vent3Switch.on()
 				ventSwitchesOnSet.add(vent3Switch)
-				if (detailedNotif == 'true') {
-					send("ScheduleTstatZones>${scheduleName}:in zone ${zoneName},turn ${mode} ${vent3Switch} in room ${roomName} as requested to create the desired zone")
-				}
+				setVentSwitchLevel(indiceRoom, vent3Switch, switchLevel)
 			}
 			key = "vent4Switch$indiceRoom"
 			def vent4Switch = settings[key]
 			if (vent4Switch != null) {
-				vent4Switch.on()
 				ventSwitchesOnSet.add(vent4Switch)
-				if (detailedNotif == 'true') {
-					send("ScheduleTstatZones>${scheduleName}:in zone ${zoneName},turn ${mode} ${vent4Switch} in room ${roomName} as requested to create the desired zone")
-				}
+				setVentSwitchLevel(indiceRoom, vent4Switch, switchLevel)
 			}
 			key = "vent5Switch$indiceRoom"
 			def vent5Switch = settings[key]
 			if (vent5Switch != null) {
-				vent5Switch.on()	
 				ventSwitchesOnSet.add(vent5Switch)
-				if (detailedNotif == 'true') {
-					send("ScheduleTstatZones>${scheduleName}:in zone ${zoneName},turn ${mode} ${vent5Switch} in room ${roomName} as requested to create the desired zone")
-				}
-			} /* end for rooms */                
-		}
+				setVentSwitchLevel(indiceRoom, vent5Switch, switchLevel)
+			}                
+		} /* end for rooms */
 	} /* end for zones */
 	return ventSwitchesOnSet
 }
