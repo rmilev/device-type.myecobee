@@ -793,8 +793,7 @@ private def adjust_vent_settings_in_zone(indiceSchedule) {
 	}    
 	thermostat.poll()
 	String mode = thermostat?.currentThermostatMode.toString()
-	desiredTemp = (mode=='heat')? thermostat.currentHeatingSetpoint.toFloat().round(1) :
-			thermostat.currentCoolingSetpoint.toFloat().round(1)
+	desiredTemp = thermostat.currentThermostatSetpoint.toFloat().round(1)
     
 	log.debug("adjust_vent_settings_in_zone>schedule ${scheduleName}, desiredTemp=${desiredTemp}")
     
