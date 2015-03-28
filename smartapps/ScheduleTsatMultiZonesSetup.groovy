@@ -780,6 +780,8 @@ private def adjust_vent_settings_in_zone(indiceSchedule) {
 	def setRoomThermostatsOnlyFlag = settings[key]
 	def setRoomThermostatsOnly = (setRoomThermostatsOnlyFlag) ?: 'false'
 	def indoor_all_zones_temps=[]
+	def indiceRoom
+	Boolean closeAllVentsInZone=true
     
 	log.debug("adjust_vent_settings_in_zone>schedule ${scheduleName}: zones= ${zones}")
 
@@ -817,7 +819,7 @@ private def adjust_vent_settings_in_zone(indiceSchedule) {
 		def rooms = settings[key]
 		for (room in rooms) {
 			def roomDetails=room.split(':')
-			def indiceRoom = roomDetails[0]
+			indiceRoom = roomDetails[0]
 			def roomName = roomDetails[1]
 			if ((roomName == null) || (roomName.trim() == "")) {
 				continue
@@ -827,7 +829,12 @@ private def adjust_vent_settings_in_zone(indiceSchedule) {
 				float temp_diff_at_sensor = tempAtSensor.toFloat().round(1) - desiredTemp 
 				log.debug("adjust_vent_settings_in_zone>schedule ${scheduleName}, in zone ${zoneName},temp_diff_at_sensor=${temp_diff_at_sensor}, avg_tem_diff=${avg_temp_diff}")
 				def switchLevel = ((temp_diff_at_sensor / avg_temp_diff) * 100).abs().round() 
-				switchLevel =( switchLevel >0)?((switchLevel<100)? switchLevel: 100):0				
+				switchLevel =( switchLevel >0)?((switchLevel<100)? switchLevel: 100):0
+				if ((switchLevel ==0) && (closeAllVentsInZone)) {	
+					closeAllVentsInZone=true
+				} else {
+					closeAllVentsInZone=false
+				}
 				key = "vent1Switch$indiceRoom"
 				def vent1Switch = settings[key]
 				if (vent1Switch != null) {
@@ -859,9 +866,17 @@ private def adjust_vent_settings_in_zone(indiceSchedule) {
 					log.debug "adjust_vent_settings_in_zone>in zone=${zoneName},room ${roomName},set ${vent5Switch} at switchLevel =${switchLevel}%"
 				}  
 			}                
-		} /* end for rooms */			                
+		} /* end for rooms */
     } /* end for zones */
-	
+
+	if (closeAllVentsInZone) {
+    
+		log.debug "adjust_vent_settings_in_zone>in zone=${zoneName},set all ventSwitches at 10% to avoid closing all of them"
+		if (detailedNotif == 'true') {
+			send("ScheduleTstatZones>schedule ${scheduleName},set all ventSwitches at switchLevel =${switchLevel}% to avoid closing all of them")
+		}
+		control_vent_switches_in_zone(indiceSchedule, 10)		    
+	}    
 }
 
 private def turn_off_all_other_vents(ventSwitchesOnSet) {
