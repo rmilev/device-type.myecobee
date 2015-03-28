@@ -830,11 +830,9 @@ private def adjust_vent_settings_in_zone(indiceSchedule) {
 				log.debug("adjust_vent_settings_in_zone>schedule ${scheduleName}, in zone ${zoneName},temp_diff_at_sensor=${temp_diff_at_sensor}, avg_tem_diff=${avg_temp_diff}")
 				def switchLevel = ((temp_diff_at_sensor / avg_temp_diff) * 100).abs().round() 
 				switchLevel =( switchLevel >0)?((switchLevel<100)? switchLevel: 100):0
-				if ((switchLevel ==0) && (closeAllVentsInZone)) {	
-					closeAllVentsInZone=true
-				} else {
+				if (switchLevel >=10) {	
 					closeAllVentsInZone=false
-				}
+				}                    
 				key = "vent1Switch$indiceRoom"
 				def vent1Switch = settings[key]
 				if (vent1Switch != null) {
