@@ -782,7 +782,8 @@ private def adjust_vent_settings_in_zone(indiceSchedule) {
 	def indoor_all_zones_temps=[]
 	def indiceRoom
 	Boolean closeAllVentsInZone=true
-	int nbVents=0    
+	int nbVents=0
+	def switchLevel    
     
 	log.debug("adjust_vent_settings_in_zone>schedule ${scheduleName}: zones= ${zones}")
 
@@ -829,7 +830,7 @@ private def adjust_vent_settings_in_zone(indiceSchedule) {
 			if (tempAtSensor != null) {
 				float temp_diff_at_sensor = tempAtSensor.toFloat().round(1) - desiredTemp 
 				log.debug("adjust_vent_settings_in_zone>schedule ${scheduleName}, in zone ${zoneName}, room ${roomName}, temp_diff_at_sensor=${temp_diff_at_sensor}, avg_temp_diff=${avg_temp_diff}")
-				def switchLevel = ((temp_diff_at_sensor / avg_temp_diff) * 100).round() 			                
+				switchLevel = ((temp_diff_at_sensor / avg_temp_diff) * 100).round() 			                
 				switchLevel =( switchLevel >=0)?((switchLevel<100)? switchLevel: 100):(switchlevel< (-100))?0:100+switchLevel
 				if (switchLevel >=10) {	
 					closeAllVentsInZone=false
@@ -876,15 +877,17 @@ private def adjust_vent_settings_in_zone(indiceSchedule) {
 
 	if (closeAllVentsInZone) {
     
-		log.debug "adjust_vent_settings_in_zone>in zone=${zoneName},set all ventSwitches at 10% to avoid closing all of them"
-		if (detailedNotif == 'true') {
-			send("ScheduleTstatZones>schedule ${scheduleName},set all ventSwitches at switchLevel =${switchLevel}% to avoid closing all of them")
-		}
 		if (nbVents > 2) {        
-			control_vent_switches_in_zone(indiceSchedule, 10)		    
+			switchLevel=10        
+			control_vent_switches_in_zone(indiceSchedule, switchLevel)		    
 		} else {
-			control_vent_switches_in_zone(indiceSchedule, 30)		    
+			switchLevel=25        
+			control_vent_switches_in_zone(indiceSchedule, switchLevel)		    
 	        
+		}
+		log.debug "adjust_vent_settings_in_zone>in zone=${zoneName},set all ventSwitches at ${switchLevel}% to avoid closing all of them"
+		if (detailedNotif == 'true') {
+			send("ScheduleTstatZones>schedule ${scheduleName},set all ventSwitches at switchLevel to ${switchLevel}% to avoid closing all of them")
 		}
 	}    
 }
