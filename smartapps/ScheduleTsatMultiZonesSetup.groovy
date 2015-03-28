@@ -782,6 +782,7 @@ private def adjust_vent_settings_in_zone(indiceSchedule) {
 	def indoor_all_zones_temps=[]
 	def indiceRoom
 	Boolean closeAllVentsInZone=true
+	int nbVents=0    
     
 	log.debug("adjust_vent_settings_in_zone>schedule ${scheduleName}: zones= ${zones}")
 
@@ -838,34 +839,40 @@ private def adjust_vent_settings_in_zone(indiceSchedule) {
 				if (vent1Switch != null) {
 					setVentSwitchLevel(indiceRoom, vent1Switch, switchLevel)                
 					log.debug "adjust_vent_settings_in_zone>in zone=${zoneName},room ${roomName},set ${vent1Switch} at switchLevel =${switchLevel}%"
+					nbVents++                    
 				}           
 				key = "vent2Switch$indiceRoom"
 				def vent2Switch = settings[key]
 				if (vent2Switch != null) {
 					setVentSwitchLevel(indiceRoom, vent2Switch, switchLevel)                
 					log.debug "adjust_vent_settings_in_zone>in zone=${zoneName},room ${roomName},set ${vent2Switch} at switchLevel =${switchLevel}%"
+					nbVents++                    
 				}           
 				key = "vent3Switch$indiceRoom"
 				def vent3Switch = settings[key]
 				if (vent3Switch != null) {
 					setVentSwitchLevel(indiceRoom, vent3Switch, switchLevel)                
 					log.debug "adjust_vent_settings_in_zone>in zone=${zoneName},room ${roomName},set ${vent3Switch} at switchLevel =${switchLevel}%"
+					nbVents++                    
 				}           
 				key = "vent4Switch$indiceRoom"
 				def vent4Switch = settings[key]
 				if (vent4Switch != null) {
 					setVentSwitchLevel(indiceRoom, vent4Switch, switchLevel)                
 					log.debug "adjust_vent_settings_in_zone>in zone=${zoneName},room ${roomName},set ${vent4Switch} at switchLevel =${switchLevel}%"
+					nbVents++                    
 				}           
 				key = "vent5Switch$indiceRoom"
 				def vent5Switch = settings[key]
 				if (vent5Switch != null) {
 					setVentSwitchLevel(indiceRoom, vent5Switch, switchLevel)                
 					log.debug "adjust_vent_settings_in_zone>in zone=${zoneName},room ${roomName},set ${vent5Switch} at switchLevel =${switchLevel}%"
+					nbVents++                    
 				}  
 			}                
 		} /* end for rooms */
-    } /* end for zones */
+		
+	} /* end for zones */
 
 	if (closeAllVentsInZone) {
     
@@ -873,7 +880,12 @@ private def adjust_vent_settings_in_zone(indiceSchedule) {
 		if (detailedNotif == 'true') {
 			send("ScheduleTstatZones>schedule ${scheduleName},set all ventSwitches at switchLevel =${switchLevel}% to avoid closing all of them")
 		}
-		control_vent_switches_in_zone(indiceSchedule, 10)		    
+		if (nbVents > 2) {        
+			control_vent_switches_in_zone(indiceSchedule, 10)		    
+		} else {
+			control_vent_switches_in_zone(indiceSchedule, 25)		    
+	        
+		}
 	}    
 }
 
@@ -914,7 +926,7 @@ private def turn_off_all_other_vents(ventSwitchesOnSet) {
 			if (vent2Switch != null) {
 				log.debug "turn_off_all_other_vents>in zone=${zoneName},room ${roomName},found= ${vent2Switch}"
 				foundVentSwitch = ventSwitchesOnSet.find{it == vent2Switch}
-            	if (foundVentSwitch==null) {
+            			if (foundVentSwitch==null) {
 					vent2Switch.off()
 					log.debug("turn_off_all_other_vents>in zone ${zoneName},turned off ${vent2Switch} in room ${roomName} as requested to create the desired zone(s)")
 				}                
