@@ -805,9 +805,6 @@ private def adjust_vent_settings_in_zone(indiceSchedule) {
 		def zoneName = zoneDetails[1]
 		def indoorTemps = getAllTempsForAverage(indiceZone)
 
-		if (detailedNotif == 'true') {
-			log.debug("adjust_vent_settings_in_zone>schedule ${scheduleName}, in zone ${zoneName}, all temps collected from sensors=${indoorTemps}")
-		}
 		float currentTemp = thermostat?.currentTemperature.toFloat()
 		if (indoorTemps != [] ) {
 			avg_indoor_temp = (indoorTemps.sum() / indoorTemps.size()).round(1)
@@ -816,6 +813,9 @@ private def adjust_vent_settings_in_zone(indiceSchedule) {
 		} else {
 			log.debug("adjust_vent_settings_in_zone>schedule ${scheduleName}, in zone ${zoneName}, no data from temp sensors, exiting")
 		}        
+		if (detailedNotif == 'true') {
+			log.debug("adjust_vent_settings_in_zone>schedule ${scheduleName}, in zone ${zoneName}, avg_temp_diff=${avg_temp_diff}, all temps collected from sensors=${indoorTemps}")
+		}
 		key = "includedRooms$indiceZone"
 		def rooms = settings[key]
 		for (room in rooms) {
@@ -830,7 +830,7 @@ private def adjust_vent_settings_in_zone(indiceSchedule) {
 				float temp_diff_at_sensor = tempAtSensor.toFloat().round(1) - desiredTemp 
 				log.debug("adjust_vent_settings_in_zone>schedule ${scheduleName}, in zone ${zoneName}, room ${roomName}, temp_diff_at_sensor=${temp_diff_at_sensor}, avg_temp_diff=${avg_temp_diff}")
 				def switchLevel = ((temp_diff_at_sensor / avg_temp_diff) * 100).round() 			                
-				switchLevel =( switchLevel >=0)?((switchLevel<100)? switchLevel: 100):100+switchLevel
+				switchLevel =( switchLevel >=0)?((switchLevel<100)? switchLevel: 100):(switchlevel< (-100))?0:100+switchLevel
 				if (switchLevel >=10) {	
 					closeAllVentsInZone=false
 				}                    
@@ -883,7 +883,7 @@ private def adjust_vent_settings_in_zone(indiceSchedule) {
 		if (nbVents > 2) {        
 			control_vent_switches_in_zone(indiceSchedule, 10)		    
 		} else {
-			control_vent_switches_in_zone(indiceSchedule, 25)		    
+			control_vent_switches_in_zone(indiceSchedule, 30)		    
 	        
 		}
 	}    
