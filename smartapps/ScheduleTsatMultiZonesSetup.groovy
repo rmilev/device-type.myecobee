@@ -197,8 +197,8 @@ def scheduleSetup() {
 
 	
 	def enumModes=[]
-	location.modes.each {
-    	enumModes << it.name
+		location.modes.each {
+		enumModes << it.name
 	}    
 
 	dynamicPage(name: "scheduleSetup", title: "Schedule Setup", uninstall: true, nextPage: Notifications) {
