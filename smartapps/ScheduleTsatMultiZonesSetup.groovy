@@ -805,7 +805,6 @@ private def adjust_vent_settings_in_zone(indiceSchedule) {
 		def zoneName = zoneDetails[1]
 		def indoorTemps = getAllTempsForAverage(indiceZone)
 
-		float currentTemp = thermostat?.currentTemperature.toFloat()
 		if (indoorTemps != [] ) {
 			avg_indoor_temp = (indoorTemps.sum() / indoorTemps.size()).round(1)
 			avg_temp_diff = (avg_indoor_temp - desiredTemp).round(1)
