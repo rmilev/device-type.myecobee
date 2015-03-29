@@ -378,8 +378,6 @@ def setZoneSettings() {
         
 			// let's set the given schedule
             
-			state.lastScheduleName = scheduleName
-			state.lastStartTime = startTimeToday
             
 			log.debug "setZoneSettings>schedule ${scheduleName},currTime= ${currTime}, current time seems OK for execution, need to check the day of Week"
 			def doChange = IsRightDayForChange(i)
@@ -389,6 +387,8 @@ def setZoneSettings() {
 
 			if (doChange) {
 
+				state.lastScheduleName = scheduleName
+				state.lastStartTime = startTimeToday
 				if (detailedNotif == 'true') {
 					send("ScheduleTstatZones>running schedule ${scheduleName},about to set zone settings as requested")
 				}
@@ -407,7 +407,7 @@ def setZoneSettings() {
 		}
 		else if ((state.lastScheduleName == scheduleName) && (currTime >= startTimeToday.time) && (currTime <= endTimeToday.time)) {
         
-			// let's set adjust the vent settings according to desired Temp
+			// let's adjust the vent settings according to desired Temp
             
 			adjust_vent_settings_in_zone(i)
         
