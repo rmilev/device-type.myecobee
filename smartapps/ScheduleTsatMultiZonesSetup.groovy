@@ -490,7 +490,7 @@ private def setRoomTstatSettings(indiceZone, indiceRoom) {
 			log.debug("ScheduleTstatZones>in room ${roomName},about to apply zone's temp settings")
 			key = "desiredHeatTemp$indiceZone"
 			def heatTemp = settings[key]
-			if (heatTemp == null) {
+			if ((heatTemp == null) || (heatTemp?.trim()=="")) {
 				log.debug("setRoomTstatSettings>in room ${roomName},about to apply default heat settings")
 				desiredHeat = (scale=='C') ? 21:72				// by default, 21°C/72°F is the target heat temp
 			} else {
@@ -519,7 +519,7 @@ private def setRoomTstatSettings(indiceZone, indiceRoom) {
 			log.debug("ScheduleTstatZones>in room ${roomName},about to apply zone's temp settings")
 			key = "desiredCoolTemp$indiceZone"
 			def coolTemp = settings[key]
-			if (coolTemp == null) {
+			if ((coolTemp == null) || (coolTemp?.trim()=="")) {
 				log.debug("setRoomTstatSettings>in room ${roomName},about to apply default cool settings")
 				desiredCool = (scale=='C') ? 23:75				// by default, 23°C/75°F is the target cool temp
 			} else {
@@ -707,7 +707,7 @@ private def adjust_thermostat_setpoint_in_zone(indiceSchedule) {
 			log.debug("adjust_thermostat_setpoint_in_zone>schedule ${scheduleName}:climate for the heating settings to be applied not found")
 			key = "desiredHeatTemp$indiceSchedule"
 			def heatTemp = settings[key]
-			if (heatTemp == null) {
+			if ((heatTemp == null) || (heatTemp?.trim()=="")) {
 				log.debug("adjust_thermostat_setpoint_in_zone>schedule ${scheduleName}:about to apply default heat settings")
 				desiredHeat = (scale=='C') ? 21:72 					// by default, 21°C/72°F is the target heat temp
 			} else {
@@ -738,7 +738,7 @@ private def adjust_thermostat_setpoint_in_zone(indiceSchedule) {
 			log.debug("adjust_thermostat_setpoint_in_zone>${scheduleName},climate associated to the cooling settings to be applied not found")
 			key = "desiredCoolTemp$indiceSchedule"
 			def coolTemp = settings[key]
-			if (coolTemp == null) {
+			if ((coolTemp == null) || (coolTemp?.trim()=="")) {
 				log.debug("adjust_thermostat_setpoint_in_zone>schedule ${scheduleName},about to apply default cool settings")
 				desiredCool = (scale=='C') ? 23:75					// by default, 23°C/75°F is the target cool temp
 			} else {
