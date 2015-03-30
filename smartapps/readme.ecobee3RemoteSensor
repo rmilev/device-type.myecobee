@@ -71,9 +71,17 @@ h) Click "create" at the bottom of the page
 i) Click save and publish
 
 /*********************************************************************************************
-4) Kill your smartThings app, clean the cache and reload the app (as the old device is cached, especially
-if you have android V1.17)
+4) Kill your smartThings app, clean the cache under your OS (android or iOS) and reload 
+the app (as the old device is cached)
 /*********************************************************************************************
+
+If you have the following error msg in the logs:
+
+'generateRemoteSensorEvents' is not supported. Supported commands: [poll, refresh, setHeatingSetpoint, ....'
+
+THis means that the old Device Type is still in the cache..
+
+
 
 /*********************************************************************************************
 5) Under My apps on your smartphone/tablet, execute ecobee3RemoteSensorInit the same way as 
