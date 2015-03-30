@@ -20,9 +20,11 @@
 /*********************************************************************************************
 1) You'd need to update the My ecobee device, save & publish in the IDE
 /*********************************************************************************************
-grab the code at 
+
+Grab the code at 
 
 https://github.com/yracine/device-type.myecobee/blob/beta/ecobee.devicetype.groovy
+Click "Save" & Publish"
 
 If not already created, read the instructions at
 
@@ -30,14 +32,18 @@ https://github.com/yracine/device-type.myecobee
 
 
 /*********************************************************************************************
-2) Create a new smartapp called ecobee3RemoteSensorInit, grab the code from github above,save&publish
+2) Create a new smartapp called ecobee3RemoteSensorInit, grab the code from github below,
+save & publish
 /*********************************************************************************************
 
 Go to 
 
 https://graph.api.smartthings.com/ide/apps
+
 Create a new Smartapp, click on new Smartapp on the right
-From there, use the "from code" tab, and grab the code from:
+
+From there, use the "From code" tab, and grab the code at:
+Click "Save" & Publish"
 
 https://github.com/yracine/device-type.myecobee/blob/beta/smartapps/ecobeeRemoteSensorsInit.groovy
 
