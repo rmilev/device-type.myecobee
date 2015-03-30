@@ -288,18 +288,22 @@ def initialize() {
 	}
 	log.trace("ecobeeRemoteSensorsInit>scheduling takeAction every ${delay} minutes")
 
+
+	schedule("0 0/${delay} * * * ?", takeAction) 
+
+/* if ST scheduling contention issue, then remove the following comments to replace schedule command above
 	if (delay >= 5 && delay <10) {
-		runEvery5Minutes(setZoneSettings)
+		runEvery5Minutes(takeAction)
 	} else if (delay >= 10 && delay <15) {
-		runEvery10Minutes(setZoneSettings)
+		runEvery10Minutes(takeAction)
 	} else if (delay >= 15 && delay <30) {
-		runEvery15Minutes(setZoneSettings)
+		runEvery15Minutes(takeAction)
 	} else if (delay >= 30 && delay <60) {
-		runEvery30Minutes(setZoneSettings)
+		runEvery30Minutes(takeAction)
 	} else {        
-		runEvery1Hour(setZoneSettings)
+		runEvery1Hour(takeAction)
 	}
-	    
+*/	    
 	log.debug "initialize>end"
 }
 
@@ -363,7 +367,7 @@ private updateMotionSensors() {
 			device.sendEvent(name: "motion", value: status, isStateChange: isChange, displayed: isDisplayed)
 		} else {
 
-			log.debug "updateMotionSensors>couldn't find Motion Dectector device $ecobeeSensorName for dni $dni, probably not selected originally"
+			log.debug "updateMotionSensors>couldn't find Motion Dectector device $ecobeeSensorName with dni $dni, probably not selected originally"
 		}
 
 	}
@@ -429,7 +433,7 @@ private updateTempSensors() {
 
 			device.sendEvent(name: "temperature", value: tempValueString, unit: scale, isStateChange: isChange, displayed: isDisplayed)
 		} else {
-			log.debug "updateTempSensors>couldn't find Temperature Sensor device $ecobeeSensorName for dni $dni, probably not selected originally"
+			log.debug "updateTempSensors>couldn't find Temperature Sensor device $ecobeeSensorName with dni $dni, probably not selected originally"
 		}
 
 	}
