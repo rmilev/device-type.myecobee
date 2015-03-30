@@ -2663,7 +2663,7 @@ private float calculate_report_stats(component, startInterval, endInterval, type
 // postData may be 'true' or 'false', by default the latter
 
 void generateRemoteSensorEvents(thermostatId,postData='false') {
-	define REMOTE_SENSOR_TYPE="ecobee3_remote_sensor"
+	String REMOTE_SENSOR_TYPE="ecobee3_remote_sensor"
 	int nbTempSensorInUse=0
 	int nbHumSensorInUse=0
 	float totalTemp=0,totalHum=0, avgTemp=0, avgHum=0
@@ -2787,7 +2787,7 @@ void generateRemoteSensorEvents(thermostatId,postData='false') {
  
  	if (remoteData != []) {
     
-    	remoteDataJson = new groovy.json.JsonBuilder(remoteData)
+		remoteDataJson = new groovy.json.JsonBuilder(remoteData)
 	}
 	
 	if (settings.trace) {
