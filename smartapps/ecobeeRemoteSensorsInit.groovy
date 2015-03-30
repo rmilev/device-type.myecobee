@@ -177,8 +177,7 @@ private def createMotionSensors() {
 		}
 
 	}
-	state.msg = "ecobeeRemoteSensorsInit>created ${devices.size()} MyEcobee's Motion Sensors"  
-	runIn((1*60), "sendWithDelay")
+	log.trace("ecobeeRemoteSensorsInit>created ${devices.size()} MyEcobee's Motion Sensors" ) 
 
 }
 
@@ -202,8 +201,7 @@ private def createTempSensors() {
 			log.debug "initialize>found ${d.displayName} with id $dni already exists"
 		}            
 	}
-	state.msg = "ecobeeRemoteSensorsInit>created ${devices.size()} MyEcobee's Temp Sensors"  
-	runIn((1*60), "sendWithDelay")
+	log.trace("ecobeeRemoteSensorsInit>created ${devices.size()} MyEcobee's Temp Sensors")
 
 }
 
@@ -229,8 +227,7 @@ private def deleteSensors() {
 			((it.device.deviceNetworkId.contains(getMotionSensorChildName())) && (!motionSensors.contains(it.device.deviceNetworkId)))
 		}
 	}
-	state.msg = "ecobeeRemoteSensorsInit>deleting ${delete.size()} MyEcobee's Motion Sensors"
-	runIn((1*60), "sendWithDelay")
+	log.trace("ecobeeRemoteSensorsInit>deleting ${delete.size()} MyEcobee's Motion Sensors")
     delete.each {
 		deleteChildDevice(it.deviceNetworkId)
 	}
@@ -246,8 +243,7 @@ private def deleteSensors() {
 			((it.device.deviceNetworkId.contains(getTempSensorChildName())) && (!tempSensors.contains(it.device.deviceNetworkId)))
 		}
 	}
-	state.msg = "ecobeeRemoteSensorsInit>deleting ${delete.size()} MyEcobee's Temp Sensors"
-	runIn((1*60), "sendWithDelay")
+	log.trace("ecobeeRemoteSensorsInit>deleting ${delete.size()} MyEcobee's Temp Sensors")
 	delete.each {
 		deleteChildDevice(it.deviceNetworkId)
 	}
@@ -267,29 +263,28 @@ def initialize() {
 	createTempSensors()
 
 
-	pollHandler()
+	takeAction()
 
 
 	Integer delay = givenInterval ?: 30 // By default, do it every 30 min.
 	if ((delay < 5) || (delay > 59)) {
 		log.error "Scheduling delay not in range (${delay} min.), exiting"
-		runIn(60, "sendNotifDelayNotInRange")
+		runIn(30, "sendNotifDelayNotInRange")
 		return
 	}
-	state.msg = "ecobeeRemoteSensorsInit>scheduling pollHandler every ${delay} minutes"
-	runIn((1*60), "sendWithDelay")
+	log.trace("ecobeeRemoteSensorsInit>scheduling takeAction every ${delay} minutes")
 
 	schedule("0 0/${delay} * * * ?", takeAction)
 	log.debug "initialize>end"
 }
 
 def takeAction() {
-	log.trace "pollHandler>begin"
+	log.trace "takeAction>begin"
 	ecobee.poll()
 	log.trace "takeAction>about to call generateRemoteSensorEvents()"
 	ecobee.generateRemoteSensorEvents("", 'true')
-	updateTempSensors(evt)
-	updateMotionSensors(evt)
+	updateTempSensors()
+	updateMotionSensors()
 	log.trace "takeAction>end"
 }
 
@@ -301,7 +296,12 @@ private def sendNotifDelayNotInRange() {
 }
 
 private updateMotionSensors(evt) {
-	log.debug "updateMotionSensors>evt name=$evt?.name, evt.value= $evt?.value"
+	log.debug "updateMotionSensors>evt name=$evt.name, evt.value= $evt.value"
+
+	updateMotionSensors()
+}
+
+private updateMotionSensors() {
 
 	def ecobeeSensors = ecobee.currentRemoteSensorOccData.toString().split(",,")
 	log.debug "updateTempSensors>ecobeeRemoteSensorOccData= $ecobeeSensors"
@@ -345,10 +345,15 @@ private updateMotionSensors(evt) {
 
 }
 
+private updateTempSensors(evt) {	
+	log.debug "updateTempSensors>evt name=$evt.name, evt.value= $evt.value"
+	updateTempSensors()
+}
 
-private updateTempSensors(evt) {
+private updateTempSensors() {
 
-	log.debug "updateTempSensors>evt name=$evt?.name, evt.value= $evt?.value"
+	def scale = getTemperatureScale()
+    
 
 	def ecobeeSensors = ecobee.currentRemoteSensorTmpData.toString().split(",,")
 
@@ -381,13 +386,23 @@ private updateTempSensors(evt) {
 			log.debug "updateTempSensors>ecobeeSensorName= $ecobeeSensorName"
 			log.debug "updateTempSensors>ecobeeSensorType= $ecobeeSensorType"
 			log.debug "updateTempSensors>ecobeeSensorValue= $ecobeeSensorValue"
+            
+			Double tempValue
+			String tempValueString
+            
+			if (scale == "F") {
+				tempValue = getTemperature(ecobeeSensorValue).toDouble().round()
+				tempValueString = String.format('%2d', tempValue.intValue())            
+			} else {
+				tempValue = getTemperature(ecobeeSensorValue).toDouble().round(1)
+				tempValueString = String.format('%2.1f', tempValue)
+			}                
 
-			float tempValue = getTemperature(ecobeeSensorValue).toFloat().round(1)
-			def isChange = device.isTemperatureStateChange(device, "temperature", tempValue.toString())
+			def isChange = device.isTemperatureStateChange(device, "temperature", tempValueString)
 			def isDisplayed = isChange
-			log.debug "device $device, found $dni,statusChanged=${isChange}, value= ${tempValue.toString()}"
+			log.debug "device $device, found $dni,statusChanged=${isChange}, value= ${tempValueString}"
 
-			device.sendEvent(name: "temperature", value: tempValue, unit: getTemperatureScale(), isStateChange: isChange, displayed: isDisplayed)
+			device.sendEvent(name: "temperature", value: tempValueString, unit: getTemperatureScale(), isStateChange: isChange, displayed: isDisplayed)
 		} else {
 			log.debug "updateTempSensors>couldn't find Temperature Sensor device $ecobeeSensorName for dni $dni, probably not selected originally"
 		}
