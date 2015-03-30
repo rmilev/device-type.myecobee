@@ -2663,6 +2663,7 @@ private float calculate_report_stats(component, startInterval, endInterval, type
 // postData may be 'true' or 'false', by default the latter
 
 void generateRemoteSensorEvents(thermostatId,postData='false') {
+	define REMOTE_SENSOR_TYPE="ecobee3_remote_sensor"
 	int nbTempSensorInUse=0
 	int nbHumSensorInUse=0
 	float totalTemp=0,totalHum=0, avgTemp=0, avgHum=0
@@ -2682,7 +2683,6 @@ void generateRemoteSensorEvents(thermostatId,postData='false') {
 		getThermostatInfo(thermostatId)    
     }
 	thermostatId = determine_tstat_id(thermostatId)
-	/* Reset all remote sensor data values */
     
 /*    
 	def testData = [
@@ -2696,24 +2696,31 @@ void generateRemoteSensorEvents(thermostatId,postData='false') {
 			[id: "rs02", type: "occupancy", value: "false"]]
 		]
 	]
+	data.thermostatList[0].remoteSensors=testData
+*/    
+	/* Reset all remote sensor data values */
 	def remoteData = []
 	def remoteTempData = ""
 	def remoteHumData = ""
 	def remoteOccData = ""
-	data.thermostatList[0].remoteSensors=testData
-*/    
     
 	if (data.thermostatList[0].remoteSensors?.size() > 0) {
 		for (i in 0..data.thermostatList[0].remoteSensors.size() - 1) {
 			if (settings.trace) {
-				log.debug "generateRemoteSensorEvents>>found sensor ${data.thermostatList[0].remoteSensors[i]} at (${i})"
+				log.debug "generateRemoteSensorEvents>found sensor ${data.thermostatList[0].remoteSensors[i]} at (${i})"
 			}
-			if (data.thermostatList[0].remoteSensors[i]?.type != 'ecobee3_remote_sensor') {
+			if (data.thermostatList[0].remoteSensors[i]?.type != REMOTE_SENSOR_TYPE) {
                 
+				if (settings.trace) {
+					log.debug "generateRemoteSensorEvents>found sensor type ${data.thermostatList[0].remoteSensors[i].type} at (${i}, skipping it)"
+				}
  				// not a remote sensor
  				continue
 			}
  			if (data.thermostatList[0].remoteSensors[i]?.capability.size() <1) {
+				if (settings.trace) {
+					log.debug "generateRemoteSensorEvents>capability size is wrong (${data.thermostatList[0].remoteSensors[i].size()}) at (${i})"
+				}
                 
 				// problem with the data
 				continue
@@ -2721,7 +2728,7 @@ void generateRemoteSensorEvents(thermostatId,postData='false') {
             
 			if (postData == 'true') {
 				if (settings.trace) {
-					log.debug "generateRemoteSensorEvents>>adding ${data.thermostatList[0].remoteSensors[i]} to remoteData"
+					log.debug "generateRemoteSensorEvents>adding ${data.thermostatList[0].remoteSensors[i]} to remoteData"
 				}
 				remoteData << data.thermostatList[0].remoteSensors[i]  // to be transformed into Json later
 			} 
@@ -2729,14 +2736,14 @@ void generateRemoteSensorEvents(thermostatId,postData='false') {
 			for (j in 0..data.thermostatList[0].remoteSensors[i].capability.size()-1) {
         		    
 				if (settings.trace) {
-					log.debug "generateRemoteSensorEvents>>looping i=${i},found ${data.thermostatList[0].remoteSensors[i].capability[j]} at j=${j}"
+					log.debug "generateRemoteSensorEvents>looping i=${i},found ${data.thermostatList[0].remoteSensors[i].capability[j]} at j=${j}"
 				}
 				if (data.thermostatList[0].remoteSensors[i].capability[j].type == 'temperature') {
 					// Divide the sensor temperature by 10 
 					valueInt =data.thermostatList[0].remoteSensors[i].capability[j].value.toInteger()/10
 					if (postData == 'true') {
 						if (settings.trace) {
-							log.debug "generateRemoteSensorEvents>>adding ${data.thermostatList[0].remoteSensors[i].capability[j]} to remoteTempData"
+							log.debug "generateRemoteSensorEvents>adding ${data.thermostatList[0].remoteSensors[i].capability[j]} to remoteTempData"
 						}
  						remoteTempData = remoteTempData + data.thermostatList[0].remoteSensors[i].capability[j].id + "," +
 							data.thermostatList[0].remoteSensors[i].name + "," +
@@ -2749,7 +2756,7 @@ void generateRemoteSensorEvents(thermostatId,postData='false') {
 				} else if (data.thermostatList[0].remoteSensors[i].capability[j].type == 'humidity') {
 					if (postData == 'true') {
 						if (settings.trace) {
-							log.debug "generateRemoteSensorEvents>>adding ${data.thermostatList[0].remoteSensors[i].capability[j]} to remoteHumData"
+							log.debug "generateRemoteSensorEvents>adding ${data.thermostatList[0].remoteSensors[i].capability[j]} to remoteHumData"
 						}
 						remoteHumData = remoteHumData + data.thermostatList[0].remoteSensors[i].capability[j].id + "," + 
 							data.thermostatList[0].remoteSensors[i].name + "," +
@@ -2778,10 +2785,13 @@ void generateRemoteSensorEvents(thermostatId,postData='false') {
 
 	def remoteDataJson = new groovy.json.JsonBuilder(remoteData)
 
+	if (settings.trace) {
+		log.debug "generateRemoteSensorEvents>remoteDataJson=${remoteDataJson}"
+	}
 	if (nbTempSensorInUse >0) {
 		avgTemp = totalTemp / nbTempSensorInUse
 		if (settings.trace) {
-			log.debug "generateRemoteSensorEvents>>avgTemp for remote sensors= ${avgTemp},totalTemp=${totalTemp},nbTempSensors=${nbTempSensorInUse}"
+			log.debug "generateRemoteSensorEvents>avgTemp for remote sensors= ${avgTemp},totalTemp=${totalTemp},nbTempSensors=${nbTempSensorInUse}"
 		}
 	}                        
 	def remoteSensorEvents = [
@@ -2797,14 +2807,14 @@ void generateRemoteSensorEvents(thermostatId,postData='false') {
 	if (nbHumSensorInUse >0) {
 		avgHum = totalHum / nbHumSensorInUse
 		if (settings.trace) {
-			log.debug "generateRemoteSensorEvents>>avgHum for remote sensors= ${avgHum},totalTemp=${totalHum},nbHumSensors=${nbHumSensorInUse}"
+			log.debug "generateRemoteSensorEvents>avgHum for remote sensors= ${avgHum},totalTemp=${totalHum},nbHumSensors=${nbHumSensorInUse}"
 		}
 		remoteSensorEvents = remoteSensorEvents + [remoteSensorHumData: "${remoteHumData.toString()}",remoteSensorAvgHumidity: avgHum,	
 			remoteSensorMinHumidity: ((minHum!=null)?minHum:0),	remoteSensorMaxHumidity: maxHum]
         
 	}                        
 	if (settings.trace) {
-		log.debug "generateRemoteSensorEvents>>remotDataJson= ${remoteDataJson}"
+		log.debug "generateRemoteSensorEvents>remoteSensorEvents to be sent= ${remoteSensorEvents}"
 	}
 
 	generateEvent(remoteSensorEvents)
