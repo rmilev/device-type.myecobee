@@ -207,17 +207,17 @@ metadata {
 		command "generateRemoteSensorEvents"
 	}        
 
-	simulator {
+simulator {
 		// TODO: define status and reply messages here
 	}
 	tiles {
 		valueTile("name", "device.thermostatName", inactiveLabel: false, width: 1,
 			height: 1, decoration: "flat") {
-			state "default", label: '${currentValue}\n '
+			state "default", label: '${currentValue}'
 		}
 		valueTile("groups", "device.groups", inactiveLabel: false, width: 1, 
 			height: 1, decoration: "flat") {
-			state "default", label: '${currentValue}%'
+			state "default", label: '${currentValue}'
 		}
 		valueTile("temperature", "device.temperature", width: 2, height: 2,
 			canChangeIcon: false) {
@@ -236,7 +236,7 @@ metadata {
 //					[value: 36, color: "#bc2323"]
 //				])
 //		}
-			state("temperature", label:'${currentValue}°', unit:"F",
+			state("temperature", label:'${currentValue}', unit:"F",
 			backgroundColors:[
 					[value: 31, color: "#153591"],
 					[value: 44, color: "#1e9cbb"],
@@ -253,10 +253,10 @@ metadata {
 				icon: "st.Weather.weather14", backgroundColor: "#ffffff"
 			state "off", label: '${name}', action: "thermostat.cool", 
 				icon: "st.Outdoor.outdoor19"
-			state "cool", label: '${name}', action: "thermostat.heat", 
+			state "cool", label: '${name}', action: "thermostat.auto", 
 				icon: "st.Weather.weather7"
-			state("auto", action:"thermostat.auto", 
-			icon: "st.thermostat.auto")
+			state "auto", action: "thermostat.heat", 
+				icon: "st.thermostat.auto"
 		}
 		standardTile("fanMode", "device.thermostatFanMode", inactiveLabel: false,
 			decoration: "flat") {
@@ -282,17 +282,17 @@ metadata {
 		}
 		valueTile("heatingSetpoint", "device.heatingSetpoint", inactiveLabel: false,
 			decoration: "flat") {
-			state "heat", label: '${currentValue}° heat', unit: "F", 
+			state "heat", label: '${currentValue} heat', unit: "F", 
 			backgroundColor: "#ffffff"
 		}
 		valueTile("coolingSetpoint", "device.coolingSetpoint", inactiveLabel: false,
 			decoration: "flat") {
-			state "cool", label: '${currentValue}° cool', unit: "F", 
+			state "cool", label: '${currentValue} cool', unit: "F", 
 			backgroundColor: "#ffffff"
 		}
 		valueTile("humidity", "device.humidity", inactiveLabel: false, 
 			decoration: "flat") {
-			state "default", label: 'Humidity\n${currentValue}%', unit: "humidity"
+			state "default", label: 'Humidity ${currentValue}%', unit: "humidity"
 		}
 		standardTile("heatLevelUp", "device.heatingSetpoint", canChangeIcon: false,
 			inactiveLabel: false, decoration: "flat") {
@@ -341,19 +341,19 @@ metadata {
 		// Program Tiles
 		valueTile("programScheduleName", "device.programScheduleName", inactiveLabel:
 			false, width: 1, height: 1, decoration: "flat") {
-			state "default", label: 'Mode\n${currentValue}'
+			state "default", label: 'Mode ${currentValue}'
 		}
 		valueTile("programType", "device.programType", inactiveLabel: false, width: 1,
 			height: 1, decoration: "flat") {
-			state "default", label: 'ProgType\n${currentValue}'
+			state "default", label: 'ProgType ${currentValue}'
 		}
 		valueTile("programCoolTemp", "device.programCoolTemp", inactiveLabel: false,
 			width: 1, height: 1, decoration: "flat") {
-			state "default", label: 'ProgCool ${currentValue}°'
+			state "default", label: 'ProgCool ${currentValue}'
 		}
 		valueTile("programHeatTemp", "device.programHeatTemp", inactiveLabel: false,
 			width: 1, height: 1, decoration: "flat") {
-			state "default", label: 'ProgHeat ${currentValue}°'
+			state "default", label: 'ProgHeat ${currentValue}'
 		}
 		standardTile("resProgram", "device.thermostatMode", inactiveLabel: false,
 			decoration: "flat") {
@@ -361,6 +361,7 @@ metadata {
             		icon: "st.Office.office7", backgroundColor: "#ffffff"
 		}
 		// Weather Tiles
+        
 		standardTile("weatherIcon", "device.weatherSymbol", inactiveLabel: false, width: 1, height: 1,
 			decoration: "flat") {
 			state "-2",			label: 'updating...',		icon: "st.unknown.unknown.unknown"
@@ -386,31 +387,34 @@ metadata {
 			state "19",			label: 'Hazy',			icon: "st.Weather.weather13"
 			state "20",			label: 'Smoke',			icon: "st.Weather.weather13"
 			state "21",			label: 'Dust',			icon: "st.Weather.weather13"
-		}
+		}        
 		valueTile("weatherDateTime", "device.weatherDateTime", inactiveLabel: false,
 			width: 2, height: 1, decoration: "flat") {
 			state "default", label: '${currentValue}'
 		}
+       
 		valueTile("weatherConditions", "device.weatherCondition", 
 			inactiveLabel: false, width: 2, height: 1, decoration: "flat") {
-			state "default", label: 'Forecast ${currentValue}'
+			state "default", label: '${currentValue}'
 		}
+        
 		valueTile("weatherTemperature", "device.weatherTemperature", inactiveLabel:
-			false, width: 1, height: 1, decoration: "flat") {
-			state "default", label: 'OutTemp ${currentValue}°', unit: "C"
+			false, width: 1, height: 1) {
+			state "default", label: 'OutTemp ${currentValue}', unit: "C"
 		}
 		valueTile("weatherRelativeHumidity", "device.weatherRelativeHumidity",
 			inactiveLabel: false, width: 1, height: 1, decoration: "flat") {
 			state "default", label: 'OutHum ${currentValue}%', unit: "humidity"
 		}
+
 		valueTile("weatherTempHigh", "device.weatherTempHigh", inactiveLabel: false,
 			width: 1, height: 1, decoration: "flat") {
-			state "default", label: 'Fcast High ${currentValue}°', unit: "C"
+			state "default", label: 'Fcast High ${currentValue}', unit: "C"
 		}
 		valueTile("weatherTempLow", "device.weatherTempLow", inactiveLabel: false,
 			width: 1, height: 1, decoration: "flat") {
-			state "default", label: 'Fcast Low ${currentValue}°', unit: "C"
-		}
+			state "default", label: 'Fcast Low ${currentValue}', unit: "C"
+		}        
 		valueTile("weatherPressure", "device.weatherPressure", inactiveLabel: false,
 			width: 1, height: 1, decoration: "flat") {
 			state "default", label: 'Pressure ${currentValue}', unit: "hpa"
@@ -425,8 +429,9 @@ metadata {
 		}
 		valueTile("weatherPop", "device.weatherPop", inactiveLabel: false, width: 1,
 			height: 1, decoration: "flat") {
-			state "default", label: 'PoP\n${currentValue}%', unit: "%"
-		}
+			state "default", label: 'ProbPrecip ${currentValue}%', unit: "%"
+		}       
+        
 		standardTile("refresh", "device.thermostatMode", inactiveLabel: false,
 			decoration: "flat") {
 			state "default", action: "polling.poll", icon: "st.secondary.refresh"
@@ -438,10 +443,14 @@ metadata {
 			"equipStatus", "programEndTimeMsg", "humidity", "alerts",
 			"fanMinOnTime", "programScheduleName", "programType", "programCoolTemp",
 			"programHeatTemp", "resProgram",
-			"weatherIcon", "weatherDateTime", "weatherConditions",
-			"weatherTemperature", "weatherRelativeHumidity", "weatherTempHigh",
-			"weatherTempLow", "weatherPressure", "weatherWindDirection",
-			"weatherWindSpeed", "weatherPop", "refresh",
+			"weatherIcon", "weatherConditions",            
+			"weatherDateTime",             
+			"weatherTemperature", "weatherRelativeHumidity", 
+			"weatherTempHigh",
+			"weatherTempLow", "weatherPressure", 
+			"weatherWindDirection",
+			"weatherWindSpeed", "weatherPop",            
+			"refresh"
 		])
 	}
 }
@@ -695,10 +704,12 @@ void quickSave() {
 	quickSaveCooling = (quickSaveCooling + quickSaveSetForw).round(0)
 	quickSaveHeating = (quickSaveHeating - quickSaveSetBack).round(0)
 	setHold(thermostatId, quickSaveCooling, quickSaveHeating, null, null)
-	sendEvent(name: 'coolingSetpoint', value: quickSaveCooling.toString())
-	sendEvent(name: 'heatingSetpoint', value: quickSaveHeating.toString())
-	sendEvent(name: 'programScheduleName', value: "QuickSave")
-	sendEvent(name: 'programDisplayName', value: "QuickSave")
+	def quickSaveMap = ['coolingSetpoint': quickSaveCooling,		
+		'heatingSetpoint': quickSaveHeating,
+		'programScheduleName': "QuickSave",
+		'programDisplayName': "QuickSave"
+	]        
+	generateEvent(quickSaveMap)    
 }
   
 void setThisTstatClimate(climateName) {
@@ -824,7 +835,7 @@ void poll() {
 		weatherStation:data.thermostatList[0].weather.weatherStation,
 		weatherSymbol:data.thermostatList[0].weather.forecasts[0].weatherSymbol.toString(),
 		weatherTemperature:data.thermostatList[0].weather.forecasts[0].temperature,
-		weatherDateTime:"Weather as of\n ${data.thermostatList[0].weather.forecasts[0].dateTime.substring(0,16)}",
+		weatherDateTime:"Weather as of ${data.thermostatList[0].weather.forecasts[0].dateTime.substring(0,16)}",
 		weatherCondition:data.thermostatList[0].weather.forecasts[0].condition,
 		weatherTemp: data.thermostatList[0].weather.forecasts[0].temperature,
 		weatherTempHigh: data.thermostatList[0].weather.forecasts[0].tempHigh, 
@@ -882,25 +893,33 @@ private void generateEvent(Map results)
 		results.each { name, value ->
 			def isDisplayed = true
 
-// 			Temperature variable names contain "temp" or "setpoint" and should not contain "data"           
+// 			Temperature variable names contain 'temp' or 'setpoint'            
 
-			if (((name.toUpperCase().contains("TEMP")) || (name.toUpperCase().contains("SETPOINT")) && (!(name.toUpperCase().contains("DATA"))))) {  
-				float tempValue = getTemperature(value).toFloat().round(1)
-				def isChange = isTemperatureStateChange(device, name, tempValue.toString())
+			if ((name.toUpperCase().contains("TEMP"))|| (name.toUpperCase().contains("SETPOINT"))) {  
+				String tempValueString
+				Double tempValue
+                
+ 				def scale = getTemperatureScale()
+                
+				if (scale == "F") {
+					tempValue = getTemperature(value).toDouble().round()
+					tempValueString = String.format('%2d', tempValue.intValue())            
+				} else {
+					tempValue = getTemperature(value).toDouble().round(1)
+					tempValueString = String.format('%2.1f', tempValue)
+				}                
+				def isChange = isTemperatureStateChange(device, name, tempValueString)
 				isDisplayed = isChange
-				sendEvent(name: name, value: tempValue.toString(), unit: getTemperatureScale(), displayed: isDisplayed)                                     									 
+				sendEvent(name: name, value: tempValueString, unit: scale, displayed: isDisplayed)                                     									 
 			} else if (name.toUpperCase().contains("SPEED")) { // Temperature variable names contain 'temp' or 'setpoint'
 
-// 			Speed variable names contain "speed"
+// 			Speed variable names contain 'speed'
 
  				float speedValue = getSpeed(value).toFloat().round(1)
 				def isChange = isStateChange(device, name, speedValue.toString())
 				isDisplayed = isChange
 				sendEvent(name: name, value: speedValue.toString(), unit: getDistanceScale(), displayed: isDisplayed)                                     									 
-
-// 			Humidity variable names contain "humidity" and should not contain "data"           
-
-			} else if ((name.toUpperCase().contains("HUMIDITY")  && (!(name.toUpperCase().contains("DATA"))))) {
+			} else if (name.toUpperCase().contains("HUMIDITY")) {
  				float humidityValue = value.toFloat().round(1)
 				def isChange = isStateChange(device, name, humidityValue.toString())
 				isDisplayed = isChange
@@ -914,6 +933,8 @@ private void generateEvent(Map results)
 		}
 	}
 }
+
+
 
 
 
@@ -2663,6 +2684,7 @@ void generateRemoteSensorEvents(thermostatId,postData='false') {
 	thermostatId = determine_tstat_id(thermostatId)
 	/* Reset all remote sensor data values */
     
+/*    
 	def testData = [
     
  			[id: "rs01", name: "My RSensor", type: "ecobee3_remote_sensor", 
@@ -2678,8 +2700,8 @@ void generateRemoteSensorEvents(thermostatId,postData='false') {
 	def remoteTempData = ""
 	def remoteHumData = ""
 	def remoteOccData = ""
-    
 	data.thermostatList[0].remoteSensors=testData
+*/    
     
 	if (data.thermostatList[0].remoteSensors?.size() > 0) {
 		for (i in 0..data.thermostatList[0].remoteSensors.size() - 1) {
