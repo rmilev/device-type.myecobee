@@ -57,4 +57,4 @@ After execution, you should be able to see the new Sensor objects under
 
 https://graph.api.smartthings.com/device/list
 
-6) The temp and motion sensors should be updated according to the polling interval specified as input in the smartapp.
+6) The temp and motion sensors data should be updated according to the polling interval specified as input in the smartapp.
