@@ -288,7 +288,18 @@ def initialize() {
 	}
 	log.trace("ecobeeRemoteSensorsInit>scheduling takeAction every ${delay} minutes")
 
-	schedule("0 0/${delay} * * * ?", takeAction)
+	if (delay >= 5 && delay <10) {
+		runEvery5Minutes(setZoneSettings)
+	} else if (delay >= 10 && delay <15) {
+		runEvery10Minutes(setZoneSettings)
+	} else if (delay >= 15 && delay <30) {
+		runEvery15Minutes(setZoneSettings)
+	} else if (delay >= 30 && delay <60) {
+		runEvery30Minutes(setZoneSettings)
+	} else {        
+		runEvery1Hour(setZoneSettings)
+	}
+	    
 	log.debug "initialize>end"
 }
 
