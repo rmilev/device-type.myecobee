@@ -402,7 +402,7 @@ private updateTempSensors() {
 			def isDisplayed = isChange
 			log.debug "device $device, found $dni,statusChanged=${isChange}, value= ${tempValueString}"
 
-			device.sendEvent(name: "temperature", value: tempValueString, unit: getTemperatureScale(), isStateChange: isChange, displayed: isDisplayed)
+			device.sendEvent(name: "temperature", value: tempValueString, unit: scale, isStateChange: isChange, displayed: isDisplayed)
 		} else {
 			log.debug "updateTempSensors>couldn't find Temperature Sensor device $ecobeeSensorName for dni $dni, probably not selected originally"
 		}
