@@ -177,8 +177,9 @@ private def createMotionSensors() {
 		}
 
 	}
+	state.msg = "ecobeeRemoteSensorsInit>created ${devices.size()} MyEcobee's Motion Sensors"  
+	runIn((1*60), "sendWithDelay")
 
-	send "ecobeeRemoteSensorsInit>created ${devices.size()} MyEcobee's Motion Sensors"
 }
 
 private def createTempSensors() {
@@ -198,14 +199,21 @@ private def createTempSensors() {
 			d = addChildDevice(getChildNamespace(), getTempSensorChildName(), dni, null, [label: "${labelName}", completedSetup: true])
 			log.debug "created ${d.displayName} with id $dni"
 		} else {
-			log.debug "initialize>found ${d.displayName} with id $dni already exists"
-		}
-
+			log.debug "initialize>found ${ddisplayName} with id $dni already exists"
+		}            
 	}
-
-	send "ecobeeRemoteSensorsInit>created ${devices.size()} MyEcobee's Temp Sensors"
+	state.msg = "ecobeeRemoteSensorsInit>created ${devices.size()} MyEcobee's Temp Sensors"  
+	runIn((1*60), "sendWithDelay")
 
 }
+
+private def sendWithDelay() {
+	
+	if (state.msg) {
+		send(state.msg)
+	}
+}
+
 
 private def deleteSensors() {
 
@@ -221,8 +229,9 @@ private def deleteSensors() {
 			((it.device.deviceNetworkId.contains(getMotionSensorChildName())) && (!motionSensors.contains(it.device.deviceNetworkId)))
 		}
 	}
-	send "ecobeeRemoteSensorsInit>deleting ${delete.size()} MyEcobee's Motion Sensors"
-	delete.each {
+	state.msg = "ecobeeRemoteSensorsInit>deleting ${delete.size()} MyEcobee's Motion Sensors"
+	runIn((1*60), "sendWithDelay")
+    delete.each {
 		deleteChildDevice(it.deviceNetworkId)
 	}
 
@@ -237,7 +246,8 @@ private def deleteSensors() {
 			((it.device.deviceNetworkId.contains(getTempSensorChildName())) && (!tempSensors.contains(it.device.deviceNetworkId)))
 		}
 	}
-	send "ecobeeRemoteSensorsInit>deleting ${delete.size()} MyEcobee's Temp Sensors"
+	state.msg = "ecobeeRemoteSensorsInit>deleting ${delete.size()} MyEcobee's Temp Sensors"
+	runIn((1*60), "sendWithDelay")
 	delete.each {
 		deleteChildDevice(it.deviceNetworkId)
 	}
@@ -247,7 +257,8 @@ private def deleteSensors() {
 
 def initialize() {
 	log.debug "initialize>begin"
-
+	state.msg=""
+    
 	subscribe(ecobee, "remoteSensorOccData", updateMotionSensors)
 	subscribe(ecobee, "remoteSensorTmpData", updateTempSensors)
 
@@ -265,7 +276,8 @@ def initialize() {
 		runIn(30, "sendNotifDelayNotInRange")
 		return
 	}
-	send "ecobeeRemoteSensorsInit>scheduling pollHandler every ${delay} minutes"
+	state.msg = "ecobeeRemoteSensorsInit>scheduling pollHandler every ${delay} minutes"
+	runIn((1*60), "sendWithDelay")
 
 	schedule("0 0/${delay} * * * ?", pollHandler)
 	log.debug "initialize>end"
@@ -289,7 +301,7 @@ private def sendNotifDelayNotInRange() {
 }
 
 private updateMotionSensors(evt) {
-	log.debug "updateMotionSensors>evt name=$evt.name, evt.value= $evt.value"
+	log.debug "updateMotionSensors>evt name=$evt?.name, evt.value= $evt?.value"
 
 	def ecobeeSensors = ecobee.currentRemoteSensorOccData.toString().split(",,")
 	log.debug "updateTempSensors>ecobeeRemoteSensorOccData= $ecobeeSensors"
@@ -336,7 +348,7 @@ private updateMotionSensors(evt) {
 
 private updateTempSensors(evt) {
 
-	log.debug "updateTempSensors>evt name=$evt.name, evt.value= $evt.value"
+	log.debug "updateTempSensors>evt name=$evt?.name, evt.value= $evt?.value"
 
 	def ecobeeSensors = ecobee.currentRemoteSensorTmpData.toString().split(",,")
 
