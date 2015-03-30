@@ -228,7 +228,7 @@ private def deleteSensors() {
 		}
 	}
 	log.trace("ecobeeRemoteSensorsInit>deleting ${delete.size()} MyEcobee's Motion Sensors")
-    delete.each {
+	delete.each {
 		deleteChildDevice(it.deviceNetworkId)
 	}
 
