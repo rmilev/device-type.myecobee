@@ -76,6 +76,8 @@ the app (as the old device is cached)
 /*********************************************************************************************
 
 If you have the following error msg in the logs:
+https://graph.api.smartthings.com/ide/logs
+
 
 'generateRemoteSensorEvents' is not supported. Supported commands: [poll, refresh, setHeatingSetpoint, ....'
 
