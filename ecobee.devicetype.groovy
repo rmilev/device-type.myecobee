@@ -2663,7 +2663,7 @@ private float calculate_report_stats(component, startInterval, endInterval, type
 // postData may be 'true' or 'false', by default the latter
 
 void generateRemoteSensorEvents(thermostatId,postData='false') {
-	String REMOTE_SENSOR_TYPE="ecobee3_remote_sensor"
+	def REMOTE_SENSOR_TYPE="ecobee3_remote_sensor"
 	int nbTempSensorInUse=0
 	int nbHumSensorInUse=0
 	float totalTemp=0,totalHum=0, avgTemp=0, avgHum=0
@@ -2745,7 +2745,7 @@ void generateRemoteSensorEvents(thermostatId,postData='false') {
 						if (settings.trace) {
 							log.debug "generateRemoteSensorEvents>adding ${data.thermostatList[0].remoteSensors[i].capability[j]} to remoteTempData"
 						}
- 						remoteTempData = remoteTempData + data.thermostatList[0].remoteSensors[i].capability[j].id + "," +
+ 						remoteTempData = remoteTempData + data.thermostatList[0].remoteSensors[i].id + "," +
 							data.thermostatList[0].remoteSensors[i].name + "," +
 							data.thermostatList[0].remoteSensors[i].capability[j].type + "," + valueInt.toString() + ",,"
 					}                        
@@ -2758,7 +2758,7 @@ void generateRemoteSensorEvents(thermostatId,postData='false') {
 						if (settings.trace) {
 							log.debug "generateRemoteSensorEvents>adding ${data.thermostatList[0].remoteSensors[i].capability[j]} to remoteHumData"
 						}
-						remoteHumData = remoteHumData + data.thermostatList[0].remoteSensors[i].capability[j].id + "," + 
+						remoteHumData = remoteHumData + data.thermostatList[0].remoteSensors[i].id + "," + 
 							data.thermostatList[0].remoteSensors[i].name + "," +
 							data.thermostatList[0].remoteSensors[i].capability[j].type + "," + data.thermostatList[0].remoteSensors[i].capability[j].value + ",,"
 					}                        
@@ -2772,7 +2772,7 @@ void generateRemoteSensorEvents(thermostatId,postData='false') {
 						if (settings.trace) {
 							log.debug "generateRemoteSensorEvents>>adding ${data.thermostatList[0].remoteSensors[i].capability[j]} to remoteOccData"
 						}
-						remoteOccData = remoteOccData + data.thermostatList[0].remoteSensors[i].capability[j].id + "," + 
+						remoteOccData = remoteOccData + data.thermostatList[0].remoteSensors[i].id + "," + 
 							data.thermostatList[0].remoteSensors[i].name + "," +
 							data.thermostatList[0].remoteSensors[i].capability[j].type + "," + data.thermostatList[0].remoteSensors[i].capability[j].value + ",,"
 					}                        
