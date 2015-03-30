@@ -2717,9 +2717,9 @@ void generateRemoteSensorEvents(thermostatId,postData='false') {
  				// not a remote sensor
  				continue
 			}
- 			if (data.thermostatList[0].remoteSensors[i]?.capability.size() <1) {
+ 			if (data.thermostatList[0].remoteSensors[i]?.capability?.size() <1) {
 				if (settings.trace) {
-					log.debug "generateRemoteSensorEvents>capability size is wrong (${data.thermostatList[0].remoteSensors[i].size()}) at (${i})"
+					log.debug "generateRemoteSensorEvents>capability size is wrong (${data.thermostatList[0].remoteSensors[i]?.size()}) at (${i})"
 				}
                 
 				// problem with the data
@@ -2783,8 +2783,13 @@ void generateRemoteSensorEvents(thermostatId,postData='false') {
         
 	}                        
 
-	def remoteDataJson = new groovy.json.JsonBuilder(remoteData)
-
+	def remoteDataJson=""
+ 
+ 	if (remoteData != []) {
+    
+    	remoteDataJson = new groovy.json.JsonBuilder(remoteData)
+	}
+	
 	if (settings.trace) {
 		log.debug "generateRemoteSensorEvents>remoteDataJson=${remoteDataJson}"
 	}
