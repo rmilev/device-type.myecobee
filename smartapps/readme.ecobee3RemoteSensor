@@ -79,8 +79,9 @@ If you have the following error msg in the logs:
 
 'generateRemoteSensorEvents' is not supported. Supported commands: [poll, refresh, setHeatingSetpoint, ....'
 
-THis means that the old Device Type is still in the cache..
+This means that the old Device Type is still in the cache..
 
+You may have to redo the cache cleaning another time.
 
 
 /*********************************************************************************************
