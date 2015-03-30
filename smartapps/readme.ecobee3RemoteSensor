@@ -1,6 +1,6 @@
 
 
-/**
+/****************************************************************************************************************
  *  readme.ecobee3RemoteSensorsInit
  *
  *  Copyright 2015 Yves Racine
@@ -16,17 +16,33 @@
  *  for the specific language governing permissions and limitations under the License.
  *
  */
- 
-1) You'd need to update the My ecobee device, save& publish in the IDE
+/****************************************************************************************************************/
+1) You'd need to update the My ecobee device, save & publish in the IDE
+/****************************************************************************************************************/
+grab the code at 
 
-go to https://github.com/yracine/device-type.myecobee/blob/beta/ecobee.devicetype.groovy
+https://github.com/yracine/device-type.myecobee/blob/beta/ecobee.devicetype.groovy
+
+If not already created, read the instructions at
+
+https://github.com/yracine/device-type.myecobee
 
 
+/****************************************************************************************************************/
 2) Create a new smartapp called ecobee3RemoteSensorInit, grab the code from github above,save&publish
+/****************************************************************************************************************/
+
+Go to 
+
+https://graph.api.smartthings.com/ide/apps
+Create a new Smartapp, click on new Smartapp on the right
+From there, use the "from code" tab, and grab the code from:
 
 https://github.com/yracine/device-type.myecobee/blob/beta/smartapps/ecobeeRemoteSensorsInit.groovy
 
+/****************************************************************************************************************/
 3) Prior to calling ecobee3RemoteSensorInit, you need to create 2 additional generic device types in your IDE:
+/****************************************************************************************************************/
 
 - Motion Sensor
 
@@ -46,10 +62,15 @@ g) Do the same for Motion Sensor
 h) Click "create" at the bottom of the page
 i) Click save and publish
 
+/****************************************************************************************************************/
 4) Kill your smartThings app, clean the cache and reload the app (as the old device is cached, especially
 if you have android V1.17)
+/****************************************************************************************************************/
 
-5) Under My apps, execute ecobee3RemoteSensorInit the same way as the My Ecobee Init (service Manager).
+/****************************************************************************************************************/
+5) Under My apps on your smartphone/tablet, execute ecobee3RemoteSensorInit the same way as 
+the My Ecobee Init (service Manager).
+/****************************************************************************************************************/
 
 It will ask you to select the remote temp sensors and motion sensors to expose to SmartThings.
 
@@ -57,4 +78,6 @@ After execution, you should be able to see the new Sensor objects under
 
 https://graph.api.smartthings.com/device/list
 
+/****************************************************************************************************************/
 6) The temp and motion sensors data should be updated according to the polling interval specified as input in the smartapp.
+/****************************************************************************************************************/
