@@ -43,9 +43,10 @@ https://graph.api.smartthings.com/ide/apps
 Create a new Smartapp, click on new Smartapp on the right
 
 From there, use the "From code" tab, and grab the code at:
-Click "Save" & Publish"
 
 https://github.com/yracine/device-type.myecobee/blob/beta/smartapps/ecobeeRemoteSensorsInit.groovy
+
+Click "Save" & Publish"
 
 /*********************************************************************************************
 3) Prior to calling ecobee3RemoteSensorInit, you need to create 2 additional generic device types in your IDE:
