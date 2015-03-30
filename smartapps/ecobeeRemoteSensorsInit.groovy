@@ -68,9 +68,15 @@ def selectMotionSensors() {
 	/* Get the list of remote sensors available 
 	 */
 	ecobee.generateRemoteSensorEvents("", 'true')
-
-	def ecobeeSensors = new JsonSlurper().parseText(ecobee.currentRemoteSensorData.toString())
-
+	def ecobeeSensors
+    
+	String remoteSensorData=currentRemoteSensorData.toString()
+	if (remoteSensorData != null) {    
+		ecobeeSensors = new JsonSlurper().parseText(remoteSensorData)
+	} else {
+		log.error("selectMotionSensors>sensorRemoteData is empty, exiting")
+		return        
+	}    
 	log.debug "selectMotionSensors>ecobeeSensors data = $ecobeeSensors"
 	def sensors = [: ]
 
@@ -109,7 +115,15 @@ def selectMotionSensors() {
 
 
 def selectTempSensors() {
-	def ecobeeSensors = new JsonSlurper().parseText(ecobee.currentRemoteSensorData.toString())
+	def ecobeeSensors
+    
+	String remoteSensorData=currentRemoteSensorData.toString()
+	if (remoteSensorData != null) {    
+		ecobeeSensors = new JsonSlurper().parseText(remoteSensorData)
+	} else {
+		log.error("selectMotionSensors>sensorRemoteData is empty, exiting")
+		return        
+	}    
 	log.debug "selectTempSensors>ecobeeSensors data = $ecobeeSensors"
 
 	def sensors = [: ]
