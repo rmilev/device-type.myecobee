@@ -70,7 +70,7 @@ def selectMotionSensors() {
 	ecobee.generateRemoteSensorEvents("", 'true')
 	def ecobeeSensors
     
-	String remoteSensorData=currentRemoteSensorData.toString()
+	String remoteSensorData=ecobee.currentRemoteSensorData.toString()
 	if (remoteSensorData != null) {    
 		ecobeeSensors = new JsonSlurper().parseText(remoteSensorData)
 	} else {
@@ -117,7 +117,7 @@ def selectMotionSensors() {
 def selectTempSensors() {
 	def ecobeeSensors
     
-	String remoteSensorData=currentRemoteSensorData.toString()
+	String remoteSensorData=ecobee.currentRemoteSensorData.toString()
 	if (remoteSensorData != null) {    
 		ecobeeSensors = new JsonSlurper().parseText(remoteSensorData)
 	} else {
