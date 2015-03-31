@@ -2664,6 +2664,10 @@ private float calculate_report_stats(component, startInterval, endInterval, type
 
 void generateRemoteSensorEvents(thermostatId,postData='false') {
 	def REMOTE_SENSOR_TYPE="ecobee3_remote_sensor"
+	def REMOTE_SENSOR_OCCUPANCY='occupancy'
+	def REMOTE_SENSOR_TEMPERATURE='temperature'
+	def REMOTE_SENSOR_HUMIDITY='humidity'
+    
 	int nbTempSensorInUse=0
 	int nbHumSensorInUse=0
 	float totalTemp=0,totalHum=0, avgTemp=0, avgHum=0
@@ -2738,7 +2742,7 @@ void generateRemoteSensorEvents(thermostatId,postData='false') {
 				if (settings.trace) {
 					log.debug "generateRemoteSensorEvents>looping i=${i},found ${data.thermostatList[0].remoteSensors[i].capability[j]} at j=${j}"
 				}
-				if (data.thermostatList[0].remoteSensors[i].capability[j].type == 'temperature') {
+				if (data.thermostatList[0].remoteSensors[i].capability[j].type == REMOTE_SENSOR_TEMPERATURE) {
 					// Divide the sensor temperature by 10 
 					valueInt =data.thermostatList[0].remoteSensors[i].capability[j].value.toInteger()/10
 					if (postData == 'true') {
@@ -2753,7 +2757,7 @@ void generateRemoteSensorEvents(thermostatId,postData='false') {
 					maxTemp = Math.max(valueInt,maxTemp)
 					minTemp = (minTemp==null)? valueInt: Math.min(valueInt,minTemp)
 					nbTempSensorInUse++
-				} else if (data.thermostatList[0].remoteSensors[i].capability[j].type == 'humidity') {
+				} else if (data.thermostatList[0].remoteSensors[i].capability[j].type == REMOTE_SENSOR_HUMIDITY) {
 					if (postData == 'true') {
 						if (settings.trace) {
 							log.debug "generateRemoteSensorEvents>adding ${data.thermostatList[0].remoteSensors[i].capability[j]} to remoteHumData"
@@ -2767,10 +2771,10 @@ void generateRemoteSensorEvents(thermostatId,postData='false') {
 					maxHum = Math.max(valueInt,maxHum)
 					minHum = (minHum==null)? valueInt: Math.min(valueInt,minHum)
 					nbHumSensorInUse++
-				} else if (data.thermostatList[0].remoteSensors[i].capability[j].type == 'occupancy') {
+				} else if (data.thermostatList[0].remoteSensors[i].capability[j].type == REMOTE_SENSOR_OCCUPANCY) {
 					if (postData == 'true') {
 						if (settings.trace) {
-							log.debug "generateRemoteSensorEvents>>adding ${data.thermostatList[0].remoteSensors[i].capability[j]} to remoteOccData"
+							log.debug "generateRemoteSensorEvents>adding ${data.thermostatList[0].remoteSensors[i].capability[j]} to remoteOccData"
 						}
 						remoteOccData = remoteOccData + data.thermostatList[0].remoteSensors[i].id + "," + 
 							data.thermostatList[0].remoteSensors[i].name + "," +
