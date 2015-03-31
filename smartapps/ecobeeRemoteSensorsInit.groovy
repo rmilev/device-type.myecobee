@@ -345,7 +345,7 @@ private updateMotionSensors() {
 		def ecobeeSensorId = ecobeeSensorDetails[0]
 		def ecobeeSensorName = ecobeeSensorDetails[1]
 		def ecobeeSensorType = ecobeeSensorDetails[2]
-		def ecobeeSensorValue = ecobeeSensorDetails[3].toString()
+		String ecobeeSensorValue = ecobeeSensorDetails[3].toString()
 
 		def dni = [app.id, ecobeeSensorName, getMotionSensorChildName(), ecobeeSensorId].join('.')
 
