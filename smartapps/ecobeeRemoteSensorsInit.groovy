@@ -359,7 +359,7 @@ private updateMotionSensors() {
 			log.debug "updateTempSensors>ecobeeSensorType= $ecobeeSensorType"
 			log.debug "updateTempSensors>ecobeeSensorValue= $ecobeeSensorValue"
 
-			def status = (ecobeeSensorValue == 'true') ? "active" : "inactive"
+			String status = (ecobeeSensorValue == 'true') ? "active" : "inactive"
 			def isChange = device.isStateChange(device, "motion", status)
 			def isDisplayed = isChange
 			log.debug "device $device, found $dni,statusChanged=${isChange}, value= ${status}"
