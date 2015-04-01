@@ -288,11 +288,10 @@ def initialize() {
 	}
 	log.trace("ecobeeRemoteSensorsInit>scheduling takeAction every ${delay} minutes")
 
-/*
-	schedule("0 0/${delay} * * * ?", takeAction) // not reliable way to schedule
-*/
+	schedule("0 0/${delay} * * * ?", takeAction) 
 
- 
+
+/* 
 	if (delay >= 5 && delay <10) {
 		runEvery5Minutes(takeAction)
 	} else if (delay >= 10 && delay <15) {
@@ -304,7 +303,8 @@ def initialize() {
 	} else {        
 		runEvery1Hour(takeAction)
 	}
-	    
+*/
+
 	log.debug "initialize>end"
 }
 
