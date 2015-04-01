@@ -82,14 +82,14 @@ the app (as the old device is cached)
 for better support, just active the live logging and get more tracing
 in the IDE by following these steps:
 
-1) Go to https://graph.api.smartthings.com/device/list, 
-2) Click on My Ecobee device, 
-3) Edit the preferences (middle of the page)
-4) Set verboseTrace to true (as long as there is a value)
-5) Click Save at the bottom of the page
-6) Go to https://graph.api.smartthings.com/ide/logs
-7) Run ecobee3RemoteSensorInit on your smartphone/tablet
-8) Watch for any errors in the logs for My Ecobee Device and ecobee3RemoteSensorInit
+a) Go to https://graph.api.smartthings.com/device/list, 
+b) Click on My Ecobee device, 
+c) Edit the preferences (middle of the page)
+d) Set verboseTrace to true (as long as there is a value)
+e) Click Save at the bottom of the page
+f) Go to https://graph.api.smartthings.com/ide/logs
+g) Run ecobee3RemoteSensorInit on your smartphone/tablet
+h) Watch for any errors in the logs for My Ecobee Device and ecobee3RemoteSensorInit
 
 
 BTW, If you have the following error msg in the logs:
