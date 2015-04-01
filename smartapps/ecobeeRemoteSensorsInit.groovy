@@ -355,12 +355,12 @@ private updateMotionSensors() {
 		def device = getChildDevice(dni)
 
 		if (device) {
-			log.debug "updateTempSensors>ecobeeSensorId= $ecobeeSensorId"
-			log.debug "updateTempSensors>ecobeeSensorName= $ecobeeSensorName"
-			log.debug "updateTempSensors>ecobeeSensorType= $ecobeeSensorType"
-			log.debug "updateTempSensors>ecobeeSensorValue= $ecobeeSensorValue"
+			log.debug "updateTempSensors>ecobeeSensorId=$ecobeeSensorId"
+			log.debug "updateTempSensors>ecobeeSensorName=$ecobeeSensorName"
+			log.debug "updateTempSensors>ecobeeSensorType=$ecobeeSensorType"
+			log.debug "updateTempSensors>ecobeeSensorValue=$ecobeeSensorValue"
 
-			String status = (ecobeeSensorValue == 'true') ? "active" : "inactive"
+			String status = (ecobeeSensorValue.contains('false')) ? "inactive" : "active"
 			def isChange = device.isStateChange(device, "motion", status)
 			def isDisplayed = isChange
 			log.debug "device $device, found $dni,statusChanged=${isChange}, value= ${status}"
