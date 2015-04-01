@@ -75,9 +75,25 @@ i) Click save and publish
 the app (as the old device is cached)
 /*********************************************************************************************
 
-If you have the following error msg in the logs:
-https://graph.api.smartthings.com/ide/logs
+/*********************************************************************************************
+5) Enable tracing and activate live Logging
+/*********************************************************************************************
 
+for better support, just active the live logging and get more tracing
+in the IDE by following these steps:
+
+1) Go to https://graph.api.smartthings.com/device/list, 
+2) Click on My Ecobee device, 
+3) Edit the preferences (middle of the page)
+4) Set verboseTrace to true (as long as there is a value)
+5) Click Save at the bottom of the page
+6) Go to https://graph.api.smartthings.com/ide/logs
+7) Run ecobee3RemoteSensorInit on your smartphone/tablet
+8) Watch for any errors in the logs for My Ecobee Device and ecobee3RemoteSensorInit
+
+
+BTW, If you have the following error msg in the logs:
+https://graph.api.smartthings.com/ide/logs
 
 'generateRemoteSensorEvents' is not supported. Supported commands: [poll, refresh, setHeatingSetpoint, ....'
 
@@ -87,7 +103,7 @@ You may have to redo the cache cleaning another time.
 
 
 /*********************************************************************************************
-5) Under My apps on your smartphone/tablet, use SmartSetup on your tablet/smartphone,
+6) Under My apps on your smartphone/tablet, use SmartSetup on your tablet/smartphone,
 & execute ecobee3RemoteSensorInit the same way as the My Ecobee Init (service Manager).
 /*********************************************************************************************
 
@@ -101,5 +117,5 @@ After execution, you should be able to see the new Sensor objects under
 https://graph.api.smartthings.com/device/list
 
 /*********************************************************************************************
-6) The temp and motion sensors data should be updated according to the polling interval specified as input in the smartapp.
+7) The temp and motion sensors data should be updated according to the polling interval specified as input in the smartapp.
 /*********************************************************************************************
