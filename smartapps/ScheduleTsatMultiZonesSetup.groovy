@@ -215,7 +215,7 @@ def scheduleSetup() {
 					options: zones,
 					multiple: true
 			}
-    		section("Schedule " + i + "Day & Time of the desired Heating/Cooling settings for the selected zone(s)") {
+			section("Schedule " + i + "Day & Time of the desired Heating/Cooling settings for the selected zone(s)") {
 				input "dayOfWeek" + i, "enum",
 					title: "Which day of the week to trigger the zoned heating/cooling settings?",
 					multiple: false,
@@ -380,7 +380,7 @@ def setZoneSettings() {
 		def startTime = settings[key]
 		if (startTime == null) {
         		continue
-        }
+		}
 		def startTimeToday = timeToday(startTime,location.timeZone)
 		key = "endtime$i"
 		def endTime = settings[key]
