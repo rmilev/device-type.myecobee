@@ -237,7 +237,7 @@ def scheduleSetup() {
 				input "endtime" + i, "time", title: "End time(format: 24H:MM)"
 			}
 			section("Schedule " + i + "-Outdoor temp Sensor used for adjustment [optional]") {
-            	input "outTempSensor" + i, "capability.temperatureMeasurement", required: false, description: "optional"
+				input "outTempSensor" + i, "capability.temperatureMeasurement", required: false, description: "optional"
 			}
 			section("Schedule " + i + "-Switch thermostat mode (auto/cool/heat) based on this outdoor temp range [optional]") {
 				input "heatModeThreshold" + i, "decimal", title: "Heat mode threshold", required: false, description: "Outdoor Temp Threshold to switch to heat mode"
