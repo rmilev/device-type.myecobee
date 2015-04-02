@@ -453,10 +453,10 @@ def setZoneSettings() {
             
 				adjust_vent_settings_in_zone(i)
 			} else {
-				if (detailedNotif == 'true') {
-					send("ScheduleTstatZones>schedule ${scheduleName}: trying to set ${thermostat} to 'away' mode")
-				}
 				if (state.setPresentOrAway != 'away') {
+					if (detailedNotif == 'true') {
+						send("ScheduleTstatZones>schedule ${scheduleName}: trying to set ${thermostat} to 'away' mode")
+					}
 					set_main_tsat_to_AwayOrPresent('away')
 				}                
 			}            
