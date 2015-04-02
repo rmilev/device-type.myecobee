@@ -436,7 +436,7 @@ def setZoneSettings() {
 			if (isResidentPresent) {            
             
 				if (state.setPresentOrAway != 'present') {
-	            	set_main_tsat_to_AwayOrPresent('present')
+					set_main_tsat_to_AwayOrPresent('present')
 				}                
 				// let's adjust the thermostat's temp & mode settings according to outdoor temperature
             
