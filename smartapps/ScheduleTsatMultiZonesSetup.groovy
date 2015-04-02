@@ -58,6 +58,10 @@ def generalSetup() {
 		section("Schedules count") {
 			input "schedulesCount", title: "Schedules count (max=12)?", "number"
 		}
+		section("Set your main thermostat to [Away,Present] based on all Room Motion Sensors [default=false] ") {
+			input "setAwayOrPresentFlag", title: "Set Main thermostat to [Away,Present]?", "Boolean",
+				description:"optional", metadata: [values: ["true", "false"]],required:false
+		}
 
 	}
 }
@@ -74,44 +78,44 @@ def roomsSetup() {
 			section("Room" + i + " Setup") {
 				input "roomName" + i, title: "Room Name", "string", description: "Zone Name " + i
 			}
-			section("Room" + i +  " Thermostat") {
+			section("Room" + i +  "-Thermostat") {
 				input "roomTstat" + i, title: "Room thermostat to be set (optional)", "capability.thermostat", description: "roomTstat " + i, required: false
 
 			}
-			section("Room" + i +  " TempSensor") {
+			section("Room" + i +  "-TempSensor") {
 				input "tempSensor" + i, title: "Temp sensor (if any) to be used in current room for better temp adjustment", "capability.temperatureMeasurement", description: "tempSensor " + i, required: false
 
 			}
-			section("Room" + i +  "  Vent no1") {
-				input "vent1Switch" + i, title: "1st vent switch to be turned on/off in current room (optional)", "capability.switch", description: "Vent1Switch " + i, required: false
+			section("Room" + i +  "-Vent no1") {
+				input "vent1Switch" + i, title: "1st vent switch to be turned on/off in current room [optional]", "capability.switch", description: "Vent1Switch " + i, required: false
 			}           
-			section("Room" + i +  " Vent no2") {
-				input "vent2Switch" + i, title: "2nd vent switch to be turned on/off in current room (optional)", "capability.switch", description: "Vent2Switch " + i, required: false
+			section("Room" + i +  "-Vent no2") {
+				input "vent2Switch" + i, title: "2nd vent switch to be turned on/off in current room [optional]", "capability.switch", description: "Vent2Switch " + i, required: false
 			}
-			section("Room" + i +  " Vent no3") {
-				input "vent3Switch" + i, title: "3rd vent switch to be turned on/off in current room (optional)", "capability.switch", description: "Vent3Switch " + i, required: false
+			section("Room" + i +  "-Vent no3") {
+				input "vent3Switch" + i, title: "3rd vent switch to be turned on/off in current room [optional]", "capability.switch", description: "Vent3Switch " + i, required: false
 			}
-			section("Room" + i +  " Vent no4") {
-				input "vent4Switch" + i, title: "4th vent switch to be turned on/off in current room (optional)", "capability.switch", description: "Vent4Switch " + i, required: false
+			section("Room" + i +  "-Vent no4") {
+				input "vent4Switch" + i, title: "4th vent switch to be turned on/off in current room [optional]", "capability.switch", description: "Vent4Switch " + i, required: false
 			}
-			section("Room" + i +  " Vent no5") {
-				input "vent5Switch" + i, title: "5th vent switch to be turned on/off in current room (optional)", "capability.switch", description: "Vent4Switch " + i, required: false
+			section("Room" + i +  "-Vent no5") {
+				input "vent5Switch" + i, title: "5th vent switch to be turned on/off in current room [optional]", "capability.switch", description: "Vent4Switch " + i, required: false
 			}
 
-			section("Room" + i + " MotionSensor") {
+			section("Room" + i + "-MotionSensor") {
 				input "motionSensor" + i, title: "Motion sensor (if any) to be used in current room to detect if room is occupied", "capability.motionSensor", description: "motionSensor " + i, required: false
 
 			}
-			section("Do temp adjustment when occupied room only") {
-				input "needOccupiedFlag" + i, title: "Will do temp adjustement only when Occupied (default=false)", "Boolean", metadata: [values: ["true", "false"]], description: "needOccupied " + i, required: false
+			section("Room" + i + "-Do temp adjustment based on avg temp calculation when occupied room only") {
+				input "needOccupiedFlag" + i, title: "Will do temp adjustement only when Occupied [default=false]", "Boolean", metadata: [values: ["true", "false"]], description: "needOccupied " + i, required: false
 
 			}
-			section("Do temp adjustment with this occupied's threshold") {
-				input "residentsQuietThreshold" + i, title: "Threshold in minutes for motion detection (default=15 min)", "number", description: "residentsQuietThreshold " + i, required: false
+			section("Room" + i + "-Do temp adjustment with this occupied's threshold") {
+				input "residentsQuietThreshold" + i, title: "Threshold in minutes for motion detection [default=15 min]", "number", description: "residentsQuietThreshold " + i, required: false
 
 			}
 			section() {
-				paragraph "**** Done for room $i **** "
+				paragraph "**** Done for Room $i **** "
 
 			}                
 		}
@@ -125,19 +129,19 @@ def ventsSetup(params) {
     
 	dynamicPage(name: "ventsSetup", title: "Room Vents Setup", uninstall: true) {
 			section("Room Vent no1 Setup") {
-				input "vent1Switch" + "${params?.indiceRoom}", title: "1st vent switch to be turned on/off in current room (optional)", "capability.switch", description: "Vent1Switch " + "${params?.indiceRoom}", required: false
+				input "vent1Switch" + "${params?.indiceRoom}", title: "1st vent switch to be turned on/off in current room [optional]", "capability.switch", description: "Vent1Switch " + "${params?.indiceRoom}", required: false
 			}           
 			section("Room Vent no2 Setup") {
-				input "vent2Switch" + "${params?.indiceRoom}", title: "2nd vent switch to be turned on/off in current room (optional)", "capability.switch", description: "Vent2Switch " + "${params?.indiceRoom}", required: false
+				input "vent2Switch" + "${params?.indiceRoom}", title: "2nd vent switch to be turned on/off in current room [optional]", "capability.switch", description: "Vent2Switch " + "${params?.indiceRoom}", required: false
 			}
 			section("Room Vent no3 Setup") {
-				input "vent3Switch" + "${params?.indiceRoom}", title: "3rd vent switch to be turned on/off in current room (optional)", "capability.switch", description: "Vent3Switch " + "${params?.indiceRoom}", required: false
+				input "vent3Switch" + "${params?.indiceRoom}", title: "3rd vent switch to be turned on/off in current room [optional]", "capability.switch", description: "Vent3Switch " + "${params?.indiceRoom}", required: false
 			}
 			section("Room Vent no4 Setup") {
-				input "vent4Switch" + "${params?.indiceRoom}", title: "4th vent switch to be turned on/off in current room (optional)", "capability.switch", description: "Vent4Switch " + "${params?.indiceRoom}", required: false
+				input "vent4Switch" + "${params?.indiceRoom}", title: "4th vent switch to be turned on/off in current room [optional]", "capability.switch", description: "Vent4Switch " + "${params?.indiceRoom}", required: false
 			}
 			section("Room Vent no5 Setup") {
-				input "vent5Switch" +  "${params?.indiceRoom}", title: "5th vent switch to be turned on/off in current room (optional)", "capability.switch", description: "Vent4Switch " + "${params?.indiceRoom}", required: false
+				input "vent5Switch" +  "${params?.indiceRoom}", title: "5th vent switch to be turned on/off in current room [optional]", "capability.switch", description: "Vent4Switch " + "${params?.indiceRoom}", required: false
 			}
 
 	}
@@ -159,13 +163,13 @@ def zonesSetup() {
 			section("Zone " + i + " Setup") {
 				input "zoneName" + i, title: "Zone Name", "string", description: "Zone Name " + i
 			}
-			section("Zone " + i + " Included rooms") {
+			section("Zone " + i + "-Included rooms") {
 				input "includedRooms" + i, title: "Rooms included in the zone", "enum", description: "Rooms included in this zone" + i,
 					options: rooms,
 					multiple: true
 			}
 			section() {
-				paragraph "**** Done for zone $i **** "
+				paragraph "**** Done for Zone $i **** "
 
 			}                
 		}            
@@ -206,12 +210,12 @@ def scheduleSetup() {
 			section("Schedule " + i + " Setup") {
 				input "scheduleName" + i, title: "Schedule Name", "string", description: "Schedule Name " + i
 			}
-			section("Schedule " + i + " Included zones") {
+			section("Schedule " + i + "-Included zones") {
 				input "includedZones" + i, title: "Zones included in this schedule", "enum", description: "Zones included in this schedule" + i,
 					options: zones,
 					multiple: true
 			}
-			section("Schedule " + i + " Day & Time of the desired Heating/Cooling settings for the selected zone(s)") {
+    		section("Schedule " + i + "Day & Time of the desired Heating/Cooling settings for the selected zone(s)") {
 				input "dayOfWeek" + i, "enum",
 					title: "Which day of the week to trigger the zoned heating/cooling settings?",
 					multiple: false,
@@ -232,26 +236,37 @@ def scheduleSetup() {
 				input "begintime" + i, "time", title: "Beginning time to trigger the zoned heating/cooling settings (format: 24H:MM)"
 				input "endtime" + i, "time", title: "End time(format: 24H:MM)"
 			}
-			section("Schedule " + i + " ,select the program at ecobee thermostat to be applied (optional, only for ecobee)") {
-				input "givenClimate" + i, "enum", title: "Which ecobee program? ", options: ecobeePrograms, required: false
+			section("Schedule " + i + "-Outdoor temp Sensor used for adjustment [optional]") {
+            	input "outTempSensor" + i, "capability.temperatureMeasurement", required: false, description: "optional"
 			}
-			section("Desired cool Temp in the selected zone(s)") {
+			section("Schedule " + i + "-Switch thermostat mode (auto/cool/heat) based on this outdoor temp range [optional]") {
+				input "heatModeThreshold" + i, "decimal", title: "Heat mode threshold", required: false, description: "Outdoor Temp Threshold to switch to heat mode"
+				input "coolModeThreshold"+ i, "decimal", title: "Cool mode threshold", required: false, description: "Outdoor Temp Threshold to switch to cool mode"
+			}			
+			section("Schedule " + i + "-Select the program at ecobee thermostat to be applied [optional, only for ecobee]") {
+				input "givenClimate" + i, "enum", title: "Which ecobee program? ", options: ecobeePrograms, required: false, description: "optional"
+			}
+			section("Schedule " + i + "-Desired Cool Temp in the selected zone(s) [when no program settings]") {
 				input "desiredCoolTemp" + i, "decimal", title: "Cool Temp, default = 75°F/23°C", required: false
 			}
-			section("And desired heat Temp in the selected zone(s)") {
+			section("Schedule " + i + "-Desired Heat Temp in the selected zone(s) [when no program settings]") {
 				input "desiredHeatTemp" + i, "decimal", title: "Heat Temp, default=72°F/21°C", required: false
 			}
-			section("Schedule " + i + " set Room thermostats Only Indicator") {
-				input "setRoomThermostatsOnlyFlag" + i, "Boolean", title: "Set room thermostats only (default=false,main & room thermostats setpoints are set)", metadata: [values: ["true", "false"]], required: false
+			section("Schedule " + i + "-More Heat/Cool Threshold in the selected zone(s) based on outdoor temp Sensor [optional]") {
+				input "moreHeatThreshold" +i, "decimal", title: "Outdoor temp's threshold for more heating",  description: "optional", required: false
+				input "moreCoolThreshold" +i, "decimal", title: "Outdoor temp's threshold for more cooling",  description: "optional", required: false
 			}
-			section("Schedule " + i + " Max temp adjustment at the main thermostat based on temp Sensors") {
+			section("Schedule " + i + "-Max Temp Adjustment at the main thermostat based on temp Sensors (indoor&outdoor)") {
 				input "givenMaxTempDiff" + i, "decimal",  title: "Max Temp adjustment (default= +/-5°F/2°C)", required: false
 			}
-			section("Schedule " + i + " set for specific mode(s) (default=all)")  {
+			section("Schedule " + i + "-Set Room Thermostats Only Indicator") {
+				input "setRoomThermostatsOnlyFlag" + i, "Boolean", title: "Set room thermostats only [default=false,main & room thermostats setpoints are set]", metadata: [values: ["true", "false"]], required: false
+			}
+			section("Schedule " + i + "-Set for specific mode(s) (default=all)")  {
 				input "selectedMode" + i, "enum", title: "Choose Mode", options: enumModes, required: false, multiple:true
 			}
 			section() {
-				paragraph "**** Done for schedule $i **** "
+				paragraph "**** Done for Schedule $i **** "
 
 			}                
 		}
@@ -286,8 +301,14 @@ def updated() {
 }
 
 def initialize() {
+
+	// Initialize state variables
+    
 	state.lastScheduleLastName=""
 	state.lastStartTime=null 
+	state.scheduleHeatingSetpoint=0  
+	state.scheduleCoolingSetpoint=0    
+	state.setPresentOrAway='present'
     
 	Integer delay =5 				// wake up every 5 minutes to apply zone settings if any
 	log.debug "Scheduling setZoneSettings every ${delay} minutes to check for zone settings to be applied"
@@ -297,10 +318,9 @@ def initialize() {
 	subscribe(app, appTouch)
     
 /*	Commented out as not a reliable way to do scheduling
-	schedule("0 0/${delay} * * * ?", setZoneSettings)
 
 	def currTime = now()
-	for (i in 1..4) {
+	for (i in 1..settings.schedulesCount) {
 		key = "scheduleName$i"
 		def scheduleName = settings[key]
 		def key = "begintime$i"
@@ -310,13 +330,10 @@ def initialize() {
 			if (startTimeToday.time < currTime) {
 				startTimeToday = startTimeToday + 1
 			}        
-			int startHourInLocal = startTimeToday.format("HH", location.timeZone).toInteger()           
-			int startMinutesInLocal = startTimeToday.format("mm", location.timeZone).toInteger()           
 			String startInLocalTime = startTimeToday.format("yyyy-MM-dd HH:mm", location.timeZone)
 			String nowInLocalTime = new Date().format("yyyy-MM-dd HH:mm", location.timeZone)
 			log.debug "initialize>scheduled ${scheduleName} at ${startInLocalTime}, (${startHourInLocal}:${startMinutesInLocal}) now = ${nowInLocalTime}, startTime UTC =${startTimeToday}"
 
-//			schedule("${startMinutesInLocal} ${startHourInLocal} * * * ?", setZoneSettings) 
 //			schedule(startTimeToday, setZoneSettings)
 
 		}            
@@ -371,10 +388,10 @@ def setZoneSettings() {
         
 		String startInLocalTime = startTimeToday.format("yyyy-MM-dd HH:mm", location.timeZone)
 		String nowInLocalTime = new Date().format("yyyy-MM-dd HH:mm", location.timeZone)
-		log.debug "setZoneSettings>found schedule ${scheduleName},nowInLocalTime= ${nowInLocalTime},startInLocalTime= ${startInLocalTime}, currTime= ${currTime}, begintime=${startTime} (${startTimeToday.time}), endTime=${endTime} (${endTimeToday.time})"
+		log.debug "setZoneSettings>found schedule ${scheduleName},nowInLocalTime= ${nowInLocalTime},startInLocalTime=${startInLocalTime},currTime=${currTime},begintime=${startTimeToday.time},endTime=${endTimeToday.time}," +
+        		"lastScheduleName=$state.lastScheduleName, lastStartTime=$state.lastStartTime"
         
-		if ((currTime >= startTimeToday.time) && (currTime <= endTimeToday.time) && (state.lastScheduleName != scheduleName) &&
-			(state.lastStartTime != startTimeToday)) {
+		if ((currTime >= startTimeToday.time) && (currTime <= endTimeToday.time) && (state.lastStartTime != startTimeToday.time)) {
         
 			// let's set the given schedule
             
@@ -388,7 +405,8 @@ def setZoneSettings() {
 			if (doChange) {
 
 				state.lastScheduleName = scheduleName
-				state.lastStartTime = startTimeToday
+				state.lastStartTime = startTimeToday.time
+                
 				if (detailedNotif == 'true') {
 					send("ScheduleTstatZones>running schedule ${scheduleName},about to set zone settings as requested")
 				}
@@ -406,10 +424,30 @@ def setZoneSettings() {
 			}
 		}
 		else if ((state.lastScheduleName == scheduleName) && (currTime >= startTimeToday.time) && (currTime <= endTimeToday.time)) {
+			// We're in the middle of a schedule run
         
-			// let's adjust the vent settings according to desired Temp
+			def setAwayOrPresent = (setAwayOrPresentFlag)?:'false'
+			Boolean isResidentPresent=true
             
-			adjust_vent_settings_in_zone(i)
+			if (setAwayOrPresent=='true') {
+            
+				isResidentPresent=verify_presence_based_on_motion_in_rooms()
+			}
+			if (isResidentPresent) {            
+            
+				if (state.setPresentOrAway != 'present') {
+	            	set_main_tsat_to_AwayOrPresent('present')
+				}                
+				// let's adjust the thermostat's temp & mode settings according to outdoor temperature
+            
+				adjust_tstat_for_more_less_heat_cool(i)
+            
+				// let's adjust the vent settings according to desired Temp
+            
+				adjust_vent_settings_in_zone(i)
+			} else {
+				set_main_tstat_to_AwayOrPresent('away')
+			}            
         
 		}
 
@@ -437,6 +475,48 @@ private def isRoomOccupied(sensor, indiceRoom) {
 	}
 	log.debug "isRoomOccupied>result = $result"
 	return result
+}
+
+private def verify_presence_based_on_motion_in_rooms() {
+
+	def result=false
+	for (i in 1..roomsCount) {
+
+		def key = "roomName$i"
+		def roomName = settings[key]
+		key = "motionSensor$i"
+		def motionSensor = settings[key]
+		if (motionSensor != null) {
+
+			if (isRoomOccupied(motionSensor,i)) {
+				log.debug("verify_presence_based_on_motion>in ${roomName},presence detected, return true")
+				result=true
+			}                
+		}
+	} /* end for */        
+	return result
+}
+
+private def set_main_tstat_to_AwayOrPresent(mode) {
+
+	try {
+    
+    	if  (mode == 'away') {
+			thermostat.away()
+            
+		} else if (mode == 'present') {	
+			thermostat.present()
+		}
+            
+		if (detailedNotif == 'true') {
+			send("ScheduleTstatZones>set main thermostat ${thermostat} to ${mode} mode based on motion in all rooms")
+		}
+		state.setPresentOrAway=mode    // set a state for further checking later
+	}    
+	catch (any) {
+		log.debug("set_tstat_to_AwayOrPresent>not able to set thermostat ${thermostat} to ${mode} mode")
+	}
+
 }
 
 private def getSensorTempForAverage(indiceRoom, typeSensor='tempSensor') {
@@ -508,9 +588,6 @@ private def setRoomTstatSettings(indiceZone, indiceRoom) {
 				roomTstat?.setClimate("", climateName)
 				setClimate = true
 			} catch (any) {
-				if (detailedNotif == 'true') {
-					send("ScheduleTstatZones>in room ${roomName}, not able to set climate ${climateName} for cooling at the thermostat ${roomTstat}")
-				}
 				log.debug("setRoomTstatSettings>in room ${roomName},not able to set climate ${climateName} for cooling at the thermostat ${roomTstat}")
 
 			}
@@ -633,6 +710,154 @@ private def getAllTempsForAverage(indiceZone) {
 	return indoorTemps
 }
 
+private def switch_thermostatMode(indiceSchedule) {
+
+	def key = "outTempSensor$indiceSchedule"
+	def outTempSensor = settings[key]
+    
+	if (outTempSensor == null) {
+		return     
+	}
+	def outdoorTemp = outTempSensor.currentTemperature
+
+	key = "heatModeThreshold$indiceSchedule"
+	def heatModeThreshold = settings[key]
+	key = "coolModeThreshold$indiceSchedule"
+	def coolModeThreshold = settings[key]
+    
+	if ((heatModeThreshold == null) && (coolModeThreshold ==null)) {
+		log.debug "switch_thermostatMode>no adjustment variables set, exiting"
+		return
+	}        
+	String currentMode = thermostat.currentThermostatMode
+	def currentHeatPoint = thermostat.currentHeatingSetpoint
+	def currentCoolPoint = thermostat.currentCoolingSetpoint
+	log.debug "switch_thermostatMode>currentMode=$currentMode, outdoor temperature=$outdoorTemp, coolTempThreshold=$coolTempThreshold, heatTempThreshold=$heatTempThreshold"
+	if (outdoorTemp < heatModeThreshold) {
+		if (currentMode != "heat") {
+			def newMode = "heat"
+			thermostat.setThermostatMode(newMode)
+			log.debug "switch_thermostatMode>thermostat mode set to $newMode"
+			state.scheduleHeatingSetpoint=currentHeatPoint      // Set for later processing in adjust_more_less_heat_cool()      
+		}
+	}
+	else if (outdoorTemp > coolModeThreshold) {
+		if (currentMode != "cool") {
+			def newMode = "cool"
+			thermostat.setThermostatMode(newMode)
+			log.debug "switch_thermostatMode>thermostat mode set to $newMode"
+			state.scheduleCoolingSetpoint=currentCoolPoint      // Set for later processing in adjust_more_less_heat_cool()      
+		}
+	} else if ((currentMode != "auto") && (currentMode != "off")) {
+			def newMode = "auto"
+			thermostat.setThermostatMode(newMode)
+			log.debug "switch_thermostatMode>thermostat mode set to $newMode"
+    
+	}    
+
+}
+
+private def adjust_tstat_for_more_less_heat_cool(indiceSchedule) {
+	def key = "setRoomThermostatsOnlyFlag$indiceSchedule"
+	def setRoomThermostatsOnlyFlag = settings[key]
+	def setRoomThermostatsOnly = (setRoomThermostatsOnlyFlag) ?: 'false'
+	key = "scheduleName$indiceSchedule"
+	def scheduleName = settings[key]
+
+	if (setRoomThermostatsOnly=='true') {
+		log.debug("adjust_tstat_for_more_less_heat_cool>schedule ${scheduleName},all room Tstats set and setRoomThermostatsOnlyFlag= true,exiting")
+		return				    
+	}    
+
+	key = "outTempSensor$indiceSchedule"
+	def outTempSensor = settings[key]
+	if (outTempSensor == null) {
+		log.debug "adjust_tstat_for_more_less_heat_cool>no outdoor temp sensor set, exiting"
+		return     
+	}
+	
+	key = "moreHeatThreshold$indiceSchedule"
+	def moreHeatThreshold = settings[key]
+	key = "moreCoolThreshold$indiceSchedule"
+	def moreCoolThreshold = settings[key]
+	key = "heatModeThreshold$indiceSchedule"
+	def heatModeThreshold = settings[key]
+	key = "coolModeThreshold$indiceSchedule"
+	def coolModeThreshold = settings[key]
+	
+    if ((moreHeatThreshold == null) && (moreCoolThreshold ==null) && 
+		(heatModeThreshold == null) && (coolModeThreshold ==null)) {
+		log.debug "adjust_tstat_for_more_less_heat_cool>no adjustment variables set, exiting"
+		return
+	}
+	
+	def outdoorTemp = outTempSensor?.currentTemperature
+    
+	thermostat.poll()
+	String currentMode = thermostat.currentThermostatMode
+	def currentHeatPoint = thermostat.currentHeatingSetpoint
+	def currentCoolPoint = thermostat.currentCoolingSetpoint
+	def targetTstatTemp    
+	log.debug "adjust_tstat_for_more_less_heat_cool>currentMode=$currentMode,outdoorTemp=$outdoorTemp,moreCoolThreshold=$moreCoolThreshold,  moreHeatThreshold=$moreHeatThreshold," +
+    	"coolModeThreshold=$coolModeThreshold,heatModeThreshold=$heatModeThreshold,currentHeatSetpoint=$currentHeatPoint,currentCoolSetpoint=$currentCoolPoint"
+
+	key = "givenMaxTempDiff$indiceSchedule"
+	def givenMaxTempDiff = settings[key]
+	def max_temp_diff = givenMaxTempDiff ?: (scale=='C')? 2: 5 // 2°C/5°F temp differential is applied by default
+    
+	if (currentMode== 'heat') {
+		if (outdoorTemp <= moreHeatThreshold)  {
+			targetTstatTemp = (currentHeatPoint + max_temp_diff)
+			def temp_diff = state?.scheduleHeatSetpoint - targetTstatTemp
+			// if temp diff is <= max_temp_diff, then do the adjustment            
+			log.debug "adjust_tstat_for_more_less_heat_cool>temp_diff=$temp_diff, max_temp_diff=$max_temp_diff" 
+			if (temp_diff.abs() <= max_temp_diff) {
+				thermostat.setHeatingSetpoint(targetTstatTemp)
+				send("ScheduleTstatZones>heating setPoint now= ${targetTstatTemp}°, outdoorTemp <=${moreHeatThreshold}°")
+			}            
+		} else if (outdoorTemp <= heatModeThreshold) {
+        
+			targetTstatTemp = (currentHeatPoint - max_temp_diff)
+			def temp_diff = state?.scheduleHeatSetpoint - targetTstatTemp
+			log.debug "adjust_tstat_for_more_less_heat_cool>temp_diff=$temp_diff, max_temp_diff=$max_temp_diff" 
+			// if temp diff is <= max_temp_diff, then do the adjustment            
+			if (temp_diff.abs() <= max_temp_diff) {
+				thermostat.setHeatingSetpoint(targetTstatTemp)
+				send("ScheduleTstatZones>heating setPoint now= ${targetTstatTemp}°, outdoorTemp >${moreHeatThreshold}°")
+			}            
+        
+		} else {
+			switch_thermostatMode(indiceSchedule)        
+		}        
+	}
+	if (currentMode== 'cool') {
+    
+		if (outdoorTemp >= moreCoolThreshold) {
+			targetTstatTemp = (currentCoolPoint - max_temp_diff)
+			def temp_diff = state?.scheduleCoolSetpoint - targetTstatTemp
+			if (temp_diff.abs() <= max_temp_diff) {
+				thermostat.setCoolingSetpoint(targetTstatTemp)
+				send("ScheduleTstatZones>cooling setPoint now= ${targetTstatTemp}°, outdoorTemp >=${moreCoolThreshold}°")
+			}            
+		} else if (outdoorTemp >= coolModeThreshold) {
+			targetTstatTemp = (currentCoolPoint + max_temp_diff)
+			def temp_diff = state?.scheduleCoolSetpoint - targetTstatTemp
+			if (temp_diff.abs() <= max_temp_diff) {
+				thermostat.setCoolingSetpoint(targetTstatTemp)
+				send("ScheduleTstatZones>cooling setPoint now= ${targetTstatTemp}°, outdoorTemp < ${moreCoolThreshold}°")
+			}            
+		} else {
+        
+			switch_thermostatMode(indiceSchedule)        
+		}        
+        
+	} 
+    // Check if auto mode needs to be switched to 'heat' or 'cool' based on thresholds
+	if (currentMode== 'auto') {
+		switch_thermostatMode(indiceSchedule)        
+	}
+}
+
 
 private def adjust_thermostat_setpoint_in_zone(indiceSchedule) {
 	def scale = getTemperatureScale()
@@ -647,7 +872,9 @@ private def adjust_thermostat_setpoint_in_zone(indiceSchedule) {
 	def setRoomThermostatsOnlyFlag = settings[key]
 	def setRoomThermostatsOnly = (setRoomThermostatsOnlyFlag) ?: 'false'
 	def indoor_all_zones_temps=[]
-    
+
+	switch_thermostatMode(indiceSchedule) // check the thermsostat mode based on outdoor temp's thresholds (heat, cool) if any set
+
 	log.debug("adjust_thermostat_setpoint_in_zone>schedule ${scheduleName}: zones= ${zones}")
 
 	for (zone in zones) {
@@ -678,7 +905,6 @@ private def adjust_thermostat_setpoint_in_zone(indiceSchedule) {
 	}    
 	//	Now will do an avg temp calculation based on all temp sensors to apply the desired temp settings at the main Tstat correctly
 
-	thermostat?.poll()
 	float currentTemp = thermostat?.currentTemperature.toFloat()
 	String mode = thermostat?.currentThermostatMode.toString()
 	//	This is the avg indoor temp based on indoor temp sensors in all rooms in the zone
@@ -731,7 +957,8 @@ private def adjust_thermostat_setpoint_in_zone(indiceSchedule) {
 		float targetTstatTemp = (desiredHeat - temp_diff).round(1)
 		thermostat?.setHeatingSetpoint(targetTstatTemp)
 		send("ScheduleTstatZones>schedule ${scheduleName},in zones=${zones},heating setPoint now =${targetTstatTemp}°,adjusted by avg temp diff (${temp_diff.abs()}°) between all temp sensors in zone")
-
+		state.scheduleHeatSetpoint=targetTstatTemp // save the value for later processing in adjust_more_less_heat_cool()
+        
 	} else if (mode == 'cool') {
 
 		if ((climateName == null) || (climateName.trim() == "")) {
@@ -763,6 +990,7 @@ private def adjust_thermostat_setpoint_in_zone(indiceSchedule) {
 		float targetTstatTemp = (desiredCool - temp_diff).round(1)
 		thermostat?.setCoolingSetpoint(targetTstatTemp)
 		send("ScheduleTstatZones>schedule ${scheduleName}, in zones=${zones},cooling setPoint now =${targetTstatTemp}°,adjusted by avg temp diff (${temp_diff}°) between all temp sensors in zone")
+		state.scheduleCoolSetpoint=targetTstatTemp // save the value for later processing in adjust_more_less_heat_cool()
 	}
 
 }
@@ -1045,7 +1273,7 @@ private def control_vent_switches_in_zone(indiceSchedule, switchLevel=100) {
 
 def IsRightDayForChange(indiceSchedule) {
 
-	def key = "zoneName$indiceSchedule"
+	def key = "scheduleName$indiceSchedule"
 	def scheduleName = settings[key]
 
 	key ="dayOfWeek$indiceSchedule"
