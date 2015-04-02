@@ -456,7 +456,9 @@ def setZoneSettings() {
 				if (detailedNotif == 'true') {
 					send("ScheduleTstatZones>schedule ${scheduleName}: trying to set ${thermostat} to 'away' mode")
 				}
-				set_main_tstat_to_AwayOrPresent('away')
+				if (state.setPresentOrAway != 'away') {
+					set_main_tsat_to_AwayOrPresent('away')
+				}                
 			}            
         
 		}
