@@ -419,7 +419,7 @@ def setZoneSettings() {
  				ventSwitchesOn = ventSwitchesOn + ventSwitchesZoneSet              
 			} else {
 				if (detailedNotif == 'true') {
-					send("ScheduleTstatZones>schedule: ${scheduleName}: change not scheduled at this time ${nowInLocalTime}...")
+					send("ScheduleTstatZones>schedule: ${scheduleName},change not scheduled at this time ${nowInLocalTime}...")
 				}
 			}
 		}
