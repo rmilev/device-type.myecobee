@@ -262,6 +262,9 @@ def scheduleSetup() {
 			section("Schedule " + i + "-Set Room Thermostats Only Indicator") {
 				input "setRoomThermostatsOnlyFlag" + i, "Boolean", title: "Set room thermostats only [default=false,main & room thermostats setpoints are set]", metadata: [values: ["true", "false"]], required: false
 			}
+			section("Schedule " + i + "-Set Fan Mode [optional]") {
+				input "fanMode" + i, "enum", title: "Set Fan Mode ['on', 'auto', 'circulate']", metadata: [values: ["on", "auto", "circulate"]], required: false, description:"optional"
+			}
 			section("Schedule " + i + "-Set for specific mode(s) (default=all)")  {
 				input "selectedMode" + i, "enum", title: "Choose Mode", options: enumModes, required: false, multiple:true
 			}
@@ -416,6 +419,7 @@ def setZoneSettings() {
 				log.debug "setZoneSettings>schedule ${scheduleName},List of Vents turned 'on'= ${ventSwitchesZoneSet}"
 				// adjust the temperature at the thermostat(s)
 				adjust_thermostat_setpoint_in_zone(i)
+				set_fan_mode(i)
  				ventSwitchesOn = ventSwitchesOn + ventSwitchesZoneSet              
 			} else {
 				if (detailedNotif == 'true') {
@@ -714,7 +718,31 @@ private def getAllTempsForAverage(indiceZone) {
 		}
 	} /* end for */
 	return indoorTemps
+
 }
+
+
+private def set_fan_mode(indiceSchedule) {
+
+	def key = "fanMode$indiceSchedule"
+	def fanMode = settings[key]
+	key = "scheduleName$indiceSchedule"
+	def scheduleName = settings[key]
+    
+	if (fanMode == null) {
+		return     
+	}
+
+	try {
+		thermostat?.setThermostatFanMode(fanMode)
+		if (detailedNotif == 'true') {
+			send("ScheduleTstatZones>schedule ${scheduleName},set fan mode to ${fanMode} at thermostat ${thermostat} as requested")
+		}
+	} catch (any) {
+		log.debug("set_fan_mode>schedule ${scheduleName},not able to set fan mode to ${fanMode} at thermostat ${thermostat}")
+	}
+}
+
 
 private def switch_thermostatMode(indiceSchedule) {
 
