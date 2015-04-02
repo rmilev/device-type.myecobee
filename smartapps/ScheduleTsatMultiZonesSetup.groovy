@@ -377,7 +377,7 @@ def setZoneSettings() {
 		def startTime = settings[key]
 		if (startTime == null) {
         		continue
-        	}
+        }
 		def startTimeToday = timeToday(startTime,location.timeZone)
 		key = "endtime$i"
 		def endTime = settings[key]
