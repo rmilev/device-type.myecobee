@@ -434,33 +434,36 @@ def setZoneSettings() {
 			Boolean isResidentPresent=true
             
 			if (setAwayOrPresent=='true') {
-            
+	            
 				isResidentPresent=verify_presence_based_on_motion_in_rooms()
-			}
-			if (isResidentPresent) {            
-            
-				if (state.setPresentOrAway != 'present') {
-					if (detailedNotif == 'true') {
-						send("ScheduleTstatZones>schedule ${scheduleName}: trying to set ${thermostat} to 'present' mode")
+				if (isResidentPresent) {            
+
+					if (state.setPresentOrAway != 'present') {
+						if (detailedNotif == 'true') {
+							send("ScheduleTstatZones>schedule ${scheduleName}: trying to set ${thermostat} to 'present' mode")
+						}
+						set_main_tsat_to_AwayOrPresent('present')
 					}
-					set_main_tsat_to_AwayOrPresent('present')
-				}                
+				} else {
+					if (state.setPresentOrAway != 'away') {
+						if (detailedNotif == 'true') {
+							send("ScheduleTstatZones>schedule ${scheduleName}: trying to set ${thermostat} to 'away' mode")
+						}
+						set_main_tsat_to_AwayOrPresent('away')
+					}                
+				}
+			}            
+            
+            if (isResidentPresent) {
+            
 				// let's adjust the thermostat's temp & mode settings according to outdoor temperature
             
 				adjust_tstat_for_more_less_heat_cool(i)
             
-				// let's adjust the vent settings according to desired Temp
+			}        
+			// let's adjust the vent settings according to desired Temp
             
-				adjust_vent_settings_in_zone(i)
-			} else {
-				if (state.setPresentOrAway != 'away') {
-					if (detailedNotif == 'true') {
-						send("ScheduleTstatZones>schedule ${scheduleName}: trying to set ${thermostat} to 'away' mode")
-					}
-					set_main_tsat_to_AwayOrPresent('away')
-				}                
-			}            
-        
+			adjust_vent_settings_in_zone(i)
 		}
 
 	} /* end for */ 	
