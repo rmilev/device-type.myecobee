@@ -390,9 +390,10 @@ def setZoneSettings() {
 		}        
         
 		String startInLocalTime = startTimeToday.format("yyyy-MM-dd HH:mm", location.timeZone)
+		String endInLocalTime = endTimeToday.format("yyyy-MM-dd HH:mm", location.timeZone)
 		String nowInLocalTime = new Date().format("yyyy-MM-dd HH:mm", location.timeZone)
-		log.debug "setZoneSettings>found schedule ${scheduleName},nowInLocalTime= ${nowInLocalTime},startInLocalTime=${startInLocalTime},currTime=${currTime},begintime=${startTimeToday.time},endTime=${endTimeToday.time}," +
-        		"lastScheduleName=$state.lastScheduleName, lastStartTime=$state.lastStartTime"
+		log.debug "setZoneSettings>found schedule ${scheduleName},nowInLocalTime= ${nowInLocalTime},startInLocalTime=${startInLocalTime},endInLocalTime=${endInLocalTime}," +
+        		"currTime=${currTime},begintime=${startTimeToday.time},endTime=${endTimeToday.time},lastScheduleName=$state.lastScheduleName, lastStartTime=$state.lastStartTime"
         
 		if ((currTime >= startTimeToday.time) && (currTime <= endTimeToday.time) && (state.lastStartTime != startTimeToday.time)) {
         
