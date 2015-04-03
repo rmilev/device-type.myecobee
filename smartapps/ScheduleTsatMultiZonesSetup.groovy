@@ -821,7 +821,7 @@ private def adjust_tstat_for_more_less_heat_cool(indiceSchedule) {
 	key = "coolModeThreshold$indiceSchedule"
 	def coolModeThreshold = settings[key]
 	
-    if ((moreHeatThreshold == null) && (moreCoolThreshold ==null) && 
+	if ((moreHeatThreshold == null) && (moreCoolThreshold ==null) && 
 		(heatModeThreshold == null) && (coolModeThreshold ==null)) {
 		log.debug "adjust_tstat_for_more_less_heat_cool>no adjustment variables set, exiting"
 		return
