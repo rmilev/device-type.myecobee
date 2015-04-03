@@ -453,7 +453,7 @@ def setZoneSettings() {
 					}                
 				}
 			}            
-            		if (isResidentPresent) {
+			if (isResidentPresent) {
             
 				// let's adjust the thermostat's temp & mode settings according to outdoor temperature
             
