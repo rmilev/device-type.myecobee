@@ -1207,7 +1207,8 @@ private def setVentSwitchLevel(indiceRoom, ventSwitch, switchLevel=100) {
 		ventSwitch.setLevel(switchLevel)
 		log.debug("ScheduleTstatZones>set ${ventSwitch} at level ${switchLevel} in room ${roomName} to reach desired temperature")
 	} catch (any) {
-		log.error "setVentSwitchLevel>in room ${roomName}, not able to set ${ventSwitch} at ${switchLevel}"
+		log.error "setVentSwitchLevel>in room ${roomName}, not able to set ${ventSwitch} at ${switchLevel}, trying to turn it on"
+		ventSwitch.on()        
 
 	}
     
