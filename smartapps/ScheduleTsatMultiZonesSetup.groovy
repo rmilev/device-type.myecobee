@@ -86,22 +86,11 @@ def roomsSetup() {
 				input "tempSensor" + i, title: "Temp sensor (if any) to be used in current room for better temp adjustment", "capability.temperatureMeasurement", description: "tempSensor " + i, required: false
 
 			}
-			section("Room" + i +  "-Vent no1") {
-				input "vent1Switch" + i, title: "1st vent switch to be turned on/off in current room [optional]", "capability.switch", description: "Vent1Switch " + i, required: false
+			section("Room" + i + "-Vents Setup")  {
+				for (int j = 1;(j <= 5); j++)  {
+					input "ventSwitch${j}" + i, title: "Vent switch no ${j} to be turned on/off in current room [optional]", "capability.switch", description: "VentSwitch no ${j}", required: false
+				}           
 			}           
-			section("Room" + i +  "-Vent no2") {
-				input "vent2Switch" + i, title: "2nd vent switch to be turned on/off in current room [optional]", "capability.switch", description: "Vent2Switch " + i, required: false
-			}
-			section("Room" + i +  "-Vent no3") {
-				input "vent3Switch" + i, title: "3rd vent switch to be turned on/off in current room [optional]", "capability.switch", description: "Vent3Switch " + i, required: false
-			}
-			section("Room" + i +  "-Vent no4") {
-				input "vent4Switch" + i, title: "4th vent switch to be turned on/off in current room [optional]", "capability.switch", description: "Vent4Switch " + i, required: false
-			}
-			section("Room" + i +  "-Vent no5") {
-				input "vent5Switch" + i, title: "5th vent switch to be turned on/off in current room [optional]", "capability.switch", description: "Vent4Switch " + i, required: false
-			}
-
 			section("Room" + i + "-MotionSensor") {
 				input "motionSensor" + i, title: "Motion sensor (if any) to be used in current room to detect if room is occupied", "capability.motionSensor", description: "motionSensor " + i, required: false
 
@@ -124,26 +113,34 @@ def roomsSetup() {
 
 }
 
-def ventsSetup(params) {
-	log.debug "params: ${params}"
-    
-	dynamicPage(name: "ventsSetup", title: "Room Vents Setup", uninstall: true) {
-			section("Room Vent no1 Setup") {
-				input "vent1Switch" + "${params?.indiceRoom}", title: "1st vent switch to be turned on/off in current room [optional]", "capability.switch", description: "Vent1Switch " + "${params?.indiceRoom}", required: false
-			}           
-			section("Room Vent no2 Setup") {
-				input "vent2Switch" + "${params?.indiceRoom}", title: "2nd vent switch to be turned on/off in current room [optional]", "capability.switch", description: "Vent2Switch " + "${params?.indiceRoom}", required: false
-			}
-			section("Room Vent no3 Setup") {
-				input "vent3Switch" + "${params?.indiceRoom}", title: "3rd vent switch to be turned on/off in current room [optional]", "capability.switch", description: "Vent3Switch " + "${params?.indiceRoom}", required: false
-			}
-			section("Room Vent no4 Setup") {
-				input "vent4Switch" + "${params?.indiceRoom}", title: "4th vent switch to be turned on/off in current room [optional]", "capability.switch", description: "Vent4Switch " + "${params?.indiceRoom}", required: false
-			}
-			section("Room Vent no5 Setup") {
-				input "vent5Switch" +  "${params?.indiceRoom}", title: "5th vent switch to be turned on/off in current room [optional]", "capability.switch", description: "Vent4Switch " + "${params?.indiceRoom}", required: false
-			}
 
+def ventHrefDescription(i) {
+	def description ="ventSwitch no ${i}" 
+	return description
+}
+
+def ventPageState(i,j) {
+
+	if (settings."ventSwitch${i}{j}") {
+    	return 'complete'
+	} else {
+    	return 'incomplete'
+	}
+}
+
+def ventHrefTitle(i) {
+	def title = "Vent ${i}"
+	return title
+}
+
+def ventsSetup(params) {
+
+	dynamicPage(name: "ventsSetup", title: "Room Vents Setup", uninstall: true) {
+		def i = params.number
+		log.debug "ventsSetup params = $i"    
+			section("Room Vent ${i} Setup") {
+				input "ventSwitch${i}", title: " vent no ${i} switch to be turned on/off in current room [optional]", "capability.switch", description: "VentSwitch${i}", required: false
+			}           
 	}
 
 }
@@ -516,7 +513,7 @@ private def set_main_tstat_to_AwayOrPresent(mode) {
 
 	try {
     
-    	if  (mode == 'away') {
+    		if  (mode == 'away') {
 			thermostat.away()
             
 		} else if (mode == 'present') {	
@@ -524,7 +521,7 @@ private def set_main_tstat_to_AwayOrPresent(mode) {
 		}
             
 		if (detailedNotif == 'true') {
-			send("ScheduleTstatZones>set main thermostat ${thermostat} to ${mode} mode based on motion in all rooms")
+		send("ScheduleTstatZones>set main thermostat ${thermostat} to ${mode} mode based on motion in all rooms")
 		}
 		state.setPresentOrAway=mode    // set a state for further checking later
 	}    
@@ -838,7 +835,7 @@ private def adjust_tstat_for_more_less_heat_cool(indiceSchedule) {
 	def currentCoolPoint = thermostat.currentCoolingSetpoint
 	def targetTstatTemp    
 	log.debug "adjust_tstat_for_more_less_heat_cool>currentMode=$currentMode,outdoorTemp=$outdoorTemp,moreCoolThreshold=$moreCoolThreshold,  moreHeatThreshold=$moreHeatThreshold," +
-    	"coolModeThreshold=$coolModeThreshold,heatModeThreshold=$heatModeThreshold,currentHeatSetpoint=$currentHeatPoint,currentCoolSetpoint=$currentCoolPoint"
+		"coolModeThreshold=$coolModeThreshold,heatModeThreshold=$heatModeThreshold,currentHeatSetpoint=$currentHeatPoint,currentCoolSetpoint=$currentCoolPoint"
 
 	key = "givenMaxTempDiff$indiceSchedule"
 	def givenMaxTempDiff = settings[key]
@@ -1099,42 +1096,18 @@ private def adjust_vent_settings_in_zone(indiceSchedule) {
 				switchLevel =( switchLevel >=0)?((switchLevel<100)? switchLevel: 100):(switchlevel< (-100))?0:100+switchLevel
 				if (switchLevel >=10) {	
 					closeAllVentsInZone=false
-				}                    
-				key = "vent1Switch$indiceRoom"
-				def vent1Switch = settings[key]
-				if (vent1Switch != null) {
-					setVentSwitchLevel(indiceRoom, vent1Switch, switchLevel)                
-					log.debug "adjust_vent_settings_in_zone>in zone=${zoneName},room ${roomName},set ${vent1Switch} at switchLevel =${switchLevel}%"
-					nbVents++                    
-				}           
-				key = "vent2Switch$indiceRoom"
-				def vent2Switch = settings[key]
-				if (vent2Switch != null) {
-					setVentSwitchLevel(indiceRoom, vent2Switch, switchLevel)                
-					log.debug "adjust_vent_settings_in_zone>in zone=${zoneName},room ${roomName},set ${vent2Switch} at switchLevel =${switchLevel}%"
-					nbVents++                    
-				}           
-				key = "vent3Switch$indiceRoom"
-				def vent3Switch = settings[key]
-				if (vent3Switch != null) {
-					setVentSwitchLevel(indiceRoom, vent3Switch, switchLevel)                
-					log.debug "adjust_vent_settings_in_zone>in zone=${zoneName},room ${roomName},set ${vent3Switch} at switchLevel =${switchLevel}%"
-					nbVents++                    
-				}           
-				key = "vent4Switch$indiceRoom"
-				def vent4Switch = settings[key]
-				if (vent4Switch != null) {
-					setVentSwitchLevel(indiceRoom, vent4Switch, switchLevel)                
-					log.debug "adjust_vent_settings_in_zone>in zone=${zoneName},room ${roomName},set ${vent4Switch} at switchLevel =${switchLevel}%"
-					nbVents++                    
-				}           
-				key = "vent5Switch$indiceRoom"
-				def vent5Switch = settings[key]
-				if (vent5Switch != null) {
-					setVentSwitchLevel(indiceRoom, vent5Switch, switchLevel)                
-					log.debug "adjust_vent_settings_in_zone>in zone=${zoneName},room ${roomName},set ${vent5Switch} at switchLevel =${switchLevel}%"
-					nbVents++                    
-				}  
+				}              
+                
+				for (int j = 1;(j <= 5); j++)  {
+	                
+					key = "ventSwitch${j}$indiceRoom"
+					def ventSwitch = settings[key]
+					if (ventSwitch != null) {
+						setVentSwitchLevel(indiceRoom, ventSwitch, switchLevel)                
+						log.debug "adjust_vent_settings_in_zone>in zone=${zoneName},room ${roomName},set ${ventSwitch} at switchLevel =${switchLevel}%"
+						nbVents++                    
+					}
+				} /* end for ventSwitch */                    
 			}                
 		} /* end for rooms */
 		
@@ -1179,57 +1152,20 @@ private def turn_off_all_other_vents(ventSwitchesOnSet) {
 				continue
 			}
 
-			key = "vent1Switch$indiceRoom"
-			def vent1Switch = settings[key]
-			if (vent1Switch != null) {
-				log.debug "turn_off_all_other_vents>in zone=${zoneName},room ${roomName},found= ${vent1Switch}"
-				foundVentSwitch = ventSwitchesOnSet.find{it == vent1Switch}
-				if (foundVentSwitch ==null) {
-					vent1Switch.off()
-					log.debug("turn_off_all_other_vents>in zone ${zoneName},turned off ${vent1Switch} in room ${roomName} as requested to create the desired zone(s)")
-				}                
-			}
-			key = "vent2Switch$indiceRoom"
-			def vent2Switch = settings[key]
-			if (vent2Switch != null) {
-				log.debug "turn_off_all_other_vents>in zone=${zoneName},room ${roomName},found= ${vent2Switch}"
-				foundVentSwitch = ventSwitchesOnSet.find{it == vent2Switch}
-            			if (foundVentSwitch==null) {
-					vent2Switch.off()
-					log.debug("turn_off_all_other_vents>in zone ${zoneName},turned off ${vent2Switch} in room ${roomName} as requested to create the desired zone(s)")
-				}                
-			}
-			key = "vent3Switch$indiceRoom"
-			def vent3Switch = settings[key]
-			if (vent3Switch != null) {
-				foundVentSwitch = ventSwitchesOnSet.find{it == vent3Switch}
-				log.debug "turn_off_all_other_vents>in zone=${zoneName},room ${roomName},found= ${vent3Switch}"
-				if (foundVentSwitch==null) {
-					vent3Switch.off()
-					log.debug("turn_off_all_other_vents>in zone ${zoneName},turned off ${vent3Switch} in room ${roomName} as requested to create the desired zone(s)")
-				}                
-			}
-			key = "vent4Switch$indiceRoom"
-			def vent4Switch = settings[key]
-			if (vent4Switch != null) {
-				log.debug "turn_off_all_other_vents>in zone=${zoneName},room ${roomName},found= ${vent4Switch}"
-				foundVentSwitch = ventSwitchesOnSet.find{it == vent4Switch}
-				if (foundVentSwitch==null) {
-					vent4Switch.off()
-					log.debug("turn_off_all_other_vents>in zone ${zoneName},turned off ${vent4Switch} in room ${roomName} as requested to create the desired zone(s)")
-				}                
-			}
-			key = "vent5Switch$indiceRoom"
-			def vent5Switch = settings[key]
-			if (vent5Switch != null) {
-				log.debug "turn_off_all_other_vents>in zone=${zoneName},room ${roomName},found= ${vent5Switch}"
-				foundVentSwitch = ventSwitchesOnSet.find{it == vent5Switch}
-				if (foundVentSwitch==null) {
-					vent5Switch.off()
-					log.debug("turn_off_all_other_vents>in zone ${zoneName},turned off ${vent5Switch} in room ${roomName} as requested to create the desired zone(s)")
-				}                
-			}
-            
+			for (int j = 1;(j <= 5); j++)  {
+	                
+				key = "ventSwitch${j}$indiceRoom"
+				def ventSwitch = settings[key]
+				if (ventSwitch != null) {
+					log.debug "turn_off_all_other_vents>in zone=${zoneName},room ${roomName},found=${ventSwitch}"
+					foundVentSwitch = ventSwitchesOnSet.find{it == ventSwitch}
+					if (foundVentSwitch ==null) {
+						ventSwitch.off()
+						log.debug("turn_off_all_other_vents>in zone ${zoneName},turned off ${ventSwitch} in room ${roomName} as requested to create the desired zone(s)")
+					}                
+				}
+			} /* end for ventSwitch */                    
+
 		}  /* end for rooms */          
 	} /* end for zones */
 
@@ -1274,36 +1210,16 @@ private def control_vent_switches_in_zone(indiceSchedule, switchLevel=100) {
 			def indiceRoom = roomDetails[0]
 			def roomName = roomDetails[1]
 
-			key = "vent1Switch$indiceRoom"
-			def vent1Switch = settings[key]
-			if (vent1Switch != null) {
-				ventSwitchesOnSet.add(vent1Switch)
-				setVentSwitchLevel(indiceRoom, vent1Switch, switchLevel)
-			}
-			key = "vent2Switch$indiceRoom"
-			def vent2Switch = settings[key]
-			if (vent2Switch != null) {
-				ventSwitchesOnSet.add(vent2Switch)
-				setVentSwitchLevel(indiceRoom, vent2Switch, switchLevel)
-			}
-			key = "vent3Switch$indiceRoom"
-			def vent3Switch = settings[key]
-			if (vent3Switch != null) {
-				ventSwitchesOnSet.add(vent3Switch)
-				setVentSwitchLevel(indiceRoom, vent3Switch, switchLevel)
-			}
-			key = "vent4Switch$indiceRoom"
-			def vent4Switch = settings[key]
-			if (vent4Switch != null) {
-				ventSwitchesOnSet.add(vent4Switch)
-				setVentSwitchLevel(indiceRoom, vent4Switch, switchLevel)
-			}
-			key = "vent5Switch$indiceRoom"
-			def vent5Switch = settings[key]
-			if (vent5Switch != null) {
-				ventSwitchesOnSet.add(vent5Switch)
-				setVentSwitchLevel(indiceRoom, vent5Switch, switchLevel)
-			}                
+
+			for (int j = 1;(j <= 5); j++)  {
+	                
+				key = "ventSwitch${j}$indiceRoom"
+				def ventSwitch = settings[key]
+				if (ventSwitch != null) {
+					ventSwitchesOnSet.add(ventSwitch)
+					setVentSwitchLevel(indiceRoom, ventSwitch, switchLevel)
+				}
+			} /* end for ventSwitch */
 		} /* end for rooms */
 	} /* end for zones */
 	return ventSwitchesOnSet
