@@ -371,7 +371,7 @@ def setZoneSettings() {
 
 	if (powerSwitch?.currentSwitch == "off") {
 		if (detailedNotif == 'true') {
-			send("ScheduleTstatZones>scheduleMasterSwitch ${powerSwitch.name} is off, schedule processing on hold...")
+			send("ScheduleTstatZones>${powerSwitch.name} is off, schedule processing on hold...")
 		}
 		return
 	}
