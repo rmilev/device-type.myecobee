@@ -1071,7 +1071,7 @@ private def adjust_vent_settings_in_zone(indiceSchedule) {
 	def setRoomThermostatsOnly = (setRoomThermostatsOnlyFlag) ?: 'false'
 	def indoor_all_zones_temps=[]
 	def indiceRoom
-	Boolean closeAllVentsInZone=true
+	Boolean closedAllVentsInZone=true
 	int nbVents=0
 	def switchLevel    
     
@@ -1121,7 +1121,7 @@ private def adjust_vent_settings_in_zone(indiceSchedule) {
 				switchLevel = ((temp_diff_at_sensor / avg_temp_diff) * 100).round() 			                
 				switchLevel =( switchLevel >=0)?((switchLevel<100)? switchLevel: 100):(switchlevel< (-100))?0:100+switchLevel
 				if (switchLevel >=10) {	
-					closeAllVentsInZone=false
+					closedAllVentsInZone=false
 				}              
                 
 				for (int j = 1;(j <= 5); j++)  {
@@ -1139,7 +1139,7 @@ private def adjust_vent_settings_in_zone(indiceSchedule) {
 		
 	} /* end for zones */
 
-	if (closeAllVentsInZone) {
+	if (closedAllVentsInZone) {
     
 		if (nbVents > 2) {        
 			switchLevel=10        
