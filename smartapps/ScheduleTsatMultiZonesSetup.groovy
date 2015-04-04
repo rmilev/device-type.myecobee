@@ -521,7 +521,7 @@ private def set_main_tstat_to_AwayOrPresent(mode) {
 		}
             
 		if (detailedNotif == 'true') {
-		send("ScheduleTstatZones>set main thermostat ${thermostat} to ${mode} mode based on motion in all rooms")
+			send("ScheduleTstatZones>set main thermostat ${thermostat} to ${mode} mode based on motion in all rooms")
 		}
 		state.setPresentOrAway=mode    // set a state for further checking later
 	}    
