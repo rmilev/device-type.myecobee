@@ -62,6 +62,9 @@ def generalSetup() {
 			input "setAwayOrPresentFlag", title: "Set Main thermostat to [Away,Present]?", "Boolean",
 				description:"optional", metadata: [values: ["true", "false"]],required:false
 		}
+		section("What do I use for the Master on/off switch to enable/disable processing? (optional)") {
+			input "powerSwitch", "capability.switch", required: false
+		}
 
 	}
 }
@@ -290,6 +293,7 @@ def Notifications() {
 }
 
 
+
 def installed() {
 	initialize()
 }
@@ -300,8 +304,22 @@ def updated() {
 	initialize()
 }
 
+def offHandler(evt) {
+	log.debug "$evt.name: $evt.value"
+}
+
+def onHandler(evt) {
+	log.debug "$evt.name: $evt.value"
+	setZoneSettings()
+}
+
+
 def initialize() {
 
+	if (powerSwitch) {
+		subscribe(powerSwitch, "switch.off", offHandler, [filterEvents: false])
+		subscribe(powerSwitch, "switch.on", onHandler, [filterEvents: false])
+	}
 	// Initialize state variables
     
 	state.lastScheduleLastName=""
@@ -349,6 +367,14 @@ def appTouch(evt) {
 
 
 def setZoneSettings() {
+
+
+	if (powerSwitch?.currentSwitch == "off") {
+		if (detailedNotif == 'true') {
+			send("ScheduleTstatZones>scheduleMasterSwitch ${powerSwitch.name} is off, schedule processing on hold...")
+		}
+		return
+	}
 
 	def currTime = now()
 
