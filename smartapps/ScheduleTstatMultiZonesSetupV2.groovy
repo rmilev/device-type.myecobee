@@ -630,7 +630,7 @@ private def set_main_tstat_to_AwayOrPresent(mode) {
 
 	try {
     
-    		if  (mode == 'away') {
+		if  (mode == 'away') {
 			thermostat.away()
             
 		} else if (mode == 'present') {	
