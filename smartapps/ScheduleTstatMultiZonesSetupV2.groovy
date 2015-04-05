@@ -63,8 +63,8 @@ def generalSetupPage() {
 			input (name:"setAwayOrPresentFlag", title: "Set Main thermostat to [Away,Present]?", type:"Boolean",
 				description:"optional", metadata: [values: ["true", "false"]],required:false)
 		}
-		section("What do I use for the Master on/off switch to enable/disable processing? (optional)") {
-			input (name:"powerSwitch", type:"capability.switch", required: false)
+		section("What do I use for the Master on/off switch to enable/disable processing? [optional]") {
+			input (name:"powerSwitch", type:"capability.switch", required: false, description:"optional")
 		}
 		if (thermostat) {
 	      		section {
@@ -125,30 +125,35 @@ def roomsSetup(params) {
 		}
 		section("Room ${indiceRoom}-TempSensor") {
 			input (name: "tempSensor${indiceRoom}", title: "Temp sensor (if any) to be used in current room for better temp adjustment",  
-				type: "capability.temperatureMeasurement",defaultValue:settings."tempSensor${indiceRoom}", required: false)
+				type: "capability.temperatureMeasurement",defaultValue:settings."tempSensor${indiceRoom}", required: false,
+                description: "optional")
 
 		}
             
 		section("Room ${indiceRoom}-Vents Setup")  {
 			for (int j = 1;(j <= 5); j++)  {
 				input (name: "ventSwitch${indiceRoom}${j}", title: "Vent switch no ${j} to be turned on/off in current room [optional]",  
-					type: "capability.switch",defaultValue:settings."ventSwitch${indiceRoom}${j}", required: false)
+					type: "capability.switch",defaultValue:settings."ventSwitch${indiceRoom}${j}", required: false,
+	                description: "optional")
 			}           
 		}
             
 		section("Room ${indiceRoom}-MotionSensor") {
 			input (name: "motionSensor${indiceRoom}", title: "Motion sensor (if any) to be used in current room to detect if room is occupied", 
-					type: "capability.motionSensor", defaultValue:settings."motionSensor${indiceRoom}",required: false)
+					type: "capability.motionSensor", defaultValue:settings."motionSensor${indiceRoom}",required: false,
+	                description: "optional")
 
 		}
 		section("Room ${indiceRoom}-Do temp adjustment based on avg temp calculation when occupied room only") {
 			input (name: "needOccupiedFlag${indiceRoom}", title: "Will do temp adjustement only when Occupied [default=false]", 
-					type: "Boolean",metadata: [values: ["true", "false"]], defaultValue:settings."needOccupiedFlag${indiceRoom}", required: false)
-
+					type: "Boolean",metadata: [values: ["true", "false"]], defaultValue:settings."needOccupiedFlag${indiceRoom}", required: false,
+                	description: "optional")
+	
 		}
 		section("Room ${indiceRoom}-Do temp adjustment with this occupied's threshold") {
 			input (name: "residentsQuietThreshold${indiceRoom}", title: "Threshold in minutes for motion detection [default=15 min]",
-					type: "number", defaultValue: settings."residentsQuietThreshold${indiceRoom}",required: false)
+					type: "number", defaultValue: settings."residentsQuietThreshold${indiceRoom}",required: false,
+	                description: "optional")
 
 		}
 
@@ -328,8 +333,8 @@ def scheduleSetup(params) {
 				defaultValue:settings."coolModeThreshold${indiceSchedule}")			                
 		}			
 		section("Schedule ${indiceSchedule}-Select the program at ecobee thermostat to be applied [optional, only for ecobee]") {
-			input ("givenClimate${indiceSchedule}", type:"enum", title: "Which ecobee program? ", options: ecobeePrograms, required: false, description: "optional",
-				defaultValue:settings."givenClimate${indiceSchedule}")			                
+			input ("givenClimate${indiceSchedule}", type:"enum", title: "Which ecobee program? ", options: ecobeePrograms, required: false, 
+				defaultValue:settings."givenClimate${indiceSchedule}",description: "optional")
 		}
 		section("Schedule ${indiceSchedule}-Desired Cool Temp in the selected zone(s) [when no program settings]") {
 			input ("desiredCoolTemp${indiceSchedule}", type:"decimal", title: "Cool Temp, default = 75°F/23°C", required: false,
@@ -340,10 +345,10 @@ def scheduleSetup(params) {
 				defaultValue:settings."desiredHeatTemp${indiceSchedule}")			                
 		}
 		section("Schedule ${indiceSchedule}-More Heat/Cool Threshold in the selected zone(s) based on outdoor temp Sensor [optional]") {
-			input ("moreHeatThreshold${indiceSchedule}", type:"decimal", title: "Outdoor temp's threshold for more heating",  description: "optional", required: false,
-				defaultValue:settings."moreHeatThreshold${indiceSchedule}")			                
-			input ("moreCoolThreshold${indiceSchedule}", type:"decimal", title: "Outdoor temp's threshold for more cooling",  description: "optional", required: false,
-				defaultValue:settings."moreCoolThreshold${indiceSchedule}")			                
+			input ("moreHeatThreshold${indiceSchedule}", type:"decimal", title: "Outdoor temp's threshold for more heating", required: false,
+				defaultValue:settings."moreHeatThreshold${indiceSchedule}",description: "optional")			                
+			input ("moreCoolThreshold${indiceSchedule}", type:"decimal", title: "Outdoor temp's threshold for more cooling",required: false,
+				defaultValue:settings."moreCoolThreshold${indiceSchedule}", description: "optional")
 		}
 		section("Schedule ${i}-Max Temp Adjustment at the main thermostat based on temp Sensors (indoor&outdoor)") {
 			input ("givenMaxTempDiff${indiceSchedule}", type:"decimal",  title: "Max Temp adjustment (default= +/-5°F/2°C)", required: false,
