@@ -68,13 +68,13 @@ def generalSetupPage() {
 			input "powerSwitch", "capability.switch", required: false
 		}
 
-    	if (thermostat) {
-	      	section {
-    	    	href(name: "toRoomPage", title: "Room Setup", page: "roomsSetupPage", description: "", state: "")
-        		href(name: "toZonePage", title: "Zone Setup", page: "zonesSetupPage", description: "", state: "")
-        		href(name: "toSchedulePage", title: "Schedule Setup", page: "schedulesSetupPage", description: "", state: "")
+    		if (thermostat) {
+	      		section {
+    	    			href(name: "toRoomPage", title: "Room Setup", page: "roomsSetupPage", description: "", state: "")
+        			href(name: "toZonePage", title: "Zone Setup", page: "zonesSetupPage", description: "", state: "")
+        			href(name: "toSchedulePage", title: "Schedule Setup", page: "schedulesSetupPage", description: "", state: "")
 			}                
-      	}
+	      	}
 	}
 }
 
@@ -125,7 +125,7 @@ def roomsSetup(params) {
 		}
 		section("Room ${indiceRoom}-TempSensor") {
 			input (name: "tempSensor${indiceRoom}", title: "Temp sensor (if any) to be used in current room for better temp adjustment",  
-            	type: "capability.temperatureMeasurement",defaultValue:settings."tempSensor${indiceRoom}", required: false)
+            			type: "capability.temperatureMeasurement",defaultValue:settings."tempSensor${indiceRoom}", required: false)
 
 		}
             
@@ -143,12 +143,12 @@ def roomsSetup(params) {
 		}
 		section("Room ${indiceRoom}-Do temp adjustment based on avg temp calculation when occupied room only") {
 			input (name: "needOccupiedFlag${indiceRoom}", title: "Will do temp adjustement only when Occupied [default=false]", type: "Boolean", 
-                metadata: [values: ["true", "false"]], defaultValue:settings."needOccupiedFlag${indiceRoom}", required: false)
+                		metadata: [values: ["true", "false"]], defaultValue:settings."needOccupiedFlag${indiceRoom}", required: false)
 
 		}
 		section("Room ${indiceRoom}-Do temp adjustment with this occupied's threshold") {
 			input (name: "residentsQuietThreshold${indiceRoom}", title: "Threshold in minutes for motion detection [default=15 min]", 
-                type: "number", defaultValue: settings."residentsQuietThreshold${indiceRoom}",required: false)
+                		type: "number", defaultValue: settings."residentsQuietThreshold${indiceRoom}",required: false)
 
 		}
 		section {
@@ -207,14 +207,14 @@ def zonesSetup(params) {
 	dynamicPage(name: "zonesSetupPage", title: "Zones Setup") {
 		section("Zone ${indiceZone} Setup") {
 			input "zoneName${indiceZone}", title: "Zone Name", type: "text",
-                defaultValue:settings."zoneName${indiceZone}"
+                		defaultValue:settings."zoneName${indiceZone}"
 		}
 		section("Zone ${indiceZone}-Included rooms") {
 			input "includedRooms${indiceZone}", title: "Rooms included in the zone", type: "enum",
 				options: rooms,
 				multiple: true,
 				refreshAfterSelection: true,                
-                defaultValue:settings."includedRooms${indiceZone}"
+                		defaultValue:settings."includedRooms${indiceZone}"
 		}
 		section {
 			href(name: "toZonePage", title: "To Zone Page", page: "zonesSetupPage")
@@ -314,53 +314,53 @@ def scheduleSetup(params) {
 					]
 				]
 			input "begintime${indiceSchedule}", type: "time", title: "Beginning time to trigger the zoned heating/cooling settings (format: 24H:MM)",
-                defaultValue:settings."begintime${indiceSchedule}"
+				defaultValue:settings."begintime${indiceSchedule}"
 			input "endtime${indiceSchedule}", type: "time", title: "End time(format: 24H:MM)",
-                defaultValue:settings."endtime${indiceSchedule}"
+				defaultValue:settings."endtime${indiceSchedule}"
 		}
 		section("Schedule ${indiceSchedule}-Outdoor temp Sensor used for adjustment [optional]") {
 			input "outTempSensor${indiceSchedule}", type:"capability.temperatureMeasurement", required: false, description: "optional",
-                defaultValue:settings."outTempSensor${indiceSchedule}"
+				defaultValue:settings."outTempSensor${indiceSchedule}"
 		}
 		section("Schedule ${indiceSchedule}-Switch thermostat mode (auto/cool/heat) based on this outdoor temp range [optional]") {
 			input "heatModeThreshold${indiceSchedule}", type:"decimal", title: "Heat mode threshold", required: false,
-                defaultValue:settings."heatModeThreshold${i}"			                
+				defaultValue:settings."heatModeThreshold${i}"			                
 			input "coolModeThreshold${indiceSchedule}", type:"decimal", title: "Cool mode threshold", required: false,
-                defaultValue:settings."coolModeThreshold${indiceSchedule}"			                
+				defaultValue:settings."coolModeThreshold${indiceSchedule}"			                
 		}			
 		section("Schedule ${indiceSchedule}-Select the program at ecobee thermostat to be applied [optional, only for ecobee]") {
 			input "givenClimate${indiceSchedule}", type:"enum", title: "Which ecobee program? ", options: ecobeePrograms, required: false, description: "optional",
-                defaultValue:settings."givenClimate${indiceSchedule}"			                
+				defaultValue:settings."givenClimate${indiceSchedule}"			                
 		}
 		section("Schedule ${indiceSchedule}-Desired Cool Temp in the selected zone(s) [when no program settings]") {
 			input "desiredCoolTemp${indiceSchedule}", type:"decimal", title: "Cool Temp, default = 75°F/23°C", required: false,
-                defaultValue:settings."desiredCoolTemp${indiceSchedule}"			                
+				defaultValue:settings."desiredCoolTemp${indiceSchedule}"			                
 		}
 		section("Schedule ${indiceSchedule}-Desired Heat Temp in the selected zone(s) [when no program settings]") {
 			input "desiredHeatTemp${indiceSchedule}", type:"decimal", title: "Heat Temp, default=72°F/21°C", required: false,
-                defaultValue:settings."desiredHeatTemp${indiceSchedule}"			                
+				defaultValue:settings."desiredHeatTemp${indiceSchedule}"			                
 		}
 		section("Schedule ${indiceSchedule}-More Heat/Cool Threshold in the selected zone(s) based on outdoor temp Sensor [optional]") {
 			input "moreHeatThreshold${indiceSchedule}", type:"decimal", title: "Outdoor temp's threshold for more heating",  description: "optional", required: false,
-                defaultValue:settings."moreHeatThreshold${indiceSchedule}"			                
+				defaultValue:settings."moreHeatThreshold${indiceSchedule}"			                
 			input "moreCoolThreshold${indiceSchedule}", type:"decimal", title: "Outdoor temp's threshold for more cooling",  description: "optional", required: false,
-                defaultValue:settings."moreCoolThreshold${indiceSchedule}"			                
+				defaultValue:settings."moreCoolThreshold${indiceSchedule}"			                
 		}
 		section("Schedule ${i}-Max Temp Adjustment at the main thermostat based on temp Sensors (indoor&outdoor)") {
 			input "givenMaxTempDiff${indiceSchedule}", type:"decimal",  title: "Max Temp adjustment (default= +/-5°F/2°C)", required: false,
-                defaultValue:settings."givenMaxTempDiff${indiceSchedule}"			                
+				defaultValue:settings."givenMaxTempDiff${indiceSchedule}"			                
 		}
 		section("Schedule ${indiceSchedule}-Set Room Thermostats Only Indicator") {
 			input "setRoomThermostatsOnlyFlag${indiceSchedule}", type:"Boolean", title: "Set room thermostats only [default=false,main & room thermostats setpoints are set]", metadata: [values: ["true", "false"]], 
-                required: false, defaultValue:settings."setRoomThermostatsOnlyFlag${indiceSchedule}"			                
+				required: false, defaultValue:settings."setRoomThermostatsOnlyFlag${indiceSchedule}"			                
 		}
 		section("Schedule ${indiceSchedule}-Set Fan Mode [optional]") {
 			input "fanMode${indiceSchedule}", type:"enum", title: "Set Fan Mode ['on', 'auto', 'circulate']", metadata: [values: ["on", "auto", "circulate"]], required: false, description:"optional",
-                defaultValue:settings."fanMode${indiceSchedule}"			                
+				defaultValue:settings."fanMode${indiceSchedule}"			                
 		}
 		section("Schedule ${indiceSchedule}-Set for specific mode(s) (default=all)")  {
 			input "selectedMode${indiceSchedule}", type:"enum", title: "Choose Mode", options: enumModes, required: false, multiple:true,
-                defaultValue:settings."selectedMode${indiceSchedule}"			                
+				defaultValue:settings."selectedMode${indiceSchedule}"			                
 		}
 		section {
 			href(name: "toSchedulePage", title: "To Schedule Page", page: "schedulesSetupPage")
