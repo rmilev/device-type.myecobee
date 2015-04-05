@@ -100,9 +100,9 @@ def roomHrefDescription(i) {
 def roomPageState(i) {
 
 	if (settings."roomName${i}" && settings."residentsQuietThreshold${i}") {
-    	return 'complete'
+		return 'complete'
 	} else {
-    	return 'incomplete'
+		return 'incomplete'
 	}
 }
 
@@ -169,9 +169,9 @@ def zoneHrefDescription(i) {
 def zonePageState(i) {
 
 	if (settings."zoneName${i}" && settings."includedRooms${i}") {
-    	return 'complete'
+		return 'complete'
 	} else {
-    	return 'incomplete'
+		return 'incomplete'
 	}
 }
 
@@ -230,9 +230,9 @@ def scheduleHrefDescription(i) {
 def schedulePageState(i) {
 
 	if (settings."scheduleName${i}" && settings."selectedMode${i}") {
-    	return 'complete'
+		return 'complete'
 	} else {
-    	return 'incomplete'
+		return 'incomplete'
 	}
 }
 
