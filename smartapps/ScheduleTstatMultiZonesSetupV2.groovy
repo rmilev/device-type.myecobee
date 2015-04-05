@@ -126,7 +126,7 @@ def roomsSetup(params) {
 		section("Room ${indiceRoom}-TempSensor") {
 			input (name: "tempSensor${indiceRoom}", title: "Temp sensor (if any) to be used in current room for better temp adjustment",  
 				type: "capability.temperatureMeasurement",defaultValue:settings."tempSensor${indiceRoom}", required: false,
-                description: "optional")
+				description: "optional")
 
 		}
             
@@ -134,26 +134,26 @@ def roomsSetup(params) {
 			for (int j = 1;(j <= 5); j++)  {
 				input (name: "ventSwitch${indiceRoom}${j}", title: "Vent switch no ${j} to be turned on/off in current room [optional]",  
 					type: "capability.switch",defaultValue:settings."ventSwitch${indiceRoom}${j}", required: false,
-	                description: "optional")
+					description: "optional")
 			}           
 		}
             
 		section("Room ${indiceRoom}-MotionSensor") {
 			input (name: "motionSensor${indiceRoom}", title: "Motion sensor (if any) to be used in current room to detect if room is occupied", 
-					type: "capability.motionSensor", defaultValue:settings."motionSensor${indiceRoom}",required: false,
-	                description: "optional")
+				type: "capability.motionSensor", defaultValue:settings."motionSensor${indiceRoom}",required: false,
+				description: "optional")
 
 		}
 		section("Room ${indiceRoom}-Do temp adjustment based on avg temp calculation when occupied room only") {
 			input (name: "needOccupiedFlag${indiceRoom}", title: "Will do temp adjustement only when Occupied [default=false]", 
-					type: "Boolean",metadata: [values: ["true", "false"]], defaultValue:settings."needOccupiedFlag${indiceRoom}", required: false,
-                	description: "optional")
+				type: "Boolean",metadata: [values: ["true", "false"]], defaultValue:settings."needOccupiedFlag${indiceRoom}", required: false,
+                		description: "optional")
 	
 		}
 		section("Room ${indiceRoom}-Do temp adjustment with this occupied's threshold") {
 			input (name: "residentsQuietThreshold${indiceRoom}", title: "Threshold in minutes for motion detection [default=15 min]",
-					type: "number", defaultValue: settings."residentsQuietThreshold${indiceRoom}",required: false,
-	                description: "optional")
+				type: "number", defaultValue: settings."residentsQuietThreshold${indiceRoom}",required: false,
+	                	description: "optional")
 
 		}
 
