@@ -67,7 +67,7 @@ def generalSetupPage() {
 			input (name:"powerSwitch", type:"capability.switch", required: false, description:"optional")
 		}
 		if (thermostat) {
-	      		section {
+			section {
 				href(name: "toRoomPage", title: "Room Setup", page: "roomsSetupPage", description: "", state: "")
 				href(name: "toZonePage", title: "Zone Setup", page: "zonesSetupPage", description: "", state: "")
 				href(name: "toSchedulePage", title: "Schedule Setup", page: "schedulesSetupPage", description: "", state: "")
