@@ -66,10 +66,10 @@ def generalSetupPage() {
 		section("What do I use for the Master on/off switch to enable/disable processing? (optional)") {
 			input (name:"powerSwitch", type:"capability.switch", required: false)
 		}
-    	if (thermostat) {
-	      	section {
+		if (thermostat) {
+	      		section {
 				href(name: "toRoomPage", title: "Room Setup", page: "roomsSetupPage", description: "", state: "")
-                href(name: "toZonePage", title: "Zone Setup", page: "zonesSetupPage", description: "", state: "")
+				href(name: "toZonePage", title: "Zone Setup", page: "zonesSetupPage", description: "", state: "")
 				href(name: "toSchedulePage", title: "Schedule Setup", page: "schedulesSetupPage", description: "", state: "")
 			}                
 		}
@@ -79,7 +79,7 @@ def generalSetupPage() {
 
 def roomsSetupPage() {
 
-	dynamicPage(name: "roomsSetupPage", title: "Rooms Setup") {
+	dynamicPage(name: "roomsSetupPage", title: "Rooms Setup",nextPage: zonesSetupPage) {
 		section("Rooms Setup") {
 			for (int i = 1; i <= settings.roomsCount; i++) {
 				href(name: "toRoomPage$i", page: "roomsSetup", params: [number: i], required:false, description: roomHrefDescription(i), title: roomHrefTitle(i), state: roomPageState(i) )
@@ -98,9 +98,9 @@ def roomHrefDescription(i) {
 def roomPageState(i) {
 
 	if (settings."roomName${i}" && settings."residentsQuietThreshold${i}") {
-    	return 'complete'
+		return 'complete'
 	} else {
-    	return 'incomplete'
+		return 'incomplete'
 	}
 }
 
@@ -125,7 +125,7 @@ def roomsSetup(params) {
 		}
 		section("Room ${indiceRoom}-TempSensor") {
 			input (name: "tempSensor${indiceRoom}", title: "Temp sensor (if any) to be used in current room for better temp adjustment",  
-					type: "capability.temperatureMeasurement",defaultValue:settings."tempSensor${indiceRoom}", required: false)
+				type: "capability.temperatureMeasurement",defaultValue:settings."tempSensor${indiceRoom}", required: false)
 
 		}
             
@@ -138,7 +138,7 @@ def roomsSetup(params) {
             
 		section("Room ${indiceRoom}-MotionSensor") {
 			input (name: "motionSensor${indiceRoom}", title: "Motion sensor (if any) to be used in current room to detect if room is occupied", 
-            	type: "capability.motionSensor", defaultValue:settings."motionSensor${indiceRoom}",required: false)
+					type: "capability.motionSensor", defaultValue:settings."motionSensor${indiceRoom}",required: false)
 
 		}
 		section("Room ${indiceRoom}-Do temp adjustment based on avg temp calculation when occupied room only") {
@@ -170,9 +170,9 @@ def zoneHrefDescription(i) {
 def zonePageState(i) {
 
 	if (settings."zoneName${i}" && settings."includedRooms${i}") {
-    	return 'complete'
+		return 'complete'
 	} else {
-    	return 'incomplete'
+		return 'incomplete'
 	}
 }
 
