@@ -1,5 +1,5 @@
 /**
- *  ScheduleTsatZones
+ *  ScheduleTstatZones
  *
  *  Copyright 2015 Yves Racine
  *
