@@ -218,7 +218,7 @@ def roomsSetup(params) {
 		section("Room ${indiceRoom}-Do temp adjustment based on avg temp calculation when occupied room only") {
 			input (name: "needOccupiedFlag${indiceRoom}", title: "Will do temp adjustement only when Occupied [default=false]", 
 				type: "Boolean",metadata: [values: ["true", "false"]],  
-				defaultValue:settings."needOccupiedFlag${indiceRoom}",required: false)
+                defaultValue:settings."needOccupiedFlag${indiceRoom}",required: false)
                 
 		}
 		section("Room ${indiceRoom}-Do temp adjustment with this occupied's threshold") {
@@ -402,9 +402,9 @@ def schedulesSetup(params) {
 						'Sunday'
 					]
 				])
-			input (name:"begintime${indiceSchedule}", type: "time", title: "Beginning time to trigger the zoned heating/cooling settings (format: 24H:MM)",
+			input (name:"begintime${indiceSchedule}", type: "time", title: "Beginning time to trigger the zoned heating/cooling settings",
 				defaultValue:settings."begintime${indiceSchedule}")
-			input (name:"endtime${indiceSchedule}", type: "time", title: "End time(format: 24H:MM)",
+			input (name:"endtime${indiceSchedule}", type: "time", title: "End time",
 				defaultValue:settings."endtime${indiceSchedule}")
 		}
 		section("Schedule ${indiceSchedule}-Outdoor temp Sensor used for adjustment [optional]") {
