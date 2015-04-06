@@ -1,5 +1,5 @@
 /**
- *  ScheduleTsatZonesV2
+ *  ScheduleTsatZones
  *
  *  Copyright 2015 Yves Racine
  *  linkedIn profile: ca.linkedin.com/pub/yves-racine-m-sc-a/0/406/4b/
@@ -15,7 +15,7 @@
  *
  */
 definition(
-	name: "ScheduleTstatZonesV2",
+	name: "ScheduleTstatZones",
 	namespace: "yracine",
 	author: "Yves Racine",
 	description: "Enable Heating/Cooling Zoned Solutions for thermostats coupled with z-wave vents (optional) for better temp settings control throughout your home",
