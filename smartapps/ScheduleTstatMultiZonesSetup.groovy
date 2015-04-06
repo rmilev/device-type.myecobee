@@ -173,7 +173,6 @@ def roomsSetupPage() {
 }        
 
 def roomsSetup(params) {
-	int j
 	def indiceRoom = params?.indiceRoom?.intValue()
 	log.debug "roomsSetup> indiceRoom=${indiceRoom}"
     
@@ -194,7 +193,7 @@ def roomsSetup(params) {
 				type: "capability.temperatureMeasurement", defaultValue:settings."tempSensor${indiceRoom}", required:false)
 		}
             
-		section("Roo4 ${indiceRoom}-Vent Switches [optional]") {
+		section("Room ${indiceRoom}-Vent Switches [optional]") {
 			input (name: "ventSwitch1${indiceRoom}" ,title: "Vent switch no1 in room",  
 					type: "capability.switch", defaultValue: settings."ventSwitch1${indiceRoom}", required: false)
 			input (name: "ventSwitch2${indiceRoom}" ,title: "Vent switch no2 in room",  
