@@ -218,7 +218,7 @@ def roomsSetup(params) {
 		section("Room ${indiceRoom}-Do temp adjustment based on avg temp calculation when occupied room only") {
 			input (name: "needOccupiedFlag${indiceRoom}", title: "Will do temp adjustement only when Occupied [default=false]", 
 				type: "Boolean",metadata: [values: ["true", "false"]],  
-                defaultValue:settings."needOccupiedFlag${indiceRoom}",required: false)
+				defaultValue:settings."needOccupiedFlag${indiceRoom}",required: false)
                 
 		}
 		section("Room ${indiceRoom}-Do temp adjustment with this occupied's threshold") {
@@ -242,8 +242,8 @@ def zoneHrefDescription(i) {
 	def description ="Zone no ${i} "
 
 	if (settings."zoneName${i}" !=null) {
-		description += settings."zoneName${i}"		    
-    }
+		description += settings."zoneName${i}"		    	
+	}
 	return description
 }
 
@@ -291,7 +291,7 @@ def zonesSetup(params) {
 	dynamicPage(name: "zonesSetup", title: "Zones Setup") {
 		section("Zone ${indiceZone} Setup") {
 			input (name:"zoneName${indiceZone}", title: "Zone Name", type: "text",
-					defaultValue:settings."zoneName${indiceZone}")
+				defaultValue:settings."zoneName${indiceZone}")
 		}
 		section("Zone ${indiceZone}-Included rooms") {
 			input (name:"includedRooms${indiceZone}", title: "Rooms included in the zone", type: "enum",
