@@ -92,31 +92,31 @@ def roomsSetupPage() {
 			((indiceRoom <= settings.roomsCount) && (indiceRoom <= 16)); indiceRoom++) {
             
 			section("Room ${indiceRoom} Setup") {
-				input "roomName${indiceRoom}", title: "Room Name", "string", description: "Room Name ${indiceRoom}"
+				input "roomName${indiceRoom}", title: "Room Name", "string"
 			}
 			section("Room ${indiceRoom}-Thermostat [optional]") {
-				input "roomTstat${indiceRoom}", title: "Room thermostat to be set", "capability.thermostat", description: "roomTstat ${indiceRoom}", required: false
+				input "roomTstat${indiceRoom}", title: "Room thermostat to be set", "capability.thermostat", required: false
 
 			}
 			section("Room ${indiceRoom}-TempSensor [optional]") {
-				input "tempSensor${indiceRoom}", title: "Temp sensor for better temp adjustment", "capability.temperatureMeasurement", description: "tempSensor ${indiceRoom}", required: false
+				input "tempSensor${indiceRoom}", title: "Temp sensor for better temp adjustment", "capability.temperatureMeasurement", required: false
 
 			}
 			section("Room ${indiceRoom}-Vents Setup [optional]")  {
 				for (int j = 1;(j <= 5); j++)  {
-					input "ventSwitch${j}${indiceRoom}", title: "Vent switch no ${j} in room", "capability.switch", description: "VentSwitch no ${j}", required: false
+					input "ventSwitch${j}${indiceRoom}", title: "Vent switch no ${j} in room", "capability.switch", required: false
 				}           
 			}           
 			section("Room ${indiceRoom}-MotionSensor [optional]") {
-				input "motionSensor${indiceRoom}", title: "Motion sensor (if any) to detect if room is occupied", "capability.motionSensor", description: "motionSensor ${indiceRoom}", required: false
+				input "motionSensor${indiceRoom}", title: "Motion sensor (if any) to detect if room is occupied", "capability.motionSensor", required: false
 
 			}
 			section("Room ${indiceRoom}-Do temp adjustment based on avg temp calculation when occupied room only [optional]") {
-				input "needOccupiedFlag${indiceRoom}", title: "Will do temp adjustement only when Occupied [default=false]", "Boolean", metadata: [values: ["true", "false"]], description: "needOccupied ${indiceRoom}", required: false
+				input "needOccupiedFlag${indiceRoom}", title: "Will do temp adjustement only when Occupied [default=false]", "Boolean", metadata: [values: ["true", "false"]], required: false
 
 			}
 			section("Room ${indiceRoom}-Do temp adjustment with this occupied's threshold [optional]") {
-				input "residentsQuietThreshold${indiceRoom}", title: "Threshold in minutes for motion detection [default=15 min]", "number", description: "residentsQuietThreshold ${indiceRoom}", required: false
+				input "residentsQuietThreshold${indiceRoom}", title: "Threshold in minutes for motion detection [default=15 min]", "number", required: false
 
 			}
 			section() {
@@ -409,7 +409,7 @@ def schedulesSetup(params) {
 		}
 		section("Schedule ${indiceSchedule}-Outdoor temp Sensor used for adjustment [optional]") {
 			input (name:"outTempSensor${indiceSchedule}", type:"capability.temperatureMeasurement", required: false,
-				defaultValue:settings."outTempSensor${indiceSchedule}")
+				description:settings."outTempSensor${indiceSchedule}")
 		}
 		section("Schedule ${indiceSchedule}-Switch thermostat mode (auto/cool/heat) based on this outdoor temp range [optional]") {
 			input (name:"heatModeThreshold${indiceSchedule}", type:"decimal", title: "Heat mode threshold", required: false,
