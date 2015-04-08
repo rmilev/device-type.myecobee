@@ -365,7 +365,7 @@ def schedulesSetup(params) {
 
 	
 	def enumModes=[]
-		location.modes.each {
+	location.modes.each {
 		enumModes << it.name
 	}    
 	def indiceSchedule=params?.indiceSchedule.intValue()
