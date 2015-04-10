@@ -18,7 +18,7 @@ definition(
 	name: "ScheduleTstatZones",
 	namespace: "yracine",
 	author: "Yves Racine",
-	description: "Enable Heating/Cooling Zoned Solutions for thermostats coupled with z-wave vents (optional) for better temp settings control throughout your home",
+	description: "Enable Heating/Cooling Zoned Solutions for thermostats coupled with smart vents (optional) for better temp settings control throughout your home",
 	category: "My Apps",
 	iconUrl: "https://s3.amazonaws.com/smartapp-icons/Partner/ecobee.png",
 	iconX2Url: "https://s3.amazonaws.com/smartapp-icons/Partner/ecobee@2x.png"
