@@ -1165,7 +1165,6 @@ private def adjust_thermostat_setpoint_in_zone(indiceSchedule) {
 	if (detailedNotif == 'true') {
 		send("ScheduleTstatZones>schedule ${scheduleName}:avg temp= ${avg_indoor_temp},main Tstat's currentTemp= ${currentTemp},temp adjustment=${temp_diff.abs()}")
 	}
-	desiredCool = (scale=='C') ? 23:75					// by default, 23°C/75°F is the target cool temp
 
 	key = "givenMaxTempDiff$indiceSchedule"
 	def givenMaxTempDiff = settings[key]
@@ -1179,7 +1178,7 @@ private def adjust_thermostat_setpoint_in_zone(indiceSchedule) {
 			log.debug("adjust_thermostat_setpoint_in_zone>schedule ${scheduleName}:climate for the heating settings to be applied not found")
 			key = "desiredHeatTemp$indiceSchedule"
 			def heatTemp = settings[key]
-			if ((heatTemp == null) || (heatTemp?.trim()=="")) {
+			if (!heatTemp) {
 				log.debug("adjust_thermostat_setpoint_in_zone>schedule ${scheduleName}:about to apply default heat settings")
 				desiredHeat = (scale=='C') ? 21:72 					// by default, 21°C/72°F is the target heat temp
 			} else {
@@ -1211,7 +1210,7 @@ private def adjust_thermostat_setpoint_in_zone(indiceSchedule) {
 			log.debug("adjust_thermostat_setpoint_in_zone>${scheduleName},climate associated to the cooling settings to be applied not found")
 			key = "desiredCoolTemp$indiceSchedule"
 			def coolTemp = settings[key]
-			if ((coolTemp == null) || (coolTemp?.trim()=="")) {
+			if (!coolTemp) {
 				log.debug("adjust_thermostat_setpoint_in_zone>schedule ${scheduleName},about to apply default cool settings")
 				desiredCool = (scale=='C') ? 23:75					// by default, 23°C/75°F is the target cool temp
 			} else {
