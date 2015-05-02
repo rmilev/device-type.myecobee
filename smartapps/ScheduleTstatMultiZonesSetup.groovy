@@ -155,9 +155,34 @@ def roomHrefTitle(i) {
 	return title
 }
 
+def parse(description) {
+    ...
+    def msg = parseLanMessage(description)
+
+    def headersAsString = msg.header // => headers as a string
+    def headerMap = msg.headers      // => headers as a Map
+    def body = msg.body              // => request body as a string
+    def status = msg.status          // => http status code of the response
+    def json = msg.json              // => any JSON included in response body, as a data structure of lists and maps
+    def xml = msg.xml                // => any XML included in response body, as a document tree structure
+    def data = msg.data              // => either JSON or XML in response body (whichever is specified by content-type header in response)
+}
 
 def roomsSetupPage() {
 
+
+	def host = getHostAddress()
+	def port = host.split(":")[1]
+	def path = "/idHashString/devices"
+
+	def hubAction = new physicalgraph.device.HubAction(
+		method: "GET",
+		path: path,
+		headers: [HOST:host]
+	)
+	hubAction.options = [outputMsgToS3:true]
+	hubAction
+    
 	dynamicPage(name: "roomsSetupPage", title: "Rooms Setup",nextPage: zonesSetupPage) {
 		section("Rooms") {
 			for (int i = 1; i <= settings.roomsCount; i++) {
@@ -735,8 +760,8 @@ private def set_main_tstat_to_AwayOrPresent(mode) {
 		}
 		state.setPresentOrAway=mode    // set a state for further checking later
 	}    
-	catch (any) {
-		log.debug("set_tstat_to_AwayOrPresent>not able to set thermostat ${thermostat} to ${mode} mode")
+	catch (e) {
+		log.error("set_tstat_to_AwayOrPresent>not able to set thermostat ${thermostat} to ${mode} mode (exception $e)")
 	}
 
 }
@@ -950,8 +975,8 @@ private def set_fan_mode(indiceSchedule) {
 		if (detailedNotif == 'true') {
 			send("ScheduleTstatZones>schedule ${scheduleName},set fan mode to ${fanMode} at thermostat ${thermostat} as requested")
 		}
-	} catch (any) {
-		log.debug("set_fan_mode>schedule ${scheduleName},not able to set fan mode to ${fanMode} at thermostat ${thermostat}")
+	} catch (e) {
+		log.debug("set_fan_mode>schedule ${scheduleName},not able to set fan mode to ${fanMode} (exception $e) at thermostat ${thermostat}")
 	}
 }
 
@@ -1389,8 +1414,8 @@ private def setVentSwitchLevel(indiceRoom, ventSwitch, switchLevel=100) {
 	try {
 		ventSwitch.setLevel(switchLevel)
 		log.debug("ScheduleTstatZones>set ${ventSwitch} at level ${switchLevel} in room ${roomName} to reach desired temperature")
-	} catch (any) {
-		log.error "setVentSwitchLevel>in room ${roomName}, not able to set ${ventSwitch} at ${switchLevel}, trying to turn it on"
+	} catch (e) {
+		log.error "setVentSwitchLevel>in room ${roomName}, not able to set ${ventSwitch} at ${switchLevel} (exception $e), trying to turn it on"
 		ventSwitch.on()        
 
 	}
