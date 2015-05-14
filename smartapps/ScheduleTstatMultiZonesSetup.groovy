@@ -333,16 +333,17 @@ def scheduleHrefDescription(i) {
 	def description ="Schedule no ${i} " 
 	if (settings."scheduleName${i}" !=null) {
 		description += settings."scheduleName${i}"		    
-    }
+	}		
+		
 	return description
 }
 
 def schedulePageState(i) {
 
 	if (settings."scheduleName${i}"  != null) {
-    	return 'complete'
+		return 'complete'
 	} else {
-    	return 'incomplete'
+		return 'incomplete'
 	}	
     
 }
