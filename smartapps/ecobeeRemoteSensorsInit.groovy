@@ -81,7 +81,7 @@ def selectMotionSensors() {
 	if (ecobeeSensors.size() < 1) {
 
 		log.debug "selectMotionSensors>no values found"
-		return []
+		return sensors
 
 	}
 
@@ -123,7 +123,7 @@ def selectTempSensors() {
 	if (ecobeeSensors.size() < 1) {
 
 		log.debug "selectTempSensors>no values found"
-		return []
+		return sensors
 	}
 
 	for (i in 0..ecobeeSensors.size() - 1) {
