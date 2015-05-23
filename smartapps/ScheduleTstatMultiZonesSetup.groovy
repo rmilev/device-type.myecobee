@@ -333,17 +333,16 @@ def scheduleHrefDescription(i) {
 	def description ="Schedule no ${i} " 
 	if (settings."scheduleName${i}" !=null) {
 		description += settings."scheduleName${i}"		    
-	}		
-		
+    }
 	return description
 }
 
 def schedulePageState(i) {
 
 	if (settings."scheduleName${i}"  != null) {
-		return 'complete'
+    	return 'complete'
 	} else {
-		return 'incomplete'
+    	return 'incomplete'
 	}	
     
 }
@@ -650,7 +649,7 @@ def setZoneSettings() {
         
 				// set the zoned vent switches to 'on'
 				def ventSwitchesZoneSet= control_vent_switches_in_zone(i)
-				log.debug "setZoneSettings>schedule ${scheduleName},List of Vents turned 'on'= ${ventSwitchesZoneSet}"
+				log.debug "setZoneSettings>schedule ${scheduleName},list of Vents turned 'on'= ${ventSwitchesZoneSet}"
 				// adjust the temperature at the thermostat(s)
 				adjust_thermostat_setpoint_in_zone(i)
 				set_fan_mode(i)
@@ -1030,6 +1029,7 @@ private def switch_thermostatMode(indiceSchedule) {
 }
 
 private def adjust_tstat_for_more_less_heat_cool(indiceSchedule) {
+	def scale = getTemperatureScale()
 	def key = "setRoomThermostatsOnlyFlag$indiceSchedule"
 	def setRoomThermostatsOnlyFlag = settings[key]
 	def setRoomThermostatsOnly = (setRoomThermostatsOnlyFlag) ?: 'false'
@@ -1414,7 +1414,7 @@ private def setVentSwitchLevel(indiceRoom, ventSwitch, switchLevel=100) {
 
 	try {
 		ventSwitch.setLevel(switchLevel)
-		log.debug("ScheduleTstatZones>set ${ventSwitch} at level ${switchLevel} in room ${roomName} to reach desired temperature")
+		log.debug("setVentSwitchLevel>set ${ventSwitch} at level ${switchLevel} in room ${roomName} to reach desired temperature")
 	} catch (e) {
 		log.error "setVentSwitchLevel>in room ${roomName}, not able to set ${ventSwitch} at ${switchLevel} (exception $e), trying to turn it on"
 		ventSwitch.on()        
