@@ -530,7 +530,7 @@ def setZoneSettings() {
 	for (int i = 1;((i <= settings.schedulesCount) && (i <= 12)); i++) {
         
         
-		key = "scheduleName$indiceSchedule"
+		def key = "scheduleName$i"
 		def scheduleName = settings[key]
         
 		key = "selectedMode$i"
