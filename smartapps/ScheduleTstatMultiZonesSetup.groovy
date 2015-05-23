@@ -340,9 +340,9 @@ def scheduleHrefDescription(i) {
 def schedulePageState(i) {
 
 	if (settings."scheduleName${i}"  != null) {
-    	return 'complete'
+		return 'complete'
 	} else {
-    	return 'incomplete'
+		return 'incomplete'
 	}	
     
 }
