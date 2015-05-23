@@ -50,13 +50,16 @@ def generalSetupPage() {
 				description: "http://github.com/yracine/device-type.myecobee/blob/master/README.md"
 		}
 		section("Main ecobee thermostat at home") {
-			input (name:"thermostat", type: "device.myEcobeeDevice", title: "Which main thermostat?")
+			input (name:"thermostat", type: "capability.thermostat", title: "Which main thermostat?")
 		}
 		section("Rooms count") {
 			input (name:"roomsCount", title: "Rooms count (max=16)?", type: "number",refreshAfterSelection: true)
 		}
 		section("Zones count") {
 			input (name:"zonesCount", title: "Zones count (max=8)?", type:"number",refreshAfterSelection: true)
+		}
+		section("Schedules count") {
+			input (name:"schedulesCount", title: "Schedules count (max=12)?", type: "number",refreshAfterSelection: true)
 		}
 		section("Set your main thermostat to [Away,Present] based on all Room Motion Sensors [default=false] ") {
 			input (name:"setAwayOrPresentFlag", title: "Set Main thermostat to [Away,Present]?", type:"Boolean",
@@ -368,8 +371,8 @@ def schedulesSetup(params) {
 	try {
 		ecobeePrograms = thermostat?.currentClimateList.toString().minus('[').minus(']').tokenize(',')
 		ecobeePrograms.sort()        
-	} catch (any) {
-		log.debug("Not able to get the list of climates (ecobee)")    	
+	} catch (e) {
+		log.debug("Not able to get the list of climates (ecobee), exception $e")    	
 	}    
     
     
