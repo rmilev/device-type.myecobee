@@ -396,8 +396,12 @@ def schedulesSetup(params) {
 	log.debug "scheduleSetup> indiceSchedule=${indiceSchedule}"
 
 	dynamicPage(name: "schedulesSetup", title: "Schedule Setup") {
+		section("Schedule ${indiceSchedule} Setup") {
+			input (name:"scheduleName${indiceSchedule}", title: "Schedule Name", type: "text",
+            		defaultValue:settings."scheduleName${indiceSchedule}")
+		}
 		section("Schedule ${indiceSchedule}-Select the program schedule(s) at ecobee thermostat for the included zone(s)") {
-			input (name:"givenClimate${indiceSchedule}", type:"enum", title: "Which ecobee program? ", options: ecobeePrograms, required: false, 
+			input (name:"givenClimate${indiceSchedule}", type:"enum", title: "Which ecobee program? ", options: ecobeePrograms,  
             	defaultValue:settings."givenClimate${indiceSchedule}")
 		}
 		section("Schedule ${indiceSchedule}-Included zones") {
@@ -511,7 +515,7 @@ def setZoneSettings() {
 
 
 	thermostat.poll()
-    def scheduleName = thermostat.currentProgramScheduleName
+    def scheduleProgramName = thermostat.currentProgramScheduleName
     
 	if (powerSwitch?.currentSwitch == "off") {
 		if (detailedNotif == 'true') {
@@ -525,7 +529,11 @@ def setZoneSettings() {
 	def ventSwitchesOn = []
 	for (int i = 1;((i <= settings.schedulesCount) && (i <= 12)); i++) {
         
-		def key = "selectedMode$i"
+        
+		key = "scheduleName$indiceSchedule"
+		def scheduleName = settings[key]
+        
+		key = "selectedMode$i"
 		def selectedModes = settings[key]
 
 		Boolean foundMode=false        
@@ -543,12 +551,12 @@ def setZoneSettings() {
 		}
 		key = "givenClimate$i"
         def selectedClimate=settings[key]
-		if ((selectedClimate==scheduleName) && (scheduleName != state.scheduleName)) {
+		if ((selectedClimate==scheduleProgramName) && (scheduleName != state.lastScheduleName)) {
         
 			// let's set the given zone(s) for this program schedule
             
             
-			log.debug "setZoneSettings>schedule program is now ${scheduleName}"
+			log.debug "setZoneSettings>now applying ${scheduleName}, scheduled program is now ${scheduleProgramName}"
 
 			state.lastScheduleName = scheduleName
                 
@@ -866,7 +874,9 @@ private def adjust_tstat_for_more_less_heat_cool(indiceSchedule) {
 	def key = "setRoomThermostatsOnlyFlag$indiceSchedule"
 	def setRoomThermostatsOnlyFlag = settings[key]
 	def setRoomThermostatsOnly = (setRoomThermostatsOnlyFlag) ?: 'false'
-	def scheduleName = state.scheduleName
+
+	key = "scheduleName$indiceSchedule"
+	def scheduleName = settings[key]
 
 	if (setRoomThermostatsOnly=='true') {
 		log.debug("adjust_tstat_for_more_less_heat_cool>schedule ${scheduleName},all room Tstats set and setRoomThermostatsOnlyFlag= true,exiting")
@@ -956,9 +966,10 @@ private def adjust_thermostat_setpoint_in_zone(indiceSchedule) {
 	def scale = getTemperatureScale()
 	float desiredHeat, desiredCool, avg_indoor_temp
 
-	def scheduleName = state.scheduleName
+	def key = "scheduleName$indiceSchedule"
+	def scheduleName = settings[key]
 
-	def key = "includedZones$indiceSchedule"
+	key = "includedZones$indiceSchedule"
 	def zones = settings[key]
 	key = "setRoomThermostatsOnlyFlag$indiceSchedule"
 	def setRoomThermostatsOnlyFlag = settings[key]
@@ -1041,9 +1052,10 @@ private def adjust_thermostat_setpoint_in_zone(indiceSchedule) {
 private def adjust_vent_settings_in_zone(indiceSchedule) {
 	float desiredTemp, avg_indoor_temp, avg_temp_diff
 
-	def scheduleName = state.scheduleName
+	def key = "scheduleName$indiceSchedule"
+	def scheduleName = settings[key]
 
-	def key = "includedZones$indiceSchedule"
+	key = "includedZones$indiceSchedule"
 	def zones = settings[key]
 	key = "setRoomThermostatsOnlyFlag$indiceSchedule"
 	def setRoomThermostatsOnlyFlag = settings[key]
