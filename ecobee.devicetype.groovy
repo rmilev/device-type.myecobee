@@ -746,7 +746,7 @@ void poll() {
 	def poll_interval=3   // set a 3 min. poll interval to avoid unecessary load on ecobee (and auth exceptions)
 	def time_check_for_poll = (now() - (poll_interval * 60 * 1000))
 	
-	if ((state?.lastPollTimestamp != null) && (state?.lastPollTimestamp < time_check_for_poll)) {
+	if ((state?.lastPollTimestamp != null) && (state?.lastPollTimestamp >= time_check_for_poll)) {
 		if (settings.trace) {
 			log.debug "poll>thermostatId = ${thermostatId},time_check_for_poll (${time_check_for_poll}) < state.lastPollTimestamp (${state.lastPollTimestamp}), not refreshing data..."
 			sendEvent name: "verboseTrace", value:
