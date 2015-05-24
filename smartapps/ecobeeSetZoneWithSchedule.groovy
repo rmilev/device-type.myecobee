@@ -365,7 +365,8 @@ def schedulesSetupPage() {
 }        
 
 def schedulesSetup(params) {
-	
+	def indiceSchedule=0
+    
 	def ecobeePrograms=[]
 	// try to get the thermostat programs list (ecobee)
 	try {
@@ -392,17 +393,27 @@ def schedulesSetup(params) {
 	location.modes.each {
 		enumModes << it.name
 	}    
-	def indiceSchedule=params?.indiceSchedule.intValue()
+    
+	if (params?.indiceSchedule || params?.params?.indiceSchedule) {
+
+      // Assign params to indiceSchedule.  Sometimes parameters are double nested.
+		if (params.indiceSchedule) {
+			indiceSchedule = params.indiceSchedule
+		} else {
+			indiceSchedule = params.params.indiceSchedule
+		}
+	}    
+	indiceSchedule=indiceSchedule.intValue()
 	log.debug "scheduleSetup> indiceSchedule=${indiceSchedule}"
 
 	dynamicPage(name: "schedulesSetup", title: "Schedule Setup") {
 		section("Schedule ${indiceSchedule} Setup") {
 			input (name:"scheduleName${indiceSchedule}", title: "Schedule Name", type: "text",
-            		defaultValue:settings."scheduleName${indiceSchedule}")
+            	defaultValue:settings."scheduleName${indiceSchedule}")
 		}
 		section("Schedule ${indiceSchedule}-Select the program schedule(s) at ecobee thermostat for the included zone(s)") {
 			input (name:"givenClimate${indiceSchedule}", type:"enum", title: "Which ecobee program? ", options: ecobeePrograms,  
-            	defaultValue:settings."givenClimate${indiceSchedule}")
+				defaultValue:settings."givenClimate${indiceSchedule}")
 		}
 		section("Schedule ${indiceSchedule}-Included zones") {
 			input (name:"includedZones${indiceSchedule}", title: "Zones included in this schedule", type: "enum",
@@ -412,7 +423,7 @@ def schedulesSetup(params) {
 		}
 		section("Schedule ${indiceSchedule}-Outdoor temp Sensor used for adjustment [optional]") {
 			input (name:"outTempSensor${indiceSchedule}", type:"capability.temperatureMeasurement", required: false,
-				description:settings."outTempSensor${indiceSchedule}")
+				defaultValue:settings."outTempSensor${indiceSchedule}")
 		}
 		section("Schedule ${indiceSchedule}-More or Less Heat/Cool Threshold in the selected zone(s) based on outdoor temp Sensor [optional]") {
 			input (name:"moreHeatThreshold${indiceSchedule}", type:"decimal", title: "Outdoor temp's threshold for more heating", required: false,
