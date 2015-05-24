@@ -119,7 +119,7 @@ def roomsSetupPage() {
 
 			}
 			section() {
-				paragraph "**** Done for Room ${indiceRoom} **** "
+				paragraph "**** DONE FOR ROOM ${indiceRoom} **** "
 
 			}                
 		} /* end for */
