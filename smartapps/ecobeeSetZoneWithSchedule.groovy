@@ -526,7 +526,7 @@ def setZoneSettings() {
 
 
 	thermostat.poll()
-    def scheduleProgramName = thermostat.currentProgramScheduleName
+	def scheduleProgramName = thermostat.currentProgramScheduleName
     
 	if (powerSwitch?.currentSwitch == "off") {
 		if (detailedNotif == 'true') {
