@@ -636,7 +636,11 @@ def setZoneSettings() {
 		String nowInLocalTime = new Date().format("yyyy-MM-dd HH:mm", location.timeZone)
 		log.debug "setZoneSettings>found schedule ${scheduleName},nowInLocalTime= ${nowInLocalTime},startInLocalTime=${startInLocalTime},endInLocalTime=${endInLocalTime}," +
         		"currTime=${currTime},begintime=${startTimeToday.time},endTime=${endTimeToday.time},lastScheduleName=$state.lastScheduleName, lastStartTime=$state.lastStartTime"
+
+		/* Poll the thermostat to get latest values */
         
+		thermostat.poll()
+
 		if ((currTime >= startTimeToday.time) && (currTime <= endTimeToday.time) && (state.lastStartTime != startTimeToday.time)) {
         
 			// let's set the given schedule
@@ -1075,7 +1079,6 @@ private def adjust_tstat_for_more_less_heat_cool(indiceSchedule) {
 	
 	def outdoorTemp = outTempSensor?.currentTemperature
     
-	thermostat.poll()
 	String currentMode = thermostat.currentThermostatMode
 	def currentHeatPoint = thermostat.currentHeatingSetpoint
 	def currentCoolPoint = thermostat.currentCoolingSetpoint
@@ -1300,7 +1303,6 @@ private def adjust_vent_settings_in_zone(indiceSchedule) {
 		log.debug("adjust_vent_settings_in_zone>schedule ${scheduleName}: schedule ${scheduleName},all room Tstats set and setRoomThermostatsOnlyFlag= true,exiting")
 		return				    
 	}    
-	thermostat.poll()
 	String mode = thermostat?.currentThermostatMode.toString()
 	desiredTemp = thermostat.currentThermostatSetpoint.toFloat().round(1)
     
