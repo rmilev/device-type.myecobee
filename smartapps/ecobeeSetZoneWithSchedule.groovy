@@ -524,7 +524,6 @@ def appTouch(evt) {
 
 def setZoneSettings() {
 
-
 	thermostat.poll()
 	def scheduleProgramName = thermostat.currentProgramScheduleName
     
