@@ -560,7 +560,7 @@ def setZoneSettings() {
 			continue			
 		}
 		key = "givenClimate$i"
-        def selectedClimate=settings[key]
+		def selectedClimate=settings[key]
 		if ((selectedClimate==scheduleProgramName) && (scheduleName != state.lastScheduleName)) {
         
 			// let's set the given zone(s) for this program schedule
