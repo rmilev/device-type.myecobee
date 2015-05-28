@@ -697,6 +697,8 @@ private def getSensorTempForAverage(indiceRoom, typeSensor='tempSensor') {
 	}
 	def tempSensor = settings[key]
 	if (tempSensor != null) {
+		// do a poll to get the latest temp value
+		tempSensor.poll()
 		log.debug("getTempSensorForAverage>found sensor ${tempSensor}")
 		currentTemp = tempSensor.currentTemperature
 	}
@@ -915,6 +917,8 @@ private def adjust_tstat_for_more_less_heat_cool(indiceSchedule) {
 		return
 	}
 	
+	// call to poll() to get latest outdoor temp value    
+	outTempSensor.poll()
 	def outdoorTemp = outTempSensor?.currentTemperature
     
 	String currentMode = thermostat.currentThermostatMode
