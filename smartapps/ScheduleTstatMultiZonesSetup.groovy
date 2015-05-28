@@ -793,7 +793,7 @@ private def getSensorTempForAverage(indiceRoom, typeSensor='tempSensor') {
 	def tempSensor = settings[key]
 	if (tempSensor != null) {
 		// do a poll to get the latest temp value
-        tempSensor.poll()
+		tempSensor.poll()
 		log.debug("getTempSensorForAverage>found sensor ${tempSensor}")
 		currentTemp = tempSensor.currentTemperature
 	}
@@ -1006,6 +1006,9 @@ private def switch_thermostatMode(indiceSchedule) {
 	if (outTempSensor == null) {
 		return     
 	}
+    
+	// do a poll to get latest temp value
+	outdoorTemp.poll()
 	def outdoorTemp = outTempSensor.currentTemperature
 
 	key = "heatModeThreshold$indiceSchedule"
