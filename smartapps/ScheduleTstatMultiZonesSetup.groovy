@@ -784,6 +784,7 @@ private def getSensorTempForAverage(indiceRoom, typeSensor='tempSensor') {
 	def key 
 	def currentTemp=null
     
+	    
 	if (typeSensor == 'tempSensor') {
 		key = "tempSensor$indiceRoom"
 	} else {
@@ -791,6 +792,8 @@ private def getSensorTempForAverage(indiceRoom, typeSensor='tempSensor') {
 	}
 	def tempSensor = settings[key]
 	if (tempSensor != null) {
+		// do a poll to get the latest temp value
+        tempSensor.poll()
 		log.debug("getTempSensorForAverage>found sensor ${tempSensor}")
 		currentTemp = tempSensor.currentTemperature
 	}
