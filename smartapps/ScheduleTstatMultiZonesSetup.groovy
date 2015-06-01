@@ -309,8 +309,18 @@ def zonesSetup(params) {
 		rooms = rooms + room
 	}
 	log.debug "rooms: $rooms"
+	def indiceZone=0    
 
-	def indiceZone=params?.indiceZone?.intValue()
+	// Assign params to indiceZone.  Sometimes parameters are double nested.
+	if (params?.indiceZone || params?.params?.indiceZone) {
+
+		if (params.indiceZone) {
+			indiceZone = params.indiceZone
+		} else {
+			indiceZone = params.params.indiceZone
+		}
+	}    
+	indiceZone=indiceZone.intValue()
 	log.debug "zonesSetup> indiceZone=${indiceZone}"
 	dynamicPage(name: "zonesSetup", title: "Zones Setup") {
 		section("Zone ${indiceZone} Setup") {
@@ -366,7 +376,6 @@ def schedulesSetupPage() {
 }        
 
 def schedulesSetup(params) {
-	def indiceSchedule=0
     
 	def ecobeePrograms=[]
 	// try to get the thermostat programs list (ecobee)
@@ -394,9 +403,10 @@ def schedulesSetup(params) {
 	location.modes.each {
 		enumModes << it.name
 	}    
+	def indiceSchedule=0
+	// Assign params to indiceSchedule.  Sometimes parameters are double nested.
 	if (params?.indiceSchedule || params?.params?.indiceSchedule) {
 
-      // Assign params to indiceSchedule.  Sometimes parameters are double nested.
 		if (params.indiceSchedule) {
 			indiceSchedule = params.indiceSchedule
 		} else {
@@ -464,6 +474,14 @@ def schedulesSetup(params) {
 			input (name:"desiredHeatTemp${indiceSchedule}", type:"decimal", title: "Heat Temp, default=72°F/21°C", required: false,
 				defaultValue:settings."desiredHeatTemp${indiceSchedule}")			                
 		}
+		section("Schedule ${indiceSchedule}-Set Fan Mode [optional]") {
+			input (name:"fanMode${indiceSchedule}", type:"enum", title: "Set Fan Mode ['on', 'auto', 'circulate']", metadata: [values: ["on", "auto", "circulate"]], required: false,
+				defaultValue:settings."fanMode${indiceSchedule}")
+			input (name:"moreFanThreshold${indiceSchedule}", type:"decimal", title: "Outdoor temp's threshold for Fan Mode", required: false,
+				defaultValue:settings."moreFanThreshold${indiceSchedule}")			                
+			input (name:"setFanModeForThresholdOnlyFlag${indiceSchedule}", type:"Boolean",  title: "Set Fan Mode only when Threshold is reached(default=false)", 
+				required: false, defaultValue:settings."setFanModeForThresholdOnlyFlag${indiceSchedule}")
+		}
 		section("Schedule ${indiceSchedule}-More Heat/Cool Threshold in the selected zone(s) based on outdoor temp Sensor [optional]") {
 			input (name:"moreHeatThreshold${indiceSchedule}", type:"decimal", title: "Outdoor temp's threshold for more heating", required: false,
 				defaultValue:settings."moreHeatThreshold${indiceSchedule}")			                
@@ -477,10 +495,6 @@ def schedulesSetup(params) {
 		section("Schedule ${indiceSchedule}-Set Room Thermostats Only Indicator [optional]") {
 			input (name:"setRoomThermostatsOnlyFlag${indiceSchedule}", type:"Boolean", title: "Set room thermostats only [default=false,main & room thermostats setpoints are set]", metadata: [values: ["true", "false"]], 
 				required: false, defaultValue:settings."setRoomThermostatsOnlyFlag${indiceSchedule}")
-		}
-		section("Schedule ${indiceSchedule}-Set Fan Mode [optional]") {
-			input (name:"fanMode${indiceSchedule}", type:"enum", title: "Set Fan Mode ['on', 'auto', 'circulate']", metadata: [values: ["on", "auto", "circulate"]], required: false,
-				defaultValue:settings."fanMode${indiceSchedule}")
 		}
 		section("Schedule ${indiceSchedule}-Set for specific mode(s) [default=all]")  {
 			input (name:"selectedMode${indiceSchedule}", type:"enum", title: "Choose Mode", options: enumModes, required: false, multiple:true,
@@ -689,14 +703,14 @@ def setZoneSettings() {
 						if (detailedNotif == 'true') {
 							send("ScheduleTstatZones>schedule ${scheduleName}: trying to set ${thermostat} to 'present' mode")
 						}
-						set_main_tsat_to_AwayOrPresent('present')
+						set_main_tstat_to_AwayOrPresent('present')
 					}
 				} else {
 					if (state.setPresentOrAway != 'away') {
 						if (detailedNotif == 'true') {
 							send("ScheduleTstatZones>schedule ${scheduleName}: trying to set ${thermostat} to 'away' mode")
 						}
-						set_main_tsat_to_AwayOrPresent('away')
+						set_main_tstat_to_AwayOrPresent('away')
 					}                
 				}
 			}            
@@ -705,6 +719,7 @@ def setZoneSettings() {
 				// let's adjust the thermostat's temp & mode settings according to outdoor temperature
             
 				adjust_tstat_for_more_less_heat_cool(i)
+				set_fan_mode(i)
             
 			}        
 			// let's adjust the vent settings according to desired Temp
@@ -983,9 +998,36 @@ private def set_fan_mode(indiceSchedule) {
 	key = "scheduleName$indiceSchedule"
 	def scheduleName = settings[key]
     
+    
+    
 	if (fanMode == null) {
 		return     
 	}
+
+	key = "setFanModeForThresholdOnlyFlag$indiceSchedule"
+	def fanModeForThresholdOnly = (settings[key])?settings[key]: 'false'
+
+	if (fanModForThresholdOnly=='true') {
+		key = "outTempSensor$indiceSchedule"
+		def outTempSensor = settings[key]
+    
+		if (outTempSensor == null) {
+			return     
+		}
+    
+		key = "moreFanForThreshold$indiceSchedule"
+		def moreFanForThreshold = settings[key]
+		if (moreFanForThreshold == null) {
+			return     
+		}
+		// do a poll to get latest temp value
+		outdoorTemp.poll()
+		def outdoorTemp = outTempSensor.currentTemperature
+        
+    	if (outdoorTemp < moreFanForThreshold) {
+			return     
+		}
+	}    
 
 	try {
 		thermostat?.setThermostatFanMode(fanMode)
@@ -1024,6 +1066,7 @@ private def switch_thermostatMode(indiceSchedule) {
 	def currentHeatPoint = thermostat.currentHeatingSetpoint
 	def currentCoolPoint = thermostat.currentCoolingSetpoint
 	log.debug "switch_thermostatMode>currentMode=$currentMode, outdoor temperature=$outdoorTemp, coolTempThreshold=$coolTempThreshold, heatTempThreshold=$heatTempThreshold"
+
 	if (outdoorTemp < heatModeThreshold) {
 		if (currentMode != "heat") {
 			def newMode = "heat"
@@ -1076,15 +1119,20 @@ private def adjust_tstat_for_more_less_heat_cool(indiceSchedule) {
 	def heatModeThreshold = settings[key]
 	key = "coolModeThreshold$indiceSchedule"
 	def coolModeThreshold = settings[key]
-	
+
+
 	if ((moreHeatThreshold == null) && (moreCoolThreshold ==null) && 
 		(heatModeThreshold == null) && (coolModeThreshold ==null)) {
 		log.debug "adjust_tstat_for_more_less_heat_cool>no adjustment variables set, exiting"
 		return
 	}
 	
+	// Get the latest outdoor temp value
+	outTempSensor.poll()    
+    
 	def outdoorTemp = outTempSensor?.currentTemperature
     
+
 	String currentMode = thermostat.currentThermostatMode
 	def currentHeatPoint = thermostat.currentHeatingSetpoint
 	def currentCoolPoint = thermostat.currentCoolingSetpoint
@@ -1107,7 +1155,7 @@ private def adjust_tstat_for_more_less_heat_cool(indiceSchedule) {
 				send("ScheduleTstatZones>heating setPoint now= ${targetTstatTemp}°, outdoorTemp <=${moreHeatThreshold}°")
 			}            
 		} else if (outdoorTemp <= heatModeThreshold) {
-        
+        	
 			targetTstatTemp = (currentHeatPoint - max_temp_diff)
 			def temp_diff = state?.scheduleHeatSetpoint - targetTstatTemp
 			log.debug "adjust_tstat_for_more_less_heat_cool>temp_diff=$temp_diff, max_temp_diff=$max_temp_diff" 
