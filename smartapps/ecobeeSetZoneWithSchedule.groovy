@@ -606,14 +606,14 @@ def setZoneSettings() {
 						if (detailedNotif == 'true') {
 							send("ScheduleTstatZones>schedule ${scheduleName}: trying to set ${thermostat} to 'present' mode")
 						}
-						set_main_tsat_to_AwayOrPresent('present')
+						set_main_tstat_to_AwayOrPresent('present')
 					}
 				} else {
 					if (state.setPresentOrAway != 'away') {
 						if (detailedNotif == 'true') {
 							send("ScheduleTstatZones>schedule ${scheduleName}: trying to set ${thermostat} to 'away' mode")
 						}
-						set_main_tsat_to_AwayOrPresent('away')
+						set_main_tstat_to_AwayOrPresent('away')
 					}                
 				}
 			}            
@@ -675,7 +675,7 @@ private def verify_presence_based_on_motion_in_rooms() {
 	return result
 }
 
-private def set_main_tsat_to_AwayOrPresent(mode) {
+private def set_main_tstat_to_AwayOrPresent(mode) {
 
 	try {
     
