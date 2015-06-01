@@ -309,7 +309,18 @@ def zonesSetup(params) {
 	}
 	log.debug "rooms: $rooms"
 
-	def indiceZone=params?.indiceZone?.intValue()
+	def indiceZone=0   
+
+	// Assign params to indiceZone.  Sometimes parameters are double nested.
+	if (params?.indiceZone || params?.params?.indiceZone) {
+
+		if (params.indiceZone) {
+			indiceZone = params.indiceZone
+		} else {
+			indiceZone = params.params.indiceZone
+		}
+	}    
+	indiceZone=indiceZone.intValue()
 	log.debug "zonesSetup> indiceZone=${indiceZone}"
 	dynamicPage(name: "zonesSetup", title: "Zones Setup") {
 		section("Zone ${indiceZone} Setup") {
@@ -365,7 +376,6 @@ def schedulesSetupPage() {
 }        
 
 def schedulesSetup(params) {
-	def indiceSchedule=0
     
 	def ecobeePrograms=[]
 	// try to get the thermostat programs list (ecobee)
@@ -394,9 +404,10 @@ def schedulesSetup(params) {
 		enumModes << it.name
 	}    
     
+	def indiceSchedule=0
+	// Assign params to indiceSchedule.  Sometimes parameters are double nested.
 	if (params?.indiceSchedule || params?.params?.indiceSchedule) {
 
-      // Assign params to indiceSchedule.  Sometimes parameters are double nested.
 		if (params.indiceSchedule) {
 			indiceSchedule = params.indiceSchedule
 		} else {
@@ -664,7 +675,7 @@ private def verify_presence_based_on_motion_in_rooms() {
 	return result
 }
 
-private def set_main_tstat_to_AwayOrPresent(mode) {
+private def set_main_tsat_to_AwayOrPresent(mode) {
 
 	try {
     
