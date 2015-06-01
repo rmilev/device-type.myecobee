@@ -474,14 +474,6 @@ def schedulesSetup(params) {
 			input (name:"desiredHeatTemp${indiceSchedule}", type:"decimal", title: "Heat Temp, default=72°F/21°C", required: false,
 				defaultValue:settings."desiredHeatTemp${indiceSchedule}")			                
 		}
-		section("Schedule ${indiceSchedule}-Set Fan Mode [optional]") {
-			input (name:"fanMode${indiceSchedule}", type:"enum", title: "Set Fan Mode ['on', 'auto', 'circulate']", metadata: [values: ["on", "auto", "circulate"]], required: false,
-				defaultValue:settings."fanMode${indiceSchedule}")
-			input (name:"moreFanThreshold${indiceSchedule}", type:"decimal", title: "Outdoor temp's threshold for Fan Mode", required: false,
-				defaultValue:settings."moreFanThreshold${indiceSchedule}")			                
-			input (name:"setFanModeForThresholdOnlyFlag${indiceSchedule}", type:"Boolean",  title: "Set Fan Mode only when Threshold is reached(default=false)", 
-				required: false, defaultValue:settings."setFanModeForThresholdOnlyFlag${indiceSchedule}")
-		}
 		section("Schedule ${indiceSchedule}-More Heat/Cool Threshold in the selected zone(s) based on outdoor temp Sensor [optional]") {
 			input (name:"moreHeatThreshold${indiceSchedule}", type:"decimal", title: "Outdoor temp's threshold for more heating", required: false,
 				defaultValue:settings."moreHeatThreshold${indiceSchedule}")			                
@@ -491,6 +483,14 @@ def schedulesSetup(params) {
 		section("Schedule ${indiceSchedule}-Max Temp Adjustment at the main thermostat based on temp Sensors [indoor&outdoor]") {
 			input (name:"givenMaxTempDiff${indiceSchedule}", type:"decimal",  title: "Max Temp adjustment (default= +/-5°F/2°C)", required: false,
 				defaultValue:settings."givenMaxTempDiff${indiceSchedule}")
+		}
+		section("Schedule ${indiceSchedule}-Set Fan Mode [optional]") {
+			input (name:"fanMode${indiceSchedule}", type:"enum", title: "Set Fan Mode ['on', 'auto', 'circulate']", metadata: [values: ["on", "auto", "circulate"]], required: false,
+				defaultValue:settings."fanMode${indiceSchedule}")
+			input (name:"moreFanThreshold${indiceSchedule}", type:"decimal", title: "Outdoor temp's threshold for Fan Mode", required: false,
+				defaultValue:settings."moreFanThreshold${indiceSchedule}")			                
+			input (name:"setFanModeForThresholdOnlyFlag${indiceSchedule}", type:"Boolean",  title: "Set Fan Mode only when Threshold is reached(default=false)", 
+				required: false, defaultValue:settings."setFanModeForThresholdOnlyFlag${indiceSchedule}")
 		}
 		section("Schedule ${indiceSchedule}-Set Room Thermostats Only Indicator [optional]") {
 			input (name:"setRoomThermostatsOnlyFlag${indiceSchedule}", type:"Boolean", title: "Set room thermostats only [default=false,main & room thermostats setpoints are set]", metadata: [values: ["true", "false"]], 
@@ -1024,7 +1024,7 @@ private def set_fan_mode(indiceSchedule) {
 		outdoorTemp.poll()
 		def outdoorTemp = outTempSensor.currentTemperature
         
-    	if (outdoorTemp < moreFanForThreshold) {
+		if (outdoorTemp < moreFanForThreshold) {
 			return     
 		}
 	}    
