@@ -1032,14 +1032,14 @@ private def set_fan_mode(indiceSchedule) {
 			fanMode='off'	// fan mode should be set then at 'off'			
 		}
 		if (detailedNotif == 'true') {
-			send("ecobeeSetZoneWithSchedule>schedule ${scheduleName},outdoorTemp=$outdoorTemp, about to set fan mode to ${fanMode} at thermostat ${thermostat} as requested")
+			send("ScheduleTstatZones>schedule ${scheduleName},outdoorTemp=$outdoorTemp, about to set fan mode to ${fanMode} at thermostat ${thermostat} as requested")
 		}
 	}    
 
 	try {
 		thermostat?.setThermostatFanMode(fanMode)
 		if (detailedNotif == 'true') {
-			send("ecobeeSetZoneWithSchedule>schedule ${scheduleName},set fan mode to ${fanMode} at thermostat ${thermostat} as requested")
+			send("ScheduleTstatZones>schedule ${scheduleName},set fan mode to ${fanMode} at thermostat ${thermostat} as requested")
 		}
 	} catch (e) {
 		log.debug("set_fan_mode>schedule ${scheduleName},not able to set fan mode to ${fanMode} (exception $e) at thermostat ${thermostat}")
@@ -1155,7 +1155,7 @@ private def adjust_tstat_for_more_less_heat_cool(indiceSchedule) {
     
 	if (currentMode== 'heat') {
 		if ((moreHeatThreshold != null) && (outdoorTemp <= moreHeatThreshold?.toFloat()))  {
-			targetTstatTemp = (currentHeatPoint + max_temp_diff).toFloat().round(1)
+			targetTstatTemp = (currentHeatPoint + max_temp_diff).round(1)
 			def temp_diff = state?.scheduleHeatSetpoint - targetTstatTemp
 			// if temp diff is <= max_temp_diff, then do the adjustment            
 			log.debug "adjust_tstat_for_more_less_heat_cool>temp_diff=$temp_diff, max_temp_diff=$max_temp_diff" 
@@ -1165,7 +1165,7 @@ private def adjust_tstat_for_more_less_heat_cool(indiceSchedule) {
 			}            
 		} else if ((heatModeThreshold != null) && (outdoorTemp <= heatModeThreshold?.toFloat())) {
         	
-			targetTstatTemp = (currentHeatPoint - max_temp_diff)
+			targetTstatTemp = (currentHeatPoint - max_temp_diff).round(1)
 			def temp_diff = state?.scheduleHeatSetpoint - targetTstatTemp
 			log.debug "adjust_tstat_for_more_less_heat_cool>temp_diff=$temp_diff, max_temp_diff=$max_temp_diff" 
 			// if temp diff is <= max_temp_diff, then do the adjustment            
@@ -1181,14 +1181,14 @@ private def adjust_tstat_for_more_less_heat_cool(indiceSchedule) {
 	if (currentMode== 'cool') {
     
 		if ((moreCoolThreshold != null) && (outdoorTemp >= moreCoolThreshold?.toFloat())) {
-			targetTstatTemp = (currentCoolPoint - max_temp_diff)
+			targetTstatTemp = (currentCoolPoint - max_temp_diff).round(1)
 			def temp_diff = state?.scheduleCoolSetpoint - targetTstatTemp
 			if (temp_diff.abs() <= max_temp_diff) {
 				thermostat.setCoolingSetpoint(targetTstatTemp)
 				send("ScheduleTstatZones>cooling setPoint now= ${targetTstatTemp}°, outdoorTemp >=${moreCoolThreshold}°")
 			}            
 		} else if ((coolModeThreshold!=null) && (outdoorTemp >= coolModeThreshold?.toFloat())) {
-			targetTstatTemp = (currentCoolPoint + max_temp_diff)
+			targetTstatTemp = (currentCoolPoint + max_temp_diff).round(1)
 			def temp_diff = state?.scheduleCoolSetpoint - targetTstatTemp
 			if (temp_diff.abs() <= max_temp_diff) {
 				thermostat.setCoolingSetpoint(targetTstatTemp)
