@@ -450,6 +450,14 @@ def schedulesSetup(params) {
 			input (name:"givenMaxTempDiff${indiceSchedule}", type:"decimal",  title: "Max Temp adjustment (default= +/-5°F/2°C)", required: false,
 				defaultValue:settings."givenMaxTempDiff${indiceSchedule}")
 		}
+		section("Schedule ${indiceSchedule}-Set Fan Mode [optional]") {
+			input (name:"fanMode${indiceSchedule}", type:"enum", title: "Set Fan Mode ['on', 'auto', 'circulate']", metadata: [values: ["on", "auto", "circulate"]], required: false,
+				defaultValue:settings."fanMode${indiceSchedule}")
+			input (name:"moreFanThreshold${indiceSchedule}", type:"decimal", title: "Outdoor temp's threshold for Fan Mode", required: false,
+				defaultValue:settings."moreFanThreshold${indiceSchedule}")			                
+			input (name:"setFanModeForThresholdOnlyFlag${indiceSchedule}", type:"Boolean",  title: "Set Fan Mode only when Threshold is reached(default=false)", 
+				required: false, defaultValue:settings."setFanModeForThresholdOnlyFlag${indiceSchedule}")
+		}
 		section("Schedule ${indiceSchedule}-Set Room Thermostats Only Indicator [optional]") {
 			input (name:"setRoomThermostatsOnlyFlag${indiceSchedule}", type:"Boolean", title: "Set room thermostats only [default=false,main & room thermostats setpoints are set]", metadata: [values: ["true", "false"]], 
 				required: false, defaultValue:settings."setRoomThermostatsOnlyFlag${indiceSchedule}")
@@ -622,6 +630,8 @@ def setZoneSettings() {
 				// let's adjust the thermostat's temp & mode settings according to outdoor temperature
             
 				adjust_tstat_for_more_less_heat_cool(i)
+				// will override the fan settings if required (ex. more Fan Threshold is set)
+				set_fan_mode(i)
             
 			}        
 			// let's adjust the vent settings according to desired Temp
@@ -890,6 +900,58 @@ private def getAllTempsForAverage(indiceZone) {
 	return indoorTemps
 
 }
+
+private def set_fan_mode(indiceSchedule) {
+
+	def key = "fanMode$indiceSchedule"
+	def fanMode = settings[key]
+	key = "scheduleName$indiceSchedule"
+	def scheduleName = settings[key]
+    
+    
+    
+	if (fanMode == null) {
+		return     
+	}
+
+	key = "setFanModeForThresholdOnlyFlag$indiceSchedule"
+	def fanModeForThresholdOnly = (settings[key])?settings[key]: 'false'
+
+	if (fanModForThresholdOnly=='true') {
+		key = "outTempSensor$indiceSchedule"
+		def outTempSensor = settings[key]
+    
+		if (outTempSensor == null) {
+			return     
+		}
+    
+		key = "moreFanForThreshold$indiceSchedule"
+		def moreFanForThreshold = settings[key]
+		if (moreFanForThreshold == null) {
+			return     
+		}
+		// do a poll to get latest temp value
+		outdoorTemp.poll()
+		def outdoorTemp = outTempSensor.currentTemperature
+        
+		if (outdoorTemp < moreFanForThreshold) {
+			fanMode='off'	// fan mode should be set then at 'off'			
+		}
+		if (detailedNotif == 'true') {
+			send("ScheduleTstatZones>schedule ${scheduleName},outdoorTemp=$outdoorTemp, about to set fan mode to ${fanMode} at thermostat ${thermostat} as requested")
+		}
+	}    
+
+	try {
+		thermostat?.setThermostatFanMode(fanMode)
+		if (detailedNotif == 'true') {
+			send("ScheduleTstatZones>schedule ${scheduleName},set fan mode to ${fanMode} at thermostat ${thermostat} as requested")
+		}
+	} catch (e) {
+		log.debug("set_fan_mode>schedule ${scheduleName},not able to set fan mode to ${fanMode} (exception $e) at thermostat ${thermostat}")
+	}
+}
+
 
 
 private def adjust_tstat_for_more_less_heat_cool(indiceSchedule) {
