@@ -455,8 +455,8 @@ def schedulesSetup(params) {
 				defaultValue:settings."fanMode${indiceSchedule}")
 			input (name:"moreFanThreshold${indiceSchedule}", type:"decimal", title: "Outdoor temp's threshold for Fan Mode", required: false,
 				defaultValue:settings."moreFanThreshold${indiceSchedule}")			                
-			input (name:"setFanModeForThresholdOnlyFlag${indiceSchedule}", type:"Boolean",  title: "Set Fan Mode only when Threshold is reached(default=false)", 
-				required: false, defaultValue:settings."setFanModeForThresholdOnlyFlag${indiceSchedule}")
+			input (name:"fanModeForThresholdOnlyFlag${indiceSchedule}", type:"Boolean",  title: "Set Fan Mode only when Threshold is reached(default=false)", 
+				required: false, defaultValue:settings."fanModeForThresholdOnlyFlag${indiceSchedule}")
 		}
 		section("Schedule ${indiceSchedule}-Set Room Thermostats Only Indicator [optional]") {
 			input (name:"setRoomThermostatsOnlyFlag${indiceSchedule}", type:"Boolean", title: "Set room thermostats only [default=false,main & room thermostats setpoints are set]", metadata: [values: ["true", "false"]], 
@@ -918,7 +918,7 @@ private def set_fan_mode(indiceSchedule) {
 		return     
 	}
 
-	key = "setFanModeForThresholdOnlyFlag$indiceSchedule"
+	key = "fanModeForThresholdOnlyFlag$indiceSchedule"
 	def fanModeForThresholdOnly = (settings[key])?settings[key]: 'false'
 
 	if (fanModForThresholdOnly=='true') {
