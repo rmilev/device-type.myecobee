@@ -1021,11 +1021,11 @@ private def set_fan_mode(indiceSchedule) {
 			return     
 		}
 		// do a poll to get latest temp value
-		outdoorTemp.poll()
+		outTempSensor.poll()
 		def outdoorTemp = outTempSensor.currentTemperature
         
 		if (outdoorTemp < moreFanForThreshold) {
-			return     
+			fanMode='off'	// fan mode should be set then at 'off'			
 		}
 		if (detailedNotif == 'true') {
 			send("ScheduleTstatZones>schedule ${scheduleName},outdoorTemp=$outdoorTemp, about to set fan mode to ${fanMode} at thermostat ${thermostat} as requested")
@@ -1053,7 +1053,7 @@ private def switch_thermostatMode(indiceSchedule) {
 	}
     
 	// do a poll to get latest temp value
-	outdoorTemp.poll()
+	outTempSensor.poll()
 	def outdoorTemp = outTempSensor.currentTemperature
 
 	key = "heatModeThreshold$indiceSchedule"
