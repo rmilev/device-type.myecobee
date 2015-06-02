@@ -1025,8 +1025,12 @@ private def set_fan_mode(indiceSchedule) {
 		if (moreFanForThreshold == null) {
 			return     
 		}
-		// do a poll to get latest temp value
-		outTempSensor.poll()
+		// do a refresh to get latest temp value
+		try {        
+			outTempSensor.refresh()
+		} catch (e) {
+			log.debug("setFanMode>not able to do a refresh() on $outTempSensor, exception $e")
+		}
 		def outdoorTemp = outTempSensor.currentTemperature
         
 		if (outdoorTemp < moreFanForThreshold) {
@@ -1490,14 +1494,16 @@ private def setVentSwitchLevel(indiceRoom, ventSwitch, switchLevel=100) {
 		ventSwitch.setLevel(switchLevel)
 		log.debug("setVentSwitchLevel>set ${ventSwitch} at level ${switchLevel} in room ${roomName} to reach desired temperature")
 	} catch (e) {
-		log.error "setVentSwitchLevel>in room ${roomName}, not able to set ${ventSwitch} at ${switchLevel} (exception $e), trying to turn it on"
-		ventSwitch.on()        
-
+		if (switchLevel >0) {
+			ventSwitch.on()        
+			log.error "setVentSwitchLevel>in room ${roomName}, not able to set ${ventSwitch} at ${switchLevel} (exception $e), trying to turn it on"
+		} else {
+			ventSwitch.off()        
+			log.error "setVentSwitchLevel>in room ${roomName}, not able to set ${ventSwitch} at ${switchLevel} (exception $e), trying to turn it off"
+		}
 	}
     
 }
-
-
 
 private def control_vent_switches_in_zone(indiceSchedule, switchLevel=100) {
 	def key = "scheduleName$indiceSchedule"
