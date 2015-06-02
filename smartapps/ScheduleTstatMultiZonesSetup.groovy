@@ -65,6 +65,10 @@ def generalSetupPage() {
 			input (name:"setAwayOrPresentFlag", title: "Set Main thermostat to [Away,Present]?", type:"Boolean",
 				description:"optional", metadata: [values: ["true", "false"]],required:false)
 		}
+		section("Outdoor temp Sensor used for adjustment [optional]") {
+			input (name:"outTempSensor", type:"capability.temperatureMeasurement", required: false,
+				description:"optional")
+		}
 		section("What do I use for the Master on/off switch to enable/disable processing? [optional]") {
 			input (name:"powerSwitch", type:"capability.switch", required: false)
 		}
@@ -450,10 +454,6 @@ def schedulesSetup(params) {
 				defaultValue:settings."begintime${indiceSchedule}")
 			input (name:"endtime${indiceSchedule}", type: "time", title: "End time",
 				defaultValue:settings."endtime${indiceSchedule}")
-		}
-		section("Schedule ${indiceSchedule}-Outdoor temp Sensor used for adjustment [optional]") {
-			input (name:"outTempSensor${indiceSchedule}", type:"capability.temperatureMeasurement", required: false,
-				defaultValue:settings."outTempSensor${indiceSchedule}")
 		}
 		section("Schedule ${indiceSchedule}-Switch thermostat mode (auto/cool/heat) based on this outdoor temp range [optional]") {
 			input (name:"heatModeThreshold${indiceSchedule}", type:"decimal", title: "Heat mode threshold", required: false,
@@ -996,6 +996,7 @@ private def getAllTempsForAverage(indiceZone) {
 }
 
 
+
 private def set_fan_mode(indiceSchedule) {
 
 	def key = "fanMode$indiceSchedule"
@@ -1009,47 +1010,42 @@ private def set_fan_mode(indiceSchedule) {
 		return     
 	}
 
-	key = "fanModeForThresholdOnlyFlag$indiceSchedule"
-	def fanModeForThresholdOnly = (settings[key])?settings[key]: 'false'
+	key = "fanModeForThresholdOnlyFlag${indiceSchedule}"
+	def fanModeForThresholdOnlyFlag = settings[key]
 
+	def fanModForThresholdOnly = (fanModeForThresholdOnlyFlag) ?: 'false'
 	if (fanModForThresholdOnly=='true') {
-		key = "outTempSensor$indiceSchedule"
-		def outTempSensor = settings[key]
     
 		if (outTempSensor == null) {
 			return     
 		}
-    
-		key = "moreFanForThreshold$indiceSchedule"
-		def moreFanForThreshold = settings[key]
-		if (moreFanForThreshold == null) {
+
+		key = "moreFanThreshold$indiceSchedule"
+		def moreFanThreshold = settings[key]
+		log.debug("setFanMode>fanModeForThresholdOnly=$fanModForThresholdOnly,morefanThreshold=$moreFanThreshold")
+		if (moreFanThreshold == null) {
 			return     
 		}
-		// do a refresh to get latest temp value
-		try {        
-			outTempSensor.refresh()
-		} catch (e) {
-			log.debug("setFanMode>not able to do a refresh() on $outTempSensor, exception $e")
-		}
-		def outdoorTemp = outTempSensor.currentTemperature
+		float outdoorTemp = outTempSensor?.currentTemperature.toFloat().round(1)
         
-		if (outdoorTemp < moreFanForThreshold) {
+		if (outdoorTemp < moreFanThreshold.toFloat()) {
 			fanMode='off'	// fan mode should be set then at 'off'			
 		}
 		if (detailedNotif == 'true') {
-			send("ScheduleTstatZones>schedule ${scheduleName},outdoorTemp=$outdoorTemp, about to set fan mode to ${fanMode} at thermostat ${thermostat} as requested")
+			send("ecobeeSetZoneWithSchedule>schedule ${scheduleName},outdoorTemp=$outdoorTemp, about to set fan mode to ${fanMode} at thermostat ${thermostat} as requested")
 		}
 	}    
 
 	try {
 		thermostat?.setThermostatFanMode(fanMode)
 		if (detailedNotif == 'true') {
-			send("ScheduleTstatZones>schedule ${scheduleName},set fan mode to ${fanMode} at thermostat ${thermostat} as requested")
+			send("ecobeeSetZoneWithSchedule>schedule ${scheduleName},set fan mode to ${fanMode} at thermostat ${thermostat} as requested")
 		}
 	} catch (e) {
 		log.debug("set_fan_mode>schedule ${scheduleName},not able to set fan mode to ${fanMode} (exception $e) at thermostat ${thermostat}")
 	}
 }
+
 
 
 private def switch_thermostatMode(indiceSchedule) {
@@ -1061,9 +1057,7 @@ private def switch_thermostatMode(indiceSchedule) {
 		return     
 	}
     
-	// do a poll to get latest temp value
-	outTempSensor.poll()
-	def outdoorTemp = outTempSensor.currentTemperature
+	float outdoorTemp = outTempSensor.currentTemperature.toFloat().round(1)
 
 	key = "heatModeThreshold$indiceSchedule"
 	def heatModeThreshold = settings[key]
@@ -1074,12 +1068,12 @@ private def switch_thermostatMode(indiceSchedule) {
 		log.debug "switch_thermostatMode>no adjustment variables set, exiting"
 		return
 	}        
-	String currentMode = thermostat.currentThermostatMode
+	String currentMode = thermostat.currentThermostatMode.toString()
 	def currentHeatPoint = thermostat.currentHeatingSetpoint
 	def currentCoolPoint = thermostat.currentCoolingSetpoint
 	log.debug "switch_thermostatMode>currentMode=$currentMode, outdoor temperature=$outdoorTemp, coolTempThreshold=$coolTempThreshold, heatTempThreshold=$heatTempThreshold"
 
-	if (outdoorTemp < heatModeThreshold) {
+	if ((heatModeThreshold != null) && (outdoorTemp < heatModeThreshold?.toFloat())) {
 		if (currentMode != "heat") {
 			def newMode = "heat"
 			thermostat.setThermostatMode(newMode)
@@ -1087,7 +1081,7 @@ private def switch_thermostatMode(indiceSchedule) {
 			state.scheduleHeatingSetpoint=currentHeatPoint      // Set for later processing in adjust_more_less_heat_cool()      
 		}
 	}
-	else if (outdoorTemp > coolModeThreshold) {
+	else if ((coolModeThreshold != null) && (outdoorTemp > coolModeThreshold?.toFloat())) {
 		if (currentMode != "cool") {
 			def newMode = "cool"
 			thermostat.setThermostatMode(newMode)
@@ -1139,16 +1133,19 @@ private def adjust_tstat_for_more_less_heat_cool(indiceSchedule) {
 		return
 	}
 	
-	// Get the latest outdoor temp value
-	outTempSensor.poll()    
-    
-	def outdoorTemp = outTempSensor?.currentTemperature
-    
+	// do a refresh to get latest temp value
+	try {        
+		outTempSensor.refresh()
+	} catch (e) {
+		log.debug("setFanMode>not able to do a refresh() on $outTempSensor, exception $e")
+	}
+	float outdoorTemp = outTempSensor?.currentTemperature.toFloat().round(1)
+      
 
-	String currentMode = thermostat.currentThermostatMode
-	def currentHeatPoint = thermostat.currentHeatingSetpoint
-	def currentCoolPoint = thermostat.currentCoolingSetpoint
-	def targetTstatTemp    
+	String currentMode = thermostat.currentThermostatMode.toString()
+	float currentHeatPoint = thermostat.currentHeatingSetpoint.toFloat().round(1)
+	float currentCoolPoint = thermostat.currentCoolingSetpoint.toFloat().round(1)
+	float targetTstatTemp    
 	log.debug "adjust_tstat_for_more_less_heat_cool>currentMode=$currentMode,outdoorTemp=$outdoorTemp,moreCoolThreshold=$moreCoolThreshold,  moreHeatThreshold=$moreHeatThreshold," +
 		"coolModeThreshold=$coolModeThreshold,heatModeThreshold=$heatModeThreshold,currentHeatSetpoint=$currentHeatPoint,currentCoolSetpoint=$currentCoolPoint"
 
@@ -1157,8 +1154,8 @@ private def adjust_tstat_for_more_less_heat_cool(indiceSchedule) {
 	def max_temp_diff = givenMaxTempDiff ?: (scale=='C')? 2: 5 // 2°C/5°F temp differential is applied by default
     
 	if (currentMode== 'heat') {
-		if (outdoorTemp <= moreHeatThreshold)  {
-			targetTstatTemp = (currentHeatPoint + max_temp_diff)
+		if ((moreHeatThreshold != null) && (outdoorTemp <= moreHeatThreshold?.toFloat()))  {
+			targetTstatTemp = (currentHeatPoint + max_temp_diff).toFloat().round(1)
 			def temp_diff = state?.scheduleHeatSetpoint - targetTstatTemp
 			// if temp diff is <= max_temp_diff, then do the adjustment            
 			log.debug "adjust_tstat_for_more_less_heat_cool>temp_diff=$temp_diff, max_temp_diff=$max_temp_diff" 
@@ -1166,7 +1163,7 @@ private def adjust_tstat_for_more_less_heat_cool(indiceSchedule) {
 				thermostat.setHeatingSetpoint(targetTstatTemp)
 				send("ScheduleTstatZones>heating setPoint now= ${targetTstatTemp}°, outdoorTemp <=${moreHeatThreshold}°")
 			}            
-		} else if (outdoorTemp <= heatModeThreshold) {
+		} else if ((heatModeThreshold != null) && (outdoorTemp <= heatModeThreshold?.toFloat())) {
         	
 			targetTstatTemp = (currentHeatPoint - max_temp_diff)
 			def temp_diff = state?.scheduleHeatSetpoint - targetTstatTemp
@@ -1174,7 +1171,7 @@ private def adjust_tstat_for_more_less_heat_cool(indiceSchedule) {
 			// if temp diff is <= max_temp_diff, then do the adjustment            
 			if (temp_diff.abs() <= max_temp_diff) {
 				thermostat.setHeatingSetpoint(targetTstatTemp)
-				send("ScheduleTstatZones>heating setPoint now= ${targetTstatTemp}°, outdoorTemp >${moreHeatThreshold}°")
+				send("ScheduleTstatZones>heating setPoint now= ${targetTstatTemp}°, outdoorTemp <=${heatModeThreshold}°")
 			}            
         
 		} else {
@@ -1183,19 +1180,19 @@ private def adjust_tstat_for_more_less_heat_cool(indiceSchedule) {
 	}
 	if (currentMode== 'cool') {
     
-		if (outdoorTemp >= moreCoolThreshold) {
+		if ((moreCoolThreshold != null) && (outdoorTemp >= moreCoolThreshold?.toFloat())) {
 			targetTstatTemp = (currentCoolPoint - max_temp_diff)
 			def temp_diff = state?.scheduleCoolSetpoint - targetTstatTemp
 			if (temp_diff.abs() <= max_temp_diff) {
 				thermostat.setCoolingSetpoint(targetTstatTemp)
 				send("ScheduleTstatZones>cooling setPoint now= ${targetTstatTemp}°, outdoorTemp >=${moreCoolThreshold}°")
 			}            
-		} else if (outdoorTemp >= coolModeThreshold) {
+		} else if ((coolModeThreshold!=null) && (outdoorTemp >= coolModeThreshold?.toFloat())) {
 			targetTstatTemp = (currentCoolPoint + max_temp_diff)
 			def temp_diff = state?.scheduleCoolSetpoint - targetTstatTemp
 			if (temp_diff.abs() <= max_temp_diff) {
 				thermostat.setCoolingSetpoint(targetTstatTemp)
-				send("ScheduleTstatZones>cooling setPoint now= ${targetTstatTemp}°, outdoorTemp < ${moreCoolThreshold}°")
+				send("ScheduleTstatZones>cooling setPoint now= ${targetTstatTemp}°, outdoorTemp >=${coolModeThreshold}°")
 			}            
 		} else {
         
