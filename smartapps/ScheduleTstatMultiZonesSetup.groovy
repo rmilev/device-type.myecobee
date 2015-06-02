@@ -1027,6 +1027,9 @@ private def set_fan_mode(indiceSchedule) {
 		if (outdoorTemp < moreFanForThreshold) {
 			return     
 		}
+		if (detailedNotif == 'true') {
+			send("ScheduleTstatZones>schedule ${scheduleName},outdoorTemp=$outdoorTemp, about to set fan mode to ${fanMode} at thermostat ${thermostat} as requested")
+		}
 	}    
 
 	try {
