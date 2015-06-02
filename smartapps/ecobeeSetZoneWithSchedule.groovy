@@ -722,7 +722,7 @@ private def getSensorTempForAverage(indiceRoom, typeSensor='tempSensor') {
 		try {        
 			tempSensor.refresh()
 		} catch (e) {
-        	log.debug("getSensorTempForAverage>not able to do a refresh() on $tempSensor, exception $e")
+			log.debug("getSensorTempForAverage>not able to do a refresh() on $tempSensor, exception $e")
 		}        
 		log.debug("getTempSensorForAverage>found sensor ${tempSensor}")
 		currentTemp = tempSensor.currentTemperature
