@@ -488,9 +488,9 @@ def schedulesSetup(params) {
 		section("Schedule ${indiceSchedule}-Set Fan Mode [optional]") {
 			input (name:"fanMode${indiceSchedule}", type:"enum", title: "Set Fan Mode ['on', 'auto', 'circulate']", metadata: [values: ["on", "auto", "circulate"]], required: false,
 				defaultValue:settings."fanMode${indiceSchedule}")
-		input (name:"moreFanThreshold${indiceSchedule}", type:"decimal", title: "Outdoor temp's threshold for Fan Mode", required: false,
+			input (name:"moreFanThreshold${indiceSchedule}", type:"decimal", title: "Outdoor temp's threshold for Fan Mode", required: false,
 				defaultValue:settings."moreFanThreshold${indiceSchedule}")			                
-		input (name:"fanModeForThresholdOnlyFlag${indiceSchedule}", type:"Boolean",  title: "Set Fan Mode only when Threshold is reached(default=false)", 
+			input (name:"fanModeForThresholdOnlyFlag${indiceSchedule}", type:"Boolean",  title: "Set Fan Mode only when Threshold is reached(default=false)", 
 				required: false, defaultValue:settings."fanModeForThresholdOnlyFlag${indiceSchedule}")
 		}
 		section("Schedule ${indiceSchedule}-Set Room Thermostats Only Indicator [optional]") {
