@@ -930,8 +930,6 @@ private def set_fan_mode(indiceSchedule) {
 		if (moreFanForThreshold == null) {
 			return     
 		}
-		// do a poll to get latest temp value
-		outdoorTemp.poll()
 		def outdoorTemp = outTempSensor.currentTemperature
         
 		if (outdoorTemp < moreFanForThreshold) {
