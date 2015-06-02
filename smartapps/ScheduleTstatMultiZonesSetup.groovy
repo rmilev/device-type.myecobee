@@ -1151,28 +1151,34 @@ private def adjust_tstat_for_more_less_heat_cool(indiceSchedule) {
 
 	key = "givenMaxTempDiff$indiceSchedule"
 	def givenMaxTempDiff = settings[key]
-	def max_temp_diff = givenMaxTempDiff ?: (scale=='C')? 2: 5 // 2°C/5°F temp differential is applied by default
+	def input_max_temp_diff = givenMaxTempDiff ?: (scale=='C')? 2: 5 // 2°C/5°F temp differential is applied by default
+
+	float max_temp_diff = input_max_temp_diff.toFloat().round(1)
     
 	if (currentMode== 'heat') {
 		if ((moreHeatThreshold != null) && (outdoorTemp <= moreHeatThreshold?.toFloat()))  {
 			targetTstatTemp = (currentHeatPoint + max_temp_diff).round(1)
-			def temp_diff = state?.scheduleHeatSetpoint - targetTstatTemp
+			float temp_diff = (state?.scheduleHeatSetpoint - targetTstatTemp).toFloat().round(1)
 			// if temp diff is <= max_temp_diff, then do the adjustment            
 			log.debug "adjust_tstat_for_more_less_heat_cool>temp_diff=$temp_diff, max_temp_diff=$max_temp_diff" 
-			if (temp_diff.abs() <= max_temp_diff) {
-				thermostat.setHeatingSetpoint(targetTstatTemp)
-				send("ScheduleTstatZones>heating setPoint now= ${targetTstatTemp}°, outdoorTemp <=${moreHeatThreshold}°")
-			}            
-		} else if ((heatModeThreshold != null) && (outdoorTemp <= heatModeThreshold?.toFloat())) {
+			if (temp_diff.abs() > max_temp_diff) {
+				log.debug("adjust_tstat_for_more_less_heat_cool>schedule ${scheduleName}:max_temp_diff= ${max_temp_diff},temp_diff=${temp_diff},too much adjustment for more heat")
+				targetTstatTemp = (state?.scheduleHeatSetpoint  + max_temp_diff).round(1)
+			}
+			send("ScheduleTstatZones>heating setPoint now= ${targetTstatTemp}°, outdoorTemp <=${moreHeatThreshold}°")
+			thermostat.setHeatingSetpoint(targetTstatTemp)
+		} else if ((heatModeThreshold != null) && (outdoorTemp >= heatModeThreshold?.toFloat())) {
         	
 			targetTstatTemp = (currentHeatPoint - max_temp_diff).round(1)
-			def temp_diff = state?.scheduleHeatSetpoint - targetTstatTemp
-			log.debug "adjust_tstat_for_more_less_heat_cool>temp_diff=$temp_diff, max_temp_diff=$max_temp_diff" 
+			float temp_diff = (state?.scheduleHeatSetpoint - targetTstatTemp).toFloat().round(1)
+			log.debug "adjust_tstat_for_more_less_heat_cool>temp_diff=$temp_diff, max_temp_diff=$max_temp_diff for heat mode" 
 			// if temp diff is <= max_temp_diff, then do the adjustment            
-			if (temp_diff.abs() <= max_temp_diff) {
-				thermostat.setHeatingSetpoint(targetTstatTemp)
-				send("ScheduleTstatZones>heating setPoint now= ${targetTstatTemp}°, outdoorTemp <=${heatModeThreshold}°")
-			}            
+			if (temp_diff.abs() > max_temp_diff) {
+				log.debug("adjust_tstat_for_more_less_heat_cool>schedule ${scheduleName}:max_temp_diff= ${max_temp_diff},temp_diff=${temp_diff},too much adjustment for heat mode")
+				targetTstatTemp = (state?.scheduleHeatSetpoint  - max_temp_diff).round(1)
+			}
+			thermostat.setHeatingSetpoint(targetTstatTemp)
+			send("ScheduleTstatZones>heating setPoint now= ${targetTstatTemp}°, outdoorTemp >=${heatModeThreshold}°")
         
 		} else {
 			switch_thermostatMode(indiceSchedule)        
@@ -1182,18 +1188,22 @@ private def adjust_tstat_for_more_less_heat_cool(indiceSchedule) {
     
 		if ((moreCoolThreshold != null) && (outdoorTemp >= moreCoolThreshold?.toFloat())) {
 			targetTstatTemp = (currentCoolPoint - max_temp_diff).round(1)
-			def temp_diff = state?.scheduleCoolSetpoint - targetTstatTemp
-			if (temp_diff.abs() <= max_temp_diff) {
-				thermostat.setCoolingSetpoint(targetTstatTemp)
-				send("ScheduleTstatZones>cooling setPoint now= ${targetTstatTemp}°, outdoorTemp >=${moreCoolThreshold}°")
-			}            
-		} else if ((coolModeThreshold!=null) && (outdoorTemp >= coolModeThreshold?.toFloat())) {
+			float temp_diff = (state?.scheduleCoolSetpoint - targetTstatTemp).toFloat().round(1)
+			if (temp_diff.abs() > max_temp_diff) {
+				log.debug("adjust_tstat_for_more_less_heat_cool>schedule ${scheduleName}:max_temp_diff= ${max_temp_diff},temp_diff=${temp_diff},too much adjustment for more cool")
+				targetTstatTemp = (state?.scheduleCoolSetpoint  - max_temp_diff).round(1)
+			}
+			thermostat.setCoolingSetpoint(targetTstatTemp)
+			send("ScheduleTstatZones>cooling setPoint now= ${targetTstatTemp}°, outdoorTemp >=${moreCoolThreshold}°")
+		} else if ((coolModeThreshold!=null) && (outdoorTemp <= coolModeThreshold?.toFloat())) {
 			targetTstatTemp = (currentCoolPoint + max_temp_diff).round(1)
-			def temp_diff = state?.scheduleCoolSetpoint - targetTstatTemp
-			if (temp_diff.abs() <= max_temp_diff) {
-				thermostat.setCoolingSetpoint(targetTstatTemp)
-				send("ScheduleTstatZones>cooling setPoint now= ${targetTstatTemp}°, outdoorTemp >=${coolModeThreshold}°")
-			}            
+			float temp_diff = (state?.scheduleCoolSetpoint - targetTstatTemp).toFloat().round(1)
+			if (temp_diff.abs() > max_temp_diff) {
+				log.debug("adjust_tstat_for_more_less_heat_cool>schedule ${scheduleName}:max_temp_diff= ${max_temp_diff},temp_diff=${temp_diff},too much adjustment for cool mode")
+				targetTstatTemp = (state?.scheduleCoolSetpoint  + max_temp_diff).round(1)
+			}
+			thermostat.setCoolingSetpoint(targetTstatTemp)
+			send("ScheduleTstatZones>cooling setPoint now= ${targetTstatTemp}°, outdoorTemp <=${coolModeThreshold}°")
 		} else {
         
 			switch_thermostatMode(indiceSchedule)        
@@ -1253,7 +1263,7 @@ private def adjust_thermostat_setpoint_in_zone(indiceSchedule) {
 	}    
 	//	Now will do an avg temp calculation based on all temp sensors to apply the desired temp settings at the main Tstat correctly
 
-	float currentTemp = thermostat?.currentTemperature.toFloat()
+	float currentTemp = thermostat?.currentTemperature.toFloat().round(1)
 	String mode = thermostat?.currentThermostatMode.toString()
 	//	This is the avg indoor temp based on indoor temp sensors in all rooms in the zone
 	log.debug("adjust_thermostat_setpoint_in_zone>schedule ${scheduleName},all temps collected from sensors=${indoor_all_zones_temps}")
@@ -1270,7 +1280,9 @@ private def adjust_thermostat_setpoint_in_zone(indiceSchedule) {
 
 	key = "givenMaxTempDiff$indiceSchedule"
 	def givenMaxTempDiff = settings[key]
-	def max_temp_diff = givenMaxTempDiff ?: (scale=='C')? 2: 5 // 2°C/5°F temp differential is applied by default
+	def input_max_temp_diff = givenMaxTempDiff ?: (scale=='C')? 2: 5 // 2°C/5°F temp differential is applied by default
+
+	float max_temp_diff = input_max_temp_diff.toFloat().round(1)
 
 	key = "givenClimate$indiceSchedule"
 	def climateName = settings[key]
@@ -1342,7 +1354,6 @@ private def adjust_thermostat_setpoint_in_zone(indiceSchedule) {
 
 }
 
-
 private def adjust_vent_settings_in_zone(indiceSchedule) {
 	float desiredTemp, avg_indoor_temp, avg_temp_diff
 
@@ -1367,8 +1378,14 @@ private def adjust_vent_settings_in_zone(indiceSchedule) {
 		return				    
 	}    
 	String mode = thermostat?.currentThermostatMode.toString()
-	desiredTemp = thermostat.currentThermostatSetpoint.toFloat().round(1)
     
+	if (mode=='heat') {
+		desiredTemp = thermostat.currentHeatingSetpoint.toFloat().round(1)
+	} else if (mode=='cool') {    
+		desiredTemp = thermostat.currentCoolingSetpoint.toFloat().round(1)
+    } else {
+		desiredTemp = thermostat.currentThermostatSetpoint.toFloat().round(1)
+	}    
 	log.debug("adjust_vent_settings_in_zone>schedule ${scheduleName}, desiredTemp=${desiredTemp}")
     
 	for (zone in zones) {
@@ -1402,26 +1419,37 @@ private def adjust_vent_settings_in_zone(indiceSchedule) {
 			if (tempAtSensor != null) {
 				float temp_diff_at_sensor = tempAtSensor.toFloat().round(1) - desiredTemp 
 				log.debug("adjust_vent_settings_in_zone>schedule ${scheduleName}, in zone ${zoneName}, room ${roomName}, temp_diff_at_sensor=${temp_diff_at_sensor}, avg_temp_diff=${avg_temp_diff}")
-				switchLevel = ((temp_diff_at_sensor / avg_temp_diff) * 100).round() 			                
+				switchLevel = ((temp_diff_at_sensor / avg_temp_diff) * 100).round()
+                                
+				if ((mode == 'cool') && (temp_diff_at_sensor < avg_temp_diff) ) {
+					switchLevel = 100-switchLevel 
+				}                    
+				if ((mode=='heat')  && (temp_diff_at_sensor > avg_temp_diff)) {
+					switchLevel = 100-switchLevel 
+				}                
 				switchLevel =( switchLevel >=0)?((switchLevel<100)? switchLevel: 100):(switchlevel< (-100))?0:100+switchLevel
-				if (switchLevel >=10) {	
-					closedAllVentsInZone=false
-				}              
+			} else {
+            	// no Temp sensor in the room, then just open the vents at 50%
+				switchLevel=50		            
+			}              
+			if (switchLevel >=10) {	
+				closedAllVentsInZone=false
+			}              
                 
-				for (int j = 1;(j <= 5); j++)  {
-	                
-					key = "ventSwitch${j}$indiceRoom"
-					def ventSwitch = settings[key]
-					if (ventSwitch != null) {
-						setVentSwitchLevel(indiceRoom, ventSwitch, switchLevel)                
-						log.debug "adjust_vent_settings_in_zone>in zone=${zoneName},room ${roomName},set ${ventSwitch} at switchLevel =${switchLevel}%"
-						nbVents++                    
-					}
-				} /* end for ventSwitch */                    
-			}                
+			for (int j = 1;(j <= 5); j++)  {
+				key = "ventSwitch${j}$indiceRoom"
+				def ventSwitch = settings[key]
+				if (ventSwitch != null) {
+					setVentSwitchLevel(indiceRoom, ventSwitch, switchLevel)                
+					log.debug "adjust_vent_settings_in_zone>in zone=${zoneName},room ${roomName},set ${ventSwitch} at switchLevel =${switchLevel}%"
+					nbVents++                    
+				}
+			} /* end for ventSwitch */                    
+         
 		} /* end for rooms */
 		
 	} /* end for zones */
+
 
 	if (closedAllVentsInZone) {
     
@@ -1433,7 +1461,7 @@ private def adjust_vent_settings_in_zone(indiceSchedule) {
 			control_vent_switches_in_zone(indiceSchedule, switchLevel)		    
 	        
 		}
-		log.debug "adjust_vent_settings_in_zone>in zone=${zoneName},set all ventSwitches at ${switchLevel}% to avoid closing all of them"
+		log.debug "adjust_vent_settings_in_zone>schedule ${scheduleName}, set all ventSwitches at ${switchLevel}% to avoid closing all of them"
 		if (detailedNotif == 'true') {
 			send("ScheduleTstatZones>schedule ${scheduleName},set all ventSwitches at ${switchLevel}% to avoid closing all of them")
 		}
