@@ -544,7 +544,7 @@ def appTouch(evt) {
 def setZoneSettings() {
 
 	thermostat.poll()
-	def scheduleProgramName = thermostat.currentProgramScheduleName
+	def scheduleProgramName = thermostat.currentClimateName
     
 	if (powerSwitch?.currentSwitch == "off") {
 		if (detailedNotif == 'true') {
@@ -562,6 +562,8 @@ def setZoneSettings() {
 		def key = "scheduleName$i"
 		def scheduleName = settings[key]
         
+        
+		log.debug "setZoneSettings>found schedule=${scheduleName}, scheduled program at ecobee=$scheduleProgramName..."
 		key = "selectedMode$i"
 		def selectedModes = settings[key]
 
@@ -934,6 +936,12 @@ private def set_fan_mode(indiceSchedule) {
 		if (moreFanForThreshold == null) {
 			return     
 		}
+		// do a refresh to get latest temp value
+		try {        
+			outTempSensor.refresh()
+		} catch (e) {
+			log.debug("setFanMode>not able to do a refresh() on $outTempSensor, exception $e")
+		}
 		def outdoorTemp = outTempSensor.currentTemperature
         
 		if (outdoorTemp < moreFanForThreshold) {
@@ -953,7 +961,6 @@ private def set_fan_mode(indiceSchedule) {
 		log.debug("set_fan_mode>schedule ${scheduleName},not able to set fan mode to ${fanMode} (exception $e) at thermostat ${thermostat}")
 	}
 }
-
 
 
 private def adjust_tstat_for_more_less_heat_cool(indiceSchedule) {
@@ -1286,9 +1293,13 @@ private def setVentSwitchLevel(indiceRoom, ventSwitch, switchLevel=100) {
 		ventSwitch.setLevel(switchLevel)
 		log.debug("setVentSwitchLevel>set ${ventSwitch} at level ${switchLevel} in room ${roomName} to reach desired temperature")
 	} catch (e) {
-		log.error "setVentSwitchLevel>in room ${roomName}, not able to set ${ventSwitch} at ${switchLevel} (exception $e), trying to turn it on"
-		ventSwitch.on()        
-
+		if (switchLevel >0) {
+			ventSwitch.on()        
+			log.error "setVentSwitchLevel>in room ${roomName}, not able to set ${ventSwitch} at ${switchLevel} (exception $e), trying to turn it on"
+		} else {
+			ventSwitch.off()        
+			log.error "setVentSwitchLevel>in room ${roomName}, not able to set ${ventSwitch} at ${switchLevel} (exception $e), trying to turn it off"
+		}
 	}
     
 }
