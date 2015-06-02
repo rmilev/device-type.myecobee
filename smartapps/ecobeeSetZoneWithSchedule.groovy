@@ -1236,10 +1236,10 @@ private def adjust_vent_settings_in_zone(indiceSchedule) {
 				switchLevel = ((temp_diff_at_sensor / avg_temp_diff) * 100).round()
                                 
 				if ((mode == 'cool') && (temp_diff_at_sensor < avg_temp_diff) ) {
-                	switchLevel = 100-switchLevel 
+					switchLevel = 100-switchLevel 
 				}                    
 				if ((mode=='heat')  && (temp_diff_at_sensor > avg_temp_diff)) {
-                	switchLevel = 100-switchLevel 
+					switchLevel = 100-switchLevel 
 				}                
 				switchLevel =( switchLevel >=0)?((switchLevel<100)? switchLevel: 100):(switchlevel< (-100))?0:100+switchLevel
 			} else {
