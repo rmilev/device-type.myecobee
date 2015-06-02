@@ -807,8 +807,12 @@ private def getSensorTempForAverage(indiceRoom, typeSensor='tempSensor') {
 	}
 	def tempSensor = settings[key]
 	if (tempSensor != null) {
-		// do a poll to get the latest temp value
-		tempSensor.poll()
+		// do a refresh to get the latest temp value
+		try {        
+			tempSensor.refresh()
+		} catch (e) {
+			log.debug("getSensorTempForAverage>not able to do a refresh() on $tempSensor, exception $e")
+		}        
 		log.debug("getTempSensorForAverage>found sensor ${tempSensor}")
 		currentTemp = tempSensor.currentTemperature
 	}
