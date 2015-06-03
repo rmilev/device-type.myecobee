@@ -1043,7 +1043,7 @@ private def adjust_tstat_for_more_less_heat_cool(indiceSchedule) {
 			log.debug "adjust_tstat_for_more_less_heat_cool>temp_diff=$temp_diff, max_temp_diff=$max_temp_diff for less leat" 
 			if (temp_diff.abs() > max_temp_diff) {
 				log.debug("adjust_tstat_for_more_less_heat_cool>schedule ${scheduleName}:max_temp_diff= ${max_temp_diff},temp_diff=${temp_diff},too much adjustment for less heat")
-				targetTstatTemp = (currentScheduleHeat + max_temp_diff).round(1)
+				targetTstatTemp = (currentScheduleHeat - max_temp_diff).round(1)
 			}
 			thermostat.setHeatingSetpoint(targetTstatTemp)
 			send("ecobeeSetZoneWithSchedule>heating setPoint now= ${targetTstatTemp}°, outdoorTemp > ${lessHeatThreshold}°")
@@ -1067,7 +1067,7 @@ private def adjust_tstat_for_more_less_heat_cool(indiceSchedule) {
 			log.debug "adjust_tstat_for_more_less_heat_cool>temp_diff=$temp_diff, max_temp_diff=$max_temp_diff for less cool" 
 			if (temp_diff.abs() > max_temp_diff) {
 				log.debug("adjust_tstat_for_more_less_heat_cool>schedule ${scheduleName}:max_temp_diff= ${max_temp_diff},temp_diff=${temp_diff},too much adjustment for less cool")
-				targetTstatTemp = (currentScheduleCool - max_temp_diff).round(1)
+				targetTstatTemp = (currentScheduleCool + max_temp_diff).round(1)
 			}
 			send("ecobeeSetZoneWithSchedule>cooling setPoint now= ${targetTstatTemp}°, outdoorTemp <${lessCoolThreshold}°")
 			thermostat.setCoolingSetpoint(targetTstatTemp)
