@@ -1232,7 +1232,7 @@ private def adjust_vent_settings_in_zone(indiceSchedule) {
 				log.debug("adjust_vent_settings_in_zone>schedule ${scheduleName}, in zone ${zoneName}, room ${roomName}, temp_diff_at_sensor=${temp_diff_at_sensor}, avg_temp_diff=${avg_temp_diff}")
 				switchLevel = ((temp_diff_at_sensor / avg_temp_diff) * 100).round()
                                 
-				if ((mode == 'cool') && (temp_diff_at_sensor < avg_temp_diff) ) {
+				if (temp_diff_at_sensor > avg_temp_diff || temp_diff_at_sensor <0)  {
 					switchLevel = 100-switchLevel 
 				}                    
 				if ((mode=='heat')  && (temp_diff_at_sensor > avg_temp_diff)) {
