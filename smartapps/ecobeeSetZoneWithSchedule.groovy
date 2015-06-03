@@ -639,9 +639,6 @@ def setZoneSettings() {
             
 			// let's adjust the thermostat's temp & mode settings according to outdoor temperature
 			adjust_tstat_for_more_less_heat_cool(i)
-			// will override the fan settings if required (ex. more Fan Threshold is set)
-			set_fan_mode(i)
-			adjust_vent_settings_in_zone(i)
 		}
 
 	} /* end for */ 	
