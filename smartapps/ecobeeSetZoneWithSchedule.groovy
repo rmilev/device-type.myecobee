@@ -1230,12 +1230,12 @@ private def adjust_vent_settings_in_zone(indiceSchedule) {
 			if (tempAtSensor != null) {
 				float temp_diff_at_sensor = tempAtSensor.toFloat().round(1) - desiredTemp 
 				log.debug("adjust_vent_settings_in_zone>schedule ${scheduleName}, in zone ${zoneName}, room ${roomName}, temp_diff_at_sensor=${temp_diff_at_sensor}, avg_temp_diff=${avg_temp_diff}")
-				switchLevel = ((temp_diff_at_sensor / avg_temp_diff) * 100).round()
+				switchLevel = ((temp_diff_at_sensor / avg_temp_diff.abs()) * 100).round()
                                 
-				if (temp_diff_at_sensor > avg_temp_diff || temp_diff_at_sensor <0)  {
-					switchLevel = 100-switchLevel 
-				}                    
-				switchLevel =( switchLevel >=0)?((switchLevel<100)? switchLevel: 100):(switchlevel< (-100))?0:100+switchLevel
+				switchLevel =( switchLevel >=0)?((switchLevel<100)? switchLevel: 100):0
+				if (mode=='heat') {
+					100-switchLevel
+				}
 			} else {
             	// no Temp sensor in the room, then just open the vents at 50%
 				switchLevel=50		            
