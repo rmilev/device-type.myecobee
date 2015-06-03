@@ -1024,7 +1024,6 @@ private def adjust_tstat_for_more_less_heat_cool(indiceSchedule) {
 		if ((moreHeatThreshold != null) & (outdoorTemp <= moreHeatThreshold?.toFloat()))  {
 			targetTstatTemp = (currentHeatPoint + max_temp_diff).round(1)
 			float temp_diff = (state.scheduleHeatSetpoint   - targetTstatTemp).round(1)
-			// if temp diff is <= max_temp_diff, then do the adjustment            
 			log.debug "adjust_tstat_for_more_less_heat_cool>temp_diff=$temp_diff, max_temp_diff=$max_temp_diff for more heat" 
 			if (temp_diff.abs() > max_temp_diff) {
 				log.debug("adjust_tstat_for_more_less_heat_cool>schedule ${scheduleName}:max_temp_diff= ${max_temp_diff},temp_diff=${temp_diff},too much adjustment for more heat")
@@ -1036,7 +1035,6 @@ private def adjust_tstat_for_more_less_heat_cool(indiceSchedule) {
 		} else if ((lessHeatThreshold != null) && (outdoorTemp > lessHeatThreshold?.toFloat()))  {
 			targetTstatTemp = (currentHeatPoint - max_temp_diff).round(1)
 			float temp_diff = (state.scheduleHeatSetpoint   - targetTstatTemp).round(1)
-			// if temp diff is <= max_temp_diff, then do the adjustment            
 			log.debug "adjust_tstat_for_more_less_heat_cool>temp_diff=$temp_diff, max_temp_diff=$max_temp_diff for less leat" 
 			if (temp_diff.abs() > max_temp_diff) {
 				log.debug("adjust_tstat_for_more_less_heat_cool>schedule ${scheduleName}:max_temp_diff= ${max_temp_diff},temp_diff=${temp_diff},too much adjustment for less heat")
