@@ -1374,11 +1374,11 @@ private def adjust_vent_settings_in_zone(indiceSchedule) {
 	log.debug("adjust_vent_settings_in_zone>schedule ${scheduleName}: zones= ${zones}")
 
 	if (setRoomThermostatsOnly=='true') {
-		log.debug("adjust_vent_settings_in_zone>schedule ${scheduleName}: schedule ${scheduleName},all room Tstats set and setRoomThermostatsOnlyFlag= true,exiting")
+		log.debug("adjust_vent_settings_in_zone>schedule ${scheduleName}:all room Tstats set and setRoomThermostatsOnlyFlag= true,exiting")
 		return				    
 	}    
 	String mode = thermostat?.currentThermostatMode.toString()
-    
+	float currentTempAtTstat = thermostat?.currentTemperature.toFloat().round(1)
 	if (mode=='heat') {
 		desiredTemp = thermostat.currentHeatingSetpoint.toFloat().round(1)
 	} else if (mode=='cool') {    
@@ -1416,19 +1416,17 @@ private def adjust_vent_settings_in_zone(indiceSchedule) {
 				continue
 			}
 			def tempAtSensor =getSensorTempForAverage(indiceRoom)			
-			if (tempAtSensor != null) {
-				float temp_diff_at_sensor = tempAtSensor.toFloat().round(1) - desiredTemp 
-				log.debug("adjust_vent_settings_in_zone>schedule ${scheduleName}, in zone ${zoneName}, room ${roomName}, temp_diff_at_sensor=${temp_diff_at_sensor}, avg_temp_diff=${avg_temp_diff}")
-				switchLevel = ((temp_diff_at_sensor / avg_temp_diff.abs()) * 100).round()
+			if (tempAtSensor == null) {
+				tempAtSensor= currentTempAtTstat				            
+			}
+			float temp_diff_at_sensor = tempAtSensor.toFloat().round(1) - desiredTemp 
+			log.debug("adjust_vent_settings_in_zone>schedule ${scheduleName}, in zone ${zoneName}, room ${roomName}, temp_diff_at_sensor=${temp_diff_at_sensor}, avg_temp_diff=${avg_temp_diff}")
+			switchLevel = ((temp_diff_at_sensor / avg_temp_diff.abs()) * 100).round()
                                 
-				switchLevel =( switchLevel >=0)?((switchLevel<100)? switchLevel: 100):0
-				if (mode=='heat') {
-					100-switchLevel
-				}
-			} else {
-            	// no Temp sensor in the room, then just open the vents at 50%
-				switchLevel=50		            
-			}              
+			switchLevel =( switchLevel >=0)?((switchLevel<100)? switchLevel: 100):0
+			if (mode=='heat') {
+				100-switchLevel
+			}
 			if (switchLevel >=10) {	
 				closedAllVentsInZone=false
 			}              
