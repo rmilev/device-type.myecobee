@@ -727,7 +727,7 @@ private def getSensorTempForAverage(indiceRoom, typeSensor='tempSensor') {
 		try {        
 			tempSensor.refresh()
 		} catch (e) {
-			log.debug("getSensorTempForAverage>not able to do a refresh() on $tempSensor, exception $e")
+			log.debug("getSensorTempForAverage>not able to do a refresh() on $tempSensor")
 		}        
 		log.debug("getTempSensorForAverage>found sensor ${tempSensor}")
 		currentTemp = tempSensor.currentTemperature.toFloat().round(1)
@@ -943,7 +943,7 @@ private def set_fan_mode(indiceSchedule) {
 		try {        
 			outTempSensor.refresh()
 		} catch (e) {
-			log.debug("setFanMode>not able to do a refresh() on $outTempSensor, exception $e")
+			log.debug("setFanMode>not able to do a refresh() on $outTempSensor")
 		}
 		float outdoorTemp = outTempSensor?.currentTemperature.toFloat().round(1)
         
@@ -1004,7 +1004,7 @@ private def adjust_tstat_for_more_less_heat_cool(indiceSchedule) {
 	try {        
 		outTempSensor.refresh()
 	} catch (e) {
-		log.debug("setFanMode>not able to do a refresh() on $outTempSensor, exception $e")
+		log.debug("setFanMode>not able to do a refresh() on $outTempSensor")
 	}
 	float outdoorTemp = outTempSensor?.currentTemperature.toFloat().round(1)
     
@@ -1383,7 +1383,6 @@ private def control_vent_switches_in_zone(indiceSchedule, switchLevel=100) {
 
 private send(msg) {
 	if (sendPushMessage != "No") {
-		log.debug("sending push message")
 		sendPush(msg)
 	}
 
