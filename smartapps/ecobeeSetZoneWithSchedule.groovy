@@ -1235,9 +1235,6 @@ private def adjust_vent_settings_in_zone(indiceSchedule) {
 				if (temp_diff_at_sensor > avg_temp_diff || temp_diff_at_sensor <0)  {
 					switchLevel = 100-switchLevel 
 				}                    
-				if ((mode=='heat')  && (temp_diff_at_sensor > avg_temp_diff)) {
-					switchLevel = 100-switchLevel 
-				}                
 				switchLevel =( switchLevel >=0)?((switchLevel<100)? switchLevel: 100):(switchlevel< (-100))?0:100+switchLevel
 			} else {
             	// no Temp sensor in the room, then just open the vents at 50%
