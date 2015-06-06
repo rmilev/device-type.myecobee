@@ -483,14 +483,14 @@ def setZoneSettings() {
 				isResidentPresent=verify_presence_based_on_motion_in_rooms()
 				if (isResidentPresent) {            
 
-					if (state?.setProgramHoldSet != 'Home') {
+					if (state?.programHoldSet != 'Home') {
 						if (detailedNotif == 'true') {
 							send("ScheduleTstatZones>schedule ${scheduleName}: trying to set ${thermostat} to 'present' mode")
 						}
 						set_main_tstat_to_AwayOrPresent('present')
 					}
 				} else {
-					if (state?.setProgramHoldSet != 'Away') {
+					if (state?.programHoldSet != 'Away') {
 						if (detailedNotif == 'true') {
 							send("ScheduleTstatZones>schedule ${scheduleName}: trying to set ${thermostat} to 'away' mode")
 						}
@@ -584,7 +584,7 @@ private def set_main_tstat_to_AwayOrPresent(mode) {
 		if (detailedNotif == 'true') {
 			send("ecobeeSetZoneWithSchedule>set main thermostat ${thermostat} to ${mode} mode based on motion in all rooms")
 		}
-		state?.setProgramHoldSet=(mode=='present')?'Home': 'Away'    // set a state for further checking later
+		state?.programHoldSet=(mode=='present')?'Home': 'Away'    // set a state for further checking later
  		state?.programSetTime = now()
  		state?.programSetTimestamp = new Date().format("yyyy-MM-dd HH:mm", location.timeZone)
 	}    
@@ -628,8 +628,8 @@ private void check_if_hold_justified() {
 			if (detailedNotif == 'true') {
 				send("ecobeeSetZoneWithSchedule>hold no longer needed, program already in Away mode")
 			}
-			reset_state_program_values()
 			thermostat.resumeProgram("")
+			reset_state_program_values()
                 
 		} else {
 			log.trace("check_if_hold_justified>quiet since ${state.programSetTimestamp}, current program= ${currentProgName},'Away' hold justified")
