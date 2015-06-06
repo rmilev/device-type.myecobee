@@ -701,16 +701,10 @@ def setZoneSettings() {
 				if (isResidentPresent) {            
 
 					if (state.setPresentOrAway != 'present') {
-						if (detailedNotif == 'true') {
-							send("ScheduleTstatZones>schedule ${scheduleName}: trying to set ${thermostat} to 'present' mode")
-						}
 						set_main_tstat_to_AwayOrPresent('present')
 					}
 				} else {
 					if (state.setPresentOrAway != 'away') {
-						if (detailedNotif == 'true') {
-							send("ScheduleTstatZones>schedule ${scheduleName}: trying to set ${thermostat} to 'away' mode")
-						}
 						set_main_tstat_to_AwayOrPresent('away')
 					}                
 				}
