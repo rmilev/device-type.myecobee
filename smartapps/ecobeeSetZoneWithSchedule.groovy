@@ -1310,7 +1310,7 @@ private def control_vent_switches_in_zone(indiceSchedule, switchLevel=100) {
 				key = "ventSwitch${j}$indiceRoom"
 				def ventSwitch = settings[key]
 				if (ventSwitch != null) {
-					ventSwitchesOnSet	.add(ventSwitch)
+					ventSwitchesOnSet.add(ventSwitch)
 					setVentSwitchLevel(indiceRoom, ventSwitch, switchLevel)
 				}
 			} /* end for ventSwitch */
