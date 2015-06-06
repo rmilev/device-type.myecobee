@@ -430,8 +430,6 @@ def setZoneSettings() {
         
 		def key = "scheduleName$i"
 		def scheduleName = settings[key]
-        
-        
 		log.debug "setZoneSettings>found schedule=${scheduleName}, scheduled program at ecobee=$scheduleProgramName..."
 		key = "selectedMode$i"
 		def selectedModes = settings[key]
@@ -461,7 +459,7 @@ def setZoneSettings() {
 			state.lastScheduleName = scheduleName
                 
 			if (detailedNotif == 'true') {
-				send("Sc	heduleTstatZones>running schedule ${scheduleName},about to set zone settings as requested")
+				send("ecobeeSetZoneWithSchedule>running schedule ${scheduleName},about to set zone settings as requested")
 			}
         
 			// set the zoned vent switches to 'on'
@@ -636,7 +634,6 @@ private void check_if_hold_justified() {
 		} else {
 			log.trace("check_if_hold_justified>quiet since ${state.programSetTimestamp}, current program= ${currentProgName},'Away' hold justified")
 			send("ecobeeSetZoneWithSchedule>quiet since ${state.programSetTimestamp}, current program= ${currentProgName}, 'Away' hold justified")
-			return // hold justified, no more adjustments
 		}    
 	}
 	if ((state?.programHoldSet == 'Home') && (!verify_presence_based_on_motion_in_rooms())) {
@@ -645,7 +642,6 @@ private void check_if_hold_justified() {
 			thermostat.resumeProgram("")
 			send("ecobeeSetZoneWithSchedule>resumed program, no motion detected")
 			reset_state_program_values()
-			return // no more adjustments
 		}                	
 		else {	/* Climate was changed since the last climate set, just reset state program values */
 			reset_state_program_values()
@@ -657,13 +653,11 @@ private void check_if_hold_justified() {
 			}
 			reset_state_program_values()
 			thermostat.resumeProgram("")
-			return
 		} else {
 			log.trace("check_if_hold_justified>not quiet since ${state.programSetTimestamp}, current program= ${currentProgName}, 'Home' hold justified")
 			if (detailedNotif == 'true') {
 				send("ecobeeSetZoneWithSchedule>not quiet since ${state.programSetTimestamp}, current program= ${currentProgName}, 'Home' hold justified")
 			}
-			return // hold justified, no more adjustments
 		}
 	}   
     
