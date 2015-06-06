@@ -595,7 +595,7 @@ private def set_main_tstat_to_AwayOrPresent(mode) {
 }
 
 private void check_if_hold_justified() {
-	log.debug "Begin of Fcn check_if_hold_justified, settings=$settings"
+	log.debug "Begin of Fcn check_if_hold_justified"
 
 	String currentProgName = thermostat.currentClimateName
 	String currentSetClimate = thermostat.currentSetClimate
