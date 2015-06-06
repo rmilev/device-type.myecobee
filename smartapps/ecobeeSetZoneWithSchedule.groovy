@@ -484,16 +484,10 @@ def setZoneSettings() {
 				if (isResidentPresent) {            
 
 					if (state?.programHoldSet != 'Home') {
-						if (detailedNotif == 'true') {
-							send("ScheduleTstatZones>schedule ${scheduleName}: trying to set ${thermostat} to 'present' mode")
-						}
 						set_main_tstat_to_AwayOrPresent('present')
 					}
 				} else {
 					if (state?.programHoldSet != 'Away') {
-						if (detailedNotif == 'true') {
-							send("ScheduleTstatZones>schedule ${scheduleName}: trying to set ${thermostat} to 'away' mode")
-						}
 						set_main_tstat_to_AwayOrPresent('away')
 					}                
 				}
@@ -1316,7 +1310,7 @@ private def control_vent_switches_in_zone(indiceSchedule, switchLevel=100) {
 				key = "ventSwitch${j}$indiceRoom"
 				def ventSwitch = settings[key]
 				if (ventSwitch != null) {
-					ventSwitchesOnSet.add(ventSwitch)
+					ventSwitchesOnSet	.add(ventSwitch)
 					setVentSwitchLevel(indiceRoom, ventSwitch, switchLevel)
 				}
 			} /* end for ventSwitch */
