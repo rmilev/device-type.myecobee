@@ -558,8 +558,8 @@ def initialize() {
     
 	state.lastScheduleLastName=""
 	state.lastStartTime=null 
-	state.scheduleHeatingSetpoint=0  
-	state.scheduleCoolingSetpoint=0    
+	state.scheduleHeatSetpoint=0  
+	state.scheduleCoolSetpoint=0    
 	state.setPresentOrAway='present'
     
 	Integer delay =5 				// wake up every 5 minutes to apply zone settings if any
@@ -679,7 +679,7 @@ def setZoneSettings() {
 				// set the zoned vent switches to 'on'
 				def ventSwitchesZoneSet= control_vent_switches_in_zone(i)
 				log.debug "setZoneSettings>schedule ${scheduleName},list of Vents turned 'on'= ${ventSwitchesZoneSet}"
-				// adjust the temperature at the thermostat(s)
+				// adjust the temperature at the thermostat(s) based on temp sensor if any
 				adjust_thermostat_setpoint_in_zone(i)
 				set_fan_mode(i)
  				ventSwitchesOn = ventSwitchesOn + ventSwitchesZoneSet              
@@ -717,9 +717,12 @@ def setZoneSettings() {
 			}            
 			if (isResidentPresent) {
             
-				// let's adjust the thermostat's temp & mode settings according to outdoor temperature
-            
+				// adjust the temperature at the thermostat(s) based on temp sensor if any
+				adjust_thermostat_setpoint_in_zone(i)
+                
+				// let's adjust the thermostat's temp & mode settings according to outdoor temperature            
 				adjust_tstat_for_more_less_heat_cool(i)
+				// will override the fan settings if required (ex. more Fan Threshold is set)
 				set_fan_mode(i)
             
 			}        
@@ -1078,7 +1081,7 @@ private def switch_thermostatMode(indiceSchedule) {
 			def newMode = "heat"
 			thermostat.setThermostatMode(newMode)
 			log.debug "switch_thermostatMode>thermostat mode set to $newMode"
-			state.scheduleHeatSetpoint=currentHeatPoint      // Set for later processing in adjust_more_less_heat_cool()      
+			state.scheduleHeatSetpoint=currentHeatPoint      // Set for later processing in adjust_more_less_heat_cool()     
 		}
 	}
 	else if ((coolModeThreshold != null) && (outdoorTemp > coolModeThreshold?.toFloat())) {
