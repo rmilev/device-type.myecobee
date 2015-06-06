@@ -85,9 +85,6 @@ def generalSetupPage() {
 
 
 
-
-
-
 def roomsSetupPage() {
 
 	dynamicPage(name: "roomsSetup", title: "Rooms Setup", uninstall: true, nextPage: zonesSetupPage) {
@@ -134,136 +131,8 @@ def roomsSetupPage() {
 	}
 
 }
-/*
-def roomHrefDescription(i) {
-	def description ="Room no${i} " 
-	if (settings."roomName${i}" !=null) {
-		description += settings."roomName${i}"		    
-    }
-	return description
-}
-
-def roomPageState(i) {
-
-	if (settings."roomName${i}" != null) {
-		return 'complete'
-	} else {
-		return 'incomplete'
-	}
-
-}
-
-def roomHrefTitle(i) {
-	def title = "Room ${i}"
-	return title
-}
-
-def parse(description) {
-    ...
-    def msg = parseLanMessage(description)
-
-    def headersAsString = msg.header // => headers as a string
-    def headerMap = msg.headers      // => headers as a Map
-    def body = msg.body              // => request body as a string
-    def status = msg.status          // => http status code of the response
-    def json = msg.json              // => any JSON included in response body, as a data structure of lists and maps
-    def xml = msg.xml                // => any XML included in response body, as a document tree structure
-    def data = msg.data              // => either JSON or XML in response body (whichever is specified by content-type header in response)
-}
-
-def roomsSetupPage() {
 
 
-	def host = getHostAddress()
-	def port = host.split(":")[1]
-	def path = "/idHashString/devices"
-
-	def hubAction = new physicalgraph.device.HubAction(
-		method: "GET",
-		path: path,
-		headers: [HOST:host]
-	)
-	hubAction.options = [outputMsgToS3:true]
-	hubAction
-    
-	dynamicPage(name: "roomsSetupPage", title: "Rooms Setup",nextPage: zonesSetupPage) {
-		section("Rooms") {
-			for (int i = 1; i <= settings.roomsCount; i++) {
-				href(name: "toRoomPage$i", page: "roomsSetup", params: [indiceRoom: i],  description: roomHrefDescription(i), title: roomHrefTitle(i), state: roomPageState(i) )
-			}		
-		}
-		
-		section {
-			href(name: "toGeneralSetupPage", title: "Back to General Setup Page", page: "generalSetupPage")
-		}
-        
-	}        
-}        
-
-def roomsSetup(params) {
-	def indiceRoom = params?.indiceRoom?.intValue()
-	log.debug "roomsSetup> indiceRoom=${indiceRoom}"
-    
-	dynamicPage(name: "roomsSetup", title: "Rooms Setup") {
-		section("Room ${indiceRoom} Setup") {
-			input (name: "roomName${indiceRoom}", title: "Room Name",  type: "text",  
-				defaultValue:settings."roomName${indiceRoom}")
-		}
-        
-		section("Room ${indiceRoom}-Thermostat [optional]") {
-			input (name: "roomTstat${indiceRoom}", title: "Room thermostat to be set", type: "capability.thermostat", 
-				required: false, defaultValue:settings."roomTstat${indiceRoom}")
-                
-                
-		}
-		section("Room ${indiceRoom}-TempSensor [optional]") {
-			input (name: "tempSensor${indiceRoom}", title: "Temp sensor to be used for better temp adjustment",  
-				type: "capability.temperatureMeasurement", defaultValue:settings."tempSensor${indiceRoom}", required:false)
-		}
-            
-		section("Room ${indiceRoom}-Vent Switches [optional]") {
-			input (name: "ventSwitch1${indiceRoom}" ,title: "Vent switch no1 in room",  
-					type: "capability.switch", defaultValue: settings."ventSwitch1${indiceRoom}", required: false)
-			input (name: "ventSwitch2${indiceRoom}" ,title: "Vent switch no2 in room",  
-					type: "capability.switch", defaultValue: settings."ventSwitch2${indiceRoom}", required: false)
-
-			input (name: "ventSwitch3${indiceRoom}" ,title: "Vent switch no3 in room",  
-					type: "capability.switch", defaultValue: settings."ventSwitch3${indiceRoom}", required: false)
-
-			input (name: "ventSwitch4${indiceRoom}" ,title: "Vent switch no4 in room",  
-					type: "capability.switch", defaultValue: settings."ventSwitch4${indiceRoom}", required: false)
-			input (name: "ventSwitch5${indiceRoom}" ,title: "Vent switch no5 in room",  
-					type: "capability.switch", defaultValue: settings."ventSwitch5${indiceRoom}", required: false)
-                    
-		}
-        
-		section("Room ${indiceRoom}-MotionSensor [optional]") {
-			input (name: "motionSensor${indiceRoom}", title: "Motion sensor to be used to detect if room is occupied", 
-				type: "capability.motionSensor", defaultValue:settings."motionSensor${indiceRoom}",required: false)
-		}
-        
-		section("Room ${indiceRoom}-Do temp adjustment based on avg temp calculation when occupied room only") {
-			input (name: "needOccupiedFlag${indiceRoom}", title: "Will do temp adjustement only when Occupied [default=false]", 
-				type: "Boolean",metadata: [values: ["true", "false"]],  
-				defaultValue:settings."needOccupiedFlag${indiceRoom}",required: false)
-                
-		}
-		section("Room ${indiceRoom}-Do temp adjustment with this occupied's threshold") {
-			input (name: "residentsQuietThresh${indiceRoom}", title: "Threshold in minutes for motion detection [default=15 min]",
-				type: "number",required: false,
- 				defaultValue: settings."residentsQuietThresh${indiceRoom}")
-                
-		}                
-		
-		section {
-			href(name: "toRoomsSetupPage", title: "Back to Rooms Setup Page", page: "roomsSetupPage")
-		}
-
-	}
-
-}
-
-*/
 
 def zoneHrefDescription(i) {
 	def description ="Zone no ${i} "
@@ -522,8 +391,8 @@ def initialize() {
 	// Initialize state variables
     
 	state.lastScheduleLastName=""
-	state.scheduleHeatingSetpoint=0  
-	state.scheduleCoolingSetpoint=0    
+	state.scheduleHeatSetpoint=0  
+	state.scheduleCoolSetpoint=0    
 	state.setPresentOrAway='present'
     
 	Integer delay =5 				// wake up every 5 minutes to apply zone settings if any
@@ -592,13 +461,13 @@ def setZoneSettings() {
 			state.lastScheduleName = scheduleName
                 
 			if (detailedNotif == 'true') {
-				send("ScheduleTstatZones>running schedule ${scheduleName},about to set zone settings as requested")
+				send("Sc	heduleTstatZones>running schedule ${scheduleName},about to set zone settings as requested")
 			}
         
 			// set the zoned vent switches to 'on'
 			def ventSwitchesZoneSet= control_vent_switches_in_zone(i)
 			log.debug "setZoneSettings>schedule ${scheduleName},list of Vents turned 'on'= ${ventSwitchesZoneSet}"
-			// adjust the temperature at the thermostat(s)
+			// adjust the temperature at the thermostat(s) based on temp sensors if any
 			adjust_thermostat_setpoint_in_zone(i)
  			ventSwitchesOn = ventSwitchesOn + ventSwitchesZoneSet              
 		} else if (state.lastScheduleName == scheduleName) {
@@ -607,38 +476,45 @@ def setZoneSettings() {
 			def setAwayOrPresent = (setAwayOrPresentFlag)?:'false'
 			Boolean isResidentPresent=true
             
+            
 			if (setAwayOrPresent=='true') {
 	            
+				// Check if current Hold (if any) is justified
+    	        check_if_hold_justified()
+                
 				isResidentPresent=verify_presence_based_on_motion_in_rooms()
 				if (isResidentPresent) {            
 
-					if (state.setPresentOrAway != 'present') {
+					if (state?.setProgramHoldSet != 'Home') {
 						if (detailedNotif == 'true') {
 							send("ScheduleTstatZones>schedule ${scheduleName}: trying to set ${thermostat} to 'present' mode")
 						}
 						set_main_tstat_to_AwayOrPresent('present')
 					}
 				} else {
-					if (state.setPresentOrAway != 'away') {
+					if (state?.setProgramHoldSet != 'Away') {
 						if (detailedNotif == 'true') {
 							send("ScheduleTstatZones>schedule ${scheduleName}: trying to set ${thermostat} to 'away' mode")
 						}
 						set_main_tstat_to_AwayOrPresent('away')
 					}                
 				}
-			}            
-			if (isResidentPresent) {
+			}   
             
+			if (isResidentPresent) {
+				// adjust the temperature at the thermostat(s) based on temp sensors if any
+				adjust_thermostat_setpoint_in_zone(i)            
 				// let's adjust the thermostat's temp & mode settings according to outdoor temperature
 				adjust_tstat_for_more_less_heat_cool(i)
 				// will override the fan settings if required (ex. more Fan Threshold is set)
 				set_fan_mode(i)
             
 			}        
+            
 			// let's adjust the vent settings according to desired Temp
             
-			// let's adjust the thermostat's temp & mode settings according to outdoor temperature
-			adjust_tstat_for_more_less_heat_cool(i)
+			adjust_vent_settings_in_zone(i)
+            
 		}
 
 	} /* end for */ 	
@@ -687,6 +563,15 @@ private def verify_presence_based_on_motion_in_rooms() {
 	return result
 }
 
+private void reset_state_program_values() {
+
+ 	state.programSetTime = null
+ 	state.programSetTimestamp = ""
+ 	state.programHoldSet = ""
+
+}
+
+
 private def set_main_tstat_to_AwayOrPresent(mode) {
 
 	try {
@@ -701,13 +586,90 @@ private def set_main_tstat_to_AwayOrPresent(mode) {
 		if (detailedNotif == 'true') {
 			send("ecobeeSetZoneWithSchedule>set main thermostat ${thermostat} to ${mode} mode based on motion in all rooms")
 		}
-		state.setPresentOrAway=mode    // set a state for further checking later
+		state?.setProgramHoldSet=(mode=='present')?'Home': 'Away'    // set a state for further checking later
+ 		state?.programSetTime = now()
+ 		state?.programSetTimestamp = new Date().format("yyyy-MM-dd HH:mm", location.timeZone)
 	}    
 	catch (e) {
 		log.error("set_tstat_to_AwayOrPresent>not able to set thermostat ${thermostat} to ${mode} mode (exception $e)")
 	}
 
 }
+
+private void check_if_hold_justified() {
+	log.debug "Begin of Fcn check_if_hold_justified, settings=$settings"
+
+	String currentProgName = thermostat.currentClimateName
+	String currentSetClimate = thermostat.currentSetClimate
+
+	String ecobeeMode = thermostat.currentThermostatMode.toString()
+	log.trace "check_if_hold_justified> location.mode = $location.mode"
+	log.trace "check_if_hold_justified> ecobee Mode = $ecobeeMode"
+		log.trace "check_if_hold_justified> currentProgName = $currentProgName"
+	log.trace "check_if_hold_justified> currentSetClimate = $currentSetClimate"
+	log.trace "check_if_hold_justified>state=${state}"
+
+	if (detailedNotif == 'true') {
+		if (state?.programHoldSet!= null && state?.programHoldSet!= "") {
+        
+			send("ecobeeSetZoneWithSchedule>Hold ${state.programHoldSet} has been set")
+		}
+	}
+	if ((state?.programHoldSet == 'Away') && (verify_presence_based_on_motion_in_rooms())) {
+		if (currentSetClimate.toUpperCase() == 'AWAY') {       
+			log.trace("check_if_hold_justified>it's not been quiet since ${state.programSetTimestamp},resume program...")
+			thermostat.resumeProgram("")
+			send("ecobeeSetZoneWithSchedule>resumed current program, motion detected")
+			reset_state_program_values()
+		}                
+ 		else {	/* Climate was changed since the last climate set, just reset state program values */
+			reset_state_program_values()
+		}
+	} else if (state?.programHoldSet == 'Away') {
+		if (currentProgName.toUpperCase() == 'AWAY') {
+			if (detailedNotif == 'true') {
+				send("ecobeeSetZoneWithSchedule>hold no longer needed, program already in Away mode")
+			}
+			reset_state_program_values()
+			thermostat.resumeProgram("")
+                
+		} else {
+			log.trace("check_if_hold_justified>quiet since ${state.programSetTimestamp}, current program= ${currentProgName},'Away' hold justified")
+			send("ecobeeSetZoneWithSchedule>quiet since ${state.programSetTimestamp}, current program= ${currentProgName}, 'Away' hold justified")
+			return // hold justified, no more adjustments
+		}    
+	}
+	if ((state?.programHoldSet == 'Home') && (!verify_presence_based_on_motion_in_rooms())) {
+		if (currentSetClimate.toUpperCase() == 'HOME') {       
+			log.trace("check_if_hold_justified>it's been quiet since ${state.programSetTimestamp},resume program...")
+			thermostat.resumeProgram("")
+			send("ecobeeSetZoneWithSchedule>resumed program, no motion detected")
+			reset_state_program_values()
+			return // no more adjustments
+		}                	
+		else {	/* Climate was changed since the last climate set, just reset state program values */
+			reset_state_program_values()
+		}
+	} else if (state?.programHoldSet == 'Home')  { 
+		if (currentProgName.toUpperCase() == 'HOME') {
+			if (detailedNotif == 'true') {
+				send("ecobeeSetZoneWithSchedule>hold no longer needed, program already in Home mode")
+			}
+			reset_state_program_values()
+			thermostat.resumeProgram("")
+			return
+		} else {
+			log.trace("check_if_hold_justified>not quiet since ${state.programSetTimestamp}, current program= ${currentProgName}, 'Home' hold justified")
+			if (detailedNotif == 'true') {
+				send("ecobeeSetZoneWithSchedule>not quiet since ${state.programSetTimestamp}, current program= ${currentProgName}, 'Home' hold justified")
+			}
+			return // hold justified, no more adjustments
+		}
+	}   
+    
+	log.debug "End of Fcn check_if_hold_justified"
+}
+
 
 private def getSensorTempForAverage(indiceRoom, typeSensor='tempSensor') {
 	def key 
@@ -1066,7 +1028,7 @@ private def adjust_tstat_for_more_less_heat_cool(indiceSchedule) {
 			}
 			send("ecobeeSetZoneWithSchedule>cooling setPoint now= ${targetTstatTemp}°, outdoorTemp <${lessCoolThreshold}°")
 			thermostat.setCoolingSetpoint(targetTstatTemp)
-		}        
+		}            
 	} 
 }
 
