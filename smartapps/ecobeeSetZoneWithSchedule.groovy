@@ -478,7 +478,7 @@ def setZoneSettings() {
 			if (setAwayOrPresent=='true') {
 	            
 				// Check if current Hold (if any) is justified
-    	        check_if_hold_justified()
+				check_if_hold_justified()
                 
 				isResidentPresent=verify_presence_based_on_motion_in_rooms()
 				if (isResidentPresent) {            
