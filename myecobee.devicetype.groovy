@@ -2,7 +2,7 @@
  *  My Ecobee Device
  *  Copyright 2014 Yves Racine
  *  linkedIn profile: ca.linkedin.com/pub/yves-racine-m-sc-a/0/406/4b/
- *
+ *  Version 2.0.1
  *  Code: https://github.com/yracine/device-type.myecobee
  *  Refer to readme file for installation instructions.
  *
@@ -17,9 +17,13 @@
  *  for the specific language governing permissions and limitations under the License.
  * 
  */
+ 
 
 // for the UI
 preferences {
+
+//	Preferences are no longer required since I created a Service Manager.
+
 	input("thermostatId", "text", title: "Serial #", description:
 		"The serial number of your thermostat (no spaces)")
 	input("appKey", "text", title: "App Key", description:
@@ -519,8 +523,8 @@ void setHeatingSetpoint(temp) {
 		null, null)
         
 	def dataEvents=[
-		heatingSetpoint=temp,
-		heatingSetpointDisplay=temp
+		heatingSetpoint:temp,
+		heatingSetpointDisplay:temp
 	]        
 	def currentMode = device.currentValue("thermostatMode")
 	if (currentMode=='heat') {
@@ -534,8 +538,8 @@ void setCoolingSetpoint(temp) {
 		null, null)
 
 	def dataEvents=[
-		coolingSetpoint=temp,
-		coolingSetpointDisplay=temp
+		coolingSetpoint:temp,
+		coolingSetpointDisplay:temp
 	]        
 	def currentMode = device.currentValue("thermostatMode")
 	if (currentMode=='cool') {
@@ -748,7 +752,7 @@ void poll() {
 
 	getThermostatInfo(thermostatId)
 
-	def poll_interval=0.25   // set a 15 second poll interval to avoid unecessary load on ecobee servers
+	def poll_interval=1   // set a 1 min. poll interval to avoid unecessary load on ecobee servers
 	def time_check_for_poll = (now() - (poll_interval * 60 * 1000))
 	if ((state?.lastPollTimestamp) && (state?.lastPollTimestamp > time_check_for_poll)) {
 		if (settings.trace) {
