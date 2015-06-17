@@ -2,7 +2,7 @@
  *  My Ecobee Device
  *  Copyright 2014 Yves Racine
  *  linkedIn profile: ca.linkedin.com/pub/yves-racine-m-sc-a/0/406/4b/
- *  Version 2.0.3
+ *  Version 2.0.4
  *  Code: https://github.com/yracine/device-type.myecobee
  *  Refer to readme file for installation instructions.
  *
@@ -523,11 +523,11 @@ void setHeatingSetpoint(temp) {
 		null, null)
         
 	def currentMode = device.currentValue("thermostatMode")
+	sendEvent(name: 'heatingSetpoint', value: temp,, unit: getTemperatureScale())
+	sendEvent(name: 'heatingSetpointDisplay', value: temp, unit: getTemperatureScale())
 	if (currentMode=='heat') {
-		dataEvents = dataEvents + [thermostatSetpoint: temp]     
+		sendEvent('thermostatSetpoint', value: temp, unit: getTemperatureScale())     
 	}
-	sendEvent(name: 'heatingSetpoint', value: temp)
-	sendEvent(name: 'heatingSetpointDisplay', value: temp)
 }
 
 void setCoolingSetpoint(temp) {
@@ -535,11 +535,11 @@ void setCoolingSetpoint(temp) {
 		null, null)
 
 	def currentMode = device.currentValue("thermostatMode")
+	sendEvent(name: 'coolingSetpoint', value: temp, unit: getTemperatureScale())
+	sendEvent(name: 'coolingSetpointDisplay', value: temp, unit: getTemperatureScale())
 	if (currentMode=='cool') {
-		dataEvents = dataEvents + [thermostatSetpoint: temp]     
+		sendEvent('thermostatSetpoint', value: temp, unit: getTemperatureScale())     
 	}
-	sendEvent(name: 'coolingSetpoint', value: temp)
-	sendEvent(name: 'coolingSetpointDisplay', value: temp)
 
 }
 
