@@ -755,7 +755,7 @@ void poll() {
 			log.debug "poll>thermostatId = ${thermostatId},time_check_for_poll (${time_check_for_poll}) < state.lastPollTimestamp (${state.lastPollTimestamp}), not refreshing data..."
 			sendEvent name: "verboseTrace", value:
 				"poll>thermostatId = ${thermostatId},time_check_for_poll (${time_check_for_poll} < state.lastPollTimestamp (${state.lastPollTimestamp}), not refreshing data..."
-    	}
+		}
 		return
 	}
 	state.lastPollTimestamp = now()
