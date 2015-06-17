@@ -2,7 +2,7 @@
  *  My Ecobee Device
  *  Copyright 2014 Yves Racine
  *  linkedIn profile: ca.linkedin.com/pub/yves-racine-m-sc-a/0/406/4b/
- *  Version 2.0.2
+ *  Version 2.0.3
  *  Code: https://github.com/yracine/device-type.myecobee
  *  Refer to readme file for installation instructions.
  *
@@ -522,30 +522,25 @@ void setHeatingSetpoint(temp) {
 	setHold("", device.currentValue("coolingSetpoint"), temp,
 		null, null)
         
-	def dataEvents=[
-		heatingSetpoint:temp,
-		heatingSetpointDisplay:temp
-	]        
 	def currentMode = device.currentValue("thermostatMode")
 	if (currentMode=='heat') {
 		dataEvents = dataEvents + [thermostatSetpoint: temp]     
 	}
-	generateEvent(dataEvents)
+	sendEvent(name: 'heatingSetpoint', value: temp)
+	sendEvent(name: 'heatingSetpointDisplay', value: temp)
 }
 
 void setCoolingSetpoint(temp) {
 	setHold("", temp, device.currentValue("heatingSetpoint"),
 		null, null)
 
-	def dataEvents=[
-		coolingSetpoint:temp,
-		coolingSetpointDisplay:temp
-	]        
 	def currentMode = device.currentValue("thermostatMode")
 	if (currentMode=='cool') {
 		dataEvents = dataEvents + [thermostatSetpoint: temp]     
 	}
-	generateEvent(dataEvents)
+	sendEvent(name: 'coolingSetpoint', value: temp)
+	sendEvent(name: 'coolingSetpointDisplay', value: temp)
+
 }
 
 void off() {
