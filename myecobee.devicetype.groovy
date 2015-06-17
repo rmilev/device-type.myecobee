@@ -2,7 +2,7 @@
  *  My Ecobee Device
  *  Copyright 2014 Yves Racine
  *  linkedIn profile: ca.linkedin.com/pub/yves-racine-m-sc-a/0/406/4b/
- *  Version 2.0.1
+ *  Version 2.0.2
  *  Code: https://github.com/yracine/device-type.myecobee
  *  Refer to readme file for installation instructions.
  *
@@ -752,7 +752,7 @@ void poll() {
 
 	getThermostatInfo(thermostatId)
 
-	def poll_interval=1   // set a 1 min. poll interval to avoid unecessary load on ecobee servers
+	def poll_interval=0.25   // set a 15 sec. poll interval to avoid unecessary load on ecobee servers
 	def time_check_for_poll = (now() - (poll_interval * 60 * 1000))
 	if ((state?.lastPollTimestamp) && (state?.lastPollTimestamp > time_check_for_poll)) {
 		if (settings.trace) {
