@@ -2,7 +2,7 @@
  *  My Ecobee Device
  *  Copyright 2014 Yves Racine
  *  linkedIn profile: ca.linkedin.com/pub/yves-racine-m-sc-a/0/406/4b/
- *  Version 2.0.4
+ *  Version 2.0.5
  *  Code: https://github.com/yracine/device-type.myecobee
  *  Refer to readme file for installation instructions.
  *
@@ -518,17 +518,18 @@ void heatLevelDown() {
 
 // handle commands
 
+
 void setHeatingSetpoint(temp) {
-	setHold("", device.currentValue("coolingSetpoint"), temp,
+	def thermostatId= determine_tstat_id("") 	    
+	setHold(thermostatId, device.currentValue("coolingSetpoint"), temp,
 		null, null)
-        
+	sendEvent(name: 'heatingSetpoint', value: temp,unit: getTemperatureScale())
 	def currentMode = device.currentValue("thermostatMode")
-	sendEvent(name: 'heatingSetpoint', value: temp,, unit: getTemperatureScale())
-	sendEvent(name: 'heatingSetpointDisplay', value: temp, unit: getTemperatureScale())
-	if (currentMode=='heat') {
-		sendEvent('thermostatSetpoint', value: temp, unit: getTemperatureScale())     
-	}
+	if ((currentMode=='heat') || (currentMode=='auto')) {
+		sendEvent(name: 'thermostatSetpoint', value: temp,unit: getTemperatureScale())     
+	} 
 }
+
 
 void setCoolingSetpoint(temp) {
 	setHold("", temp, device.currentValue("heatingSetpoint"),
@@ -537,8 +538,8 @@ void setCoolingSetpoint(temp) {
 	def currentMode = device.currentValue("thermostatMode")
 	sendEvent(name: 'coolingSetpoint', value: temp, unit: getTemperatureScale())
 	sendEvent(name: 'coolingSetpointDisplay', value: temp, unit: getTemperatureScale())
-	if (currentMode=='cool') {
-		sendEvent('thermostatSetpoint', value: temp, unit: getTemperatureScale())     
+	if ((currentMode=='cool') || (currentMode=='auto')) {
+		sendEvent(name:'thermostatSetpoint', value: temp, unit: getTemperatureScale())     
 	}
 
 }
