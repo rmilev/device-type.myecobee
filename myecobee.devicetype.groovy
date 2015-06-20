@@ -2,7 +2,7 @@
  *  My Ecobee Device
  *  Copyright 2014 Yves Racine
  *  linkedIn profile: ca.linkedin.com/pub/yves-racine-m-sc-a/0/406/4b/
- *  Version 2.0.5
+ *  Version 2.0.6
  *  Code: https://github.com/yracine/device-type.myecobee
  *  Refer to readme file for installation instructions.
  *
@@ -2267,13 +2267,6 @@ void controlPlug(thermostatId, plugName, plugState, plugSettings = []) {
 		',"functions":[{"type":"controlPlug","params":{"plugName":"' + plugName +
 		'","plugState":"' + plugState + '"'
 
-	// add the holdType (workaround till ecobee fixes the issue)
-    
-	if ((settings.holdType != null) && (settings.holdType.trim() != "")) {
-		bodyReq = bodyReq + '"holdType":"' + settings.holdType.trim() + '"'
-	} else {
-		bodyReq = bodyReq + '"holdType":"indefinite"'
-	}
 	// add the plugSettings if any
 	if ((plugSettings != null) && (plugSettings != [])) {
 		bodyReq = bodyReq + ',' + plugSet
