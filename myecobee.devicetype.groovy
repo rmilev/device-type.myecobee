@@ -2,7 +2,7 @@
  *  My Ecobee Device
  *  Copyright 2014 Yves Racine
  *  linkedIn profile: ca.linkedin.com/pub/yves-racine-m-sc-a/0/406/4b/
- *  Version 2.0.6
+ *  Version 2.0.7
  *  Code: https://github.com/yracine/device-type.myecobee
  *  Refer to readme file for installation instructions.
  *
@@ -1203,16 +1203,19 @@ private void doRequest(uri, args, type, success) {
 	} catch (java.net.UnknownHostException e) {
 		log.error "doRequest> Unknown host - check the URL " + params.uri
 		sendEvent name: "verboseTrace", value: "doRequest> Unknown host"
-		state.exceptionCount++        
+		state.exceptionCount = state.exceptionCount +1     
+		throw e        
 	} catch (java.net.NoRouteToHostException e) {
 		log.error "doRequest> No route to host - check the URL " + params.uri
 		sendEvent name: "verboseTrace", value: "doRequest> No route to host"
-		state.exceptionCount++        
+		state.exceptionCount = state.exceptionCount +1     
+		throw e        
 	} catch (e) {
 		log.debug "doRequest>exception $e for " + params.body
 		sendEvent name: "verboseTrace", value:
 			"doRequest>exception $e for " + params.body
-		state.exceptionCount++    
+		state.exceptionCount = state.exceptionCount +1     
+		throw e        
 	}
 }
 
@@ -3025,18 +3028,18 @@ private def refresh_tokens() {
 	} catch (java.net.UnknownHostException e) {
 		log.error "refresh_tokens> Unknown host - check the URL " + method.uri
 		sendEvent name: "verboseTrace", value: "refresh_tokens> Unknown host"
-		state.exceptionCount++        
+		state.exceptionCount = state.exceptionCount +1     
 		return false
 	} catch (java.net.NoRouteToHostException e) {
 		log.error "refresh_tokens> No route to host - check the URL " + method.uri
 		sendEvent name: "verboseTrace", value: "refresh_tokens> No route to host"
-		state.exceptionCount++        
+		state.exceptionCount = state.exceptionCount +1     
 		return false
 	} catch (e) {
 		log.debug "refresh_tokens>exception $e at " + method.uri
 		sendEvent name: "verboseTrace", value:
 			"refresh_tokens>exception $e at " + method.uri
-		state.exceptionCount++                    
+		state.exceptionCount = state.exceptionCount +1     
 		return false
 	}
 	// determine token's expire time
@@ -3341,8 +3344,8 @@ void initialSetup(device_client_id, auth_data, device_tstat_id) {
 	getThermostatInfo(thermostatId)
 	def ecobeeType=determine_ecobee_type_or_location("")
 	data.auth.ecobeeType = ecobeeType
-	state.exceptionCount=0    
-	state.lastPollTimestamp = now()
+	state?.exceptionCount=0    
+	state?.lastPollTimestamp = now()
 }
 
 def toQueryString(Map m) {
