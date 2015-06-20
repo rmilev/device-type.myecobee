@@ -1202,12 +1202,12 @@ private void doRequest(uri, args, type, success) {
 
 	} catch (java.net.UnknownHostException e) {
 		log.error "doRequest> Unknown host - check the URL " + params.uri
-		sendEvent name: "verboseTrace", value: "doRequest> Unknown host"
+		sendEvent name: "verboseTrace", value: "doRequest> Unknown host ${params.uri}"
 		state.exceptionCount = state.exceptionCount +1     
 		throw e        
 	} catch (java.net.NoRouteToHostException e) {
 		log.error "doRequest> No route to host - check the URL " + params.uri
-		sendEvent name: "verboseTrace", value: "doRequest> No route to host"
+		sendEvent name: "verboseTrace", value: "doRequest> No route to host ${params.uri}"
 		state.exceptionCount = state.exceptionCount +1     
 		throw e        
 	} catch (e) {
@@ -3027,12 +3027,12 @@ private def refresh_tokens() {
 		httpPostJson(method, successRefreshTokens)
 	} catch (java.net.UnknownHostException e) {
 		log.error "refresh_tokens> Unknown host - check the URL " + method.uri
-		sendEvent name: "verboseTrace", value: "refresh_tokens> Unknown host"
+		sendEvent name: "verboseTrace", value: "refresh_tokens> Unknown host ${method.uri}"
 		state.exceptionCount = state.exceptionCount +1     
 		return false
 	} catch (java.net.NoRouteToHostException e) {
 		log.error "refresh_tokens> No route to host - check the URL " + method.uri
-		sendEvent name: "verboseTrace", value: "refresh_tokens> No route to host"
+		sendEvent name: "verboseTrace", value: "refresh_tokens> No route to host ${method.uri}"
 		state.exceptionCount = state.exceptionCount +1     
 		return false
 	} catch (e) {
