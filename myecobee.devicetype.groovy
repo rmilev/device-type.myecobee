@@ -194,7 +194,7 @@ metadata {
 		command "deleteClimate"
 		command "setClimate"
 		command "iterateSetClimate"
-		command "controlPlug" // not tested as I don't own a smartplug
+		command "controlPlug" 
 		command "ventilatorOn"
 		command "ventilatorAuto"
 		command "ventilatorOff"
@@ -2245,6 +2245,7 @@ void updateClimate(thermostatId, climateName, deleteClimateFlag,
 		} /* end api call */               
 	} /* end for */
 }
+// controlPlug() only works with Smart-02 thermostats as smart plugs are now obsolete
 // thermostatId may only be 1 thermostat (not a list) 
 //	if no thermostatId is provided, it is defaulted to the current thermostatId 
 // plugName is the name of the plug name to be controlled 
@@ -2268,7 +2269,7 @@ void controlPlug(thermostatId, plugName, plugState, plugSettings = []) {
 		'","plugState":"' + plugState + '"'
 
 	// add the plugSettings if any
-	if ((plugSettings != null) && (plugSettings != [])) {
+	if (plugSettings) {
 		bodyReq = bodyReq + ',' + plugSet
 	}
 	bodyReq = bodyReq + '}}]}'
@@ -2290,7 +2291,7 @@ void controlPlug(thermostatId, plugName, plugState, plugSettings = []) {
  					plugState: plugState
  				]
                 
-				if ((plugSettings != null) && (plugSettings != '')) {
+				if (plugSettings) {
 					plugEvents = plugEvents + [plugSettings: plugSettings]
 				}
 				generateEvent(plugEvents)
