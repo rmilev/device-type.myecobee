@@ -2,7 +2,7 @@
  *  My Ecobee Device
  *  Copyright 2014 Yves Racine
  *  linkedIn profile: ca.linkedin.com/pub/yves-racine-m-sc-a/0/406/4b/
- *  Version 2.0.7
+ *  Version 2.0.8
  *  Code: https://github.com/yracine/device-type.myecobee
  *  Refer to readme file for installation instructions.
  *
@@ -1129,7 +1129,7 @@ private void api(method, args, success = {}) {
 		log.error ("api>found a high number of exceptions since last refresh_tokens() call, probably need to re-authenticate with ecobee, run MyEcobeeInit....")         
 		sendEvent (name: "verboseTrace", 
 			value: "api>found a high number of exceptions since last refresh_tokens() call, probably need to re-authenticate with ecobee, run MyEcobeeInit....")         
-		return		
+		state.exceptionCount=0
 	}    
 	def args_encoded = java.net.URLEncoder.encode(args.toString(), "UTF-8")
 	def methods = [
