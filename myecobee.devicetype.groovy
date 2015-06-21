@@ -2295,7 +2295,7 @@ void controlPlug(thermostatId, plugName, plugState, plugSettings = []) {
  				]
                 
 				if (plugSettings) {
-					plugEvents = plugEvents + [plugSettings: plugSettings]
+					plugEvents = plugEvents + [plugSettings: plugSet]
 				}
 				generateEvent(plugEvents)
 			} else {
