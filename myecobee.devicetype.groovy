@@ -2917,6 +2917,7 @@ void getThermostatInfo(thermostatId=settings.thermostatId) {
 // tstatType =managementSet or registered (no spaces). 
 // May also be set to a specific locationSet (ex./Toronto/Campus/BuildingA)
 // thermostatId may be a single thermostat only
+// returns true of false if intervalRevision or runtimeRevision has changed
 
 def getThermostatRevision(tstatType, thermostatId) {
 	def runtimeRevision,intervalRevision
