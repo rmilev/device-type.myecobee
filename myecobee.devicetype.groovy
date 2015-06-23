@@ -3292,7 +3292,7 @@ private def determine_ecobee_type_or_location(tstatType) {
 	} else if ((settings?.ecobeeType != null) && (settings?.ecobeeType != "")) {
 		ecobeeType = settings.ecobeeType.trim()
 		
-	} else if (modelNumber.toUpperCase().contains.("EMS")) {
+	} else if (modelNumber.toUpperCase().contains("EMS")) {
     
 		ecobeeType = 'managementSet'
 		settings.ecobeeType='managementSet'
