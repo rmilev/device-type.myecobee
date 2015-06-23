@@ -746,7 +746,6 @@ void poll() {
     
 	def thermostatId= determine_tstat_id("") 	    
 
-	getThermostatInfo(thermostatId)
 
 	def poll_interval=0.25   // set a 15 sec. poll interval to avoid unecessary load on ecobee servers
 	def time_check_for_poll = (now() - (poll_interval * 60 * 1000))
@@ -763,11 +762,13 @@ void poll() {
 	ecobeeType = determine_ecobee_type_or_location(ecobeeType)
 	if (!getThermostatRevision(ecobeeType,"")) {
     
-		// if there is no changes in runtime or internal revisions, stop the polling as values at ecobee haven't changed since
+		// if there is no changes in runtime or interval revisions, stop the polling as values at ecobee haven't changed since last poll()
 		return
 	}
     
     
+	getThermostatInfo(thermostatId)
+
 	// determine if there is an event running
     
 	Integer indiceEvent = 0    
