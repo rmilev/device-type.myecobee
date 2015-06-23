@@ -2,7 +2,7 @@
  *  My Ecobee Device
  *  Copyright 2014 Yves Racine
  *  linkedIn profile: ca.linkedin.com/pub/yves-racine-m-sc-a/0/406/4b/
- *  Version 2.0.10
+ *  Version 2.0.11
  *  Code: https://github.com/yracine/device-type.myecobee
  *  Refer to readme file for installation instructions.
  *
@@ -2381,15 +2381,14 @@ void getReportData(thermostatId, startDateTime, endDateTime, startInterval, endI
     
 
 
-	// Check the thermostat Revision in order to avoid polling ecobee servers unnecessarily 
+	// Check the interval Revision in order to avoid polling ecobee servers unnecessarily 
     
 	getThermostatRevision("", thermostatId)
 	def newReportRevision = device.currentValue('intervalRevision')
 	if (settings.trace) {
 		log.debug ("getReportData>state.reportRevision=${state?.reportRevision},newReportRevision=${newReportRevision}, component=$reportColumn...")
 	}
-	if ((state?.reportRevision) && (state?.reportRevision == newReportRevision) && 
-    	((state?.componentReport) && (state?.componentReport==reportColumn))) {
+	if ((state?.reportRevision == newReportRevision) && (state?.componentReport==reportColumn)) {
 		// Trying to produce report data on same component with same interval Revision
 		if (settings.trace) {
 			log.debug ("getReportData>called in a very short time with same component=${state.componentReport}, exiting...")
