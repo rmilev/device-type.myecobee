@@ -2,7 +2,7 @@
  *  My Ecobee Device
  *  Copyright 2014 Yves Racine
  *  linkedIn profile: ca.linkedin.com/pub/yves-racine-m-sc-a/0/406/4b/
- *  Version 2.0.9
+ *  Version 2.0.10
  *  Code: https://github.com/yracine/device-type.myecobee
  *  Refer to readme file for installation instructions.
  *
@@ -2917,7 +2917,7 @@ void getThermostatInfo(thermostatId=settings.thermostatId) {
 // tstatType =managementSet or registered (no spaces). 
 // May also be set to a specific locationSet (ex./Toronto/Campus/BuildingA)
 // thermostatId may be a single thermostat only
-// returns true of false if intervalRevision or runtimeRevision has changed
+// returns true if intervalRevision or runtimeRevision has changed or false otherwise.
 
 def getThermostatRevision(tstatType, thermostatId) {
 	def runtimeRevision,intervalRevision
@@ -2939,8 +2939,8 @@ def getThermostatRevision(tstatType, thermostatId) {
 				log.debug "getThermostatRevision>done for ${thermostatId},intervalRevision=$intervalRevision,runtimeRevision=$runtimeRevision," +
 					"state?.intervalRevision=${state?.intervalRevision}, state?.runtimeRevision=${state?.runtimeRevision}"
 			}
-			if (((state?.runtimeRevision) && (state?.runtimeRevision != runtimeRevision)) ||
-				((state?.intervalRevision) && (state?.intervalRevision != intervalRevision))) {
+			if ((state?.runtimeRevision != runtimeRevision) ||
+				(state?.intervalRevision != intervalRevision)) {
 				state?.intervalRevision=intervalRevision
 				state?.runtimeRevision=runtimeRevision
 				return true
