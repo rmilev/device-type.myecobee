@@ -2382,7 +2382,7 @@ void getReportData(thermostatId, startDateTime, endDateTime, startInterval, endI
 
 	// Check the interval Revision in order to avoid polling ecobee servers unnecessarily 
     
-	getThermostatRevision("", thermostatId)
+	def hasRevisionChanged=getThermostatRevision("", thermostatId)
 	def newReportRevision = device.currentValue('intervalRevision')
 	if (settings.trace) {
 		log.debug ("getReportData>state.reportRevision=${state?.reportRevision},newReportRevision=${newReportRevision}, component=$reportColumn...")
@@ -2921,7 +2921,7 @@ void getThermostatInfo(thermostatId=settings.thermostatId) {
 // tstatType =managementSet or registered (no spaces). 
 // May also be set to a specific locationSet (ex./Toronto/Campus/BuildingA)
 // thermostatId may be a single thermostat only
-// returns true if intervalRevision or runtimeRevision has changed or false otherwise.
+// returns true if intervalRevision, thermostatRevision or runtimeRevision has changed or false otherwise.
 
 def getThermostatRevision(tstatType, thermostatId) {
 	def runtimeRevision,intervalRevision,thermostatRevision
