@@ -29,7 +29,7 @@ preferences {
 	page(name: "selectThermostat", title: "Ecobee Thermostat", install: false, uninstall: true, nextPage: "selectMotionSensors") {
 		section("About") {
 			paragraph "ecobeeRemoteSensorsInit, the smartapp that creates individual ST sensors for your ecobee3's remote Sensors and polls them on a regular basis"
-			paragraph "Version 1.1.3\n\n" +
+			paragraph "Version 1.1.4\n\n" +
 				"If you like this app, please support the developer via PayPal:\n\nyracine@yahoo.com\n\n" +
 				"Copyright©2015 Yves Racine"
 			href url: "http://github.com/yracine", style: "embedded", required: false, title: "More information...",
@@ -76,7 +76,7 @@ def selectMotionSensors() {
 
 	log.debug "selectMotionSensors>ecobeeSensors= $ecobeeSensors"
 
-	if (ecobeeSensors.size() < 1) {
+	if ((!ecobeeSensors)  || (ecobeeSensors.size() < 1)) {
 
 		log.debug "selectMotionSensors>no values found"
 		return sensors
@@ -118,10 +118,11 @@ def selectTempSensors() {
 
 	log.debug "selectTempSensors>ecobeeSensors= $ecobeeSensors"
 
-	if (ecobeeSensors.size() < 1) {
+	if ((!ecobeeSensors)  || (ecobeeSensors.size() < 1)) {
 
 		log.debug "selectTempSensors>no values found"
 		return sensors
+
 	}
 
 	for (i in 0..ecobeeSensors.size() - 1) {
