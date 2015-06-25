@@ -2,7 +2,7 @@
  *  My Ecobee Device
  *  Copyright 2014 Yves Racine
  *  linkedIn profile: ca.linkedin.com/pub/yves-racine-m-sc-a/0/406/4b/
- *  Version 2.0.11
+ *  Version 2.0.12
  *  Code: https://github.com/yracine/device-type.myecobee
  *  Refer to readme file for installation instructions.
  *
@@ -104,6 +104,7 @@ metadata {
 		attribute "autoAway", "string"
 		attribute "intervalRevision", "string"
 		attribute "runtimeRevision", "string"
+		attribute "thermostatRevision", "string"
 		attribute "heatStages", "string"
 		attribute "coolStages", "string"
 		attribute "climateName", "string"
@@ -762,11 +763,9 @@ void poll() {
 	ecobeeType = determine_ecobee_type_or_location(ecobeeType)
 	if (!getThermostatRevision(ecobeeType,"")) {
     
-		// if there is no changes in runtime or interval revisions, stop the polling as values at ecobee haven't changed since last poll()
+		// if there are no changes in the thermostat, runtime or interval revisions, stop the polling as values at ecobee haven't changed since last poll()
 		return
 	}
-    
-    
 	getThermostatInfo(thermostatId)
 
 	// determine if there is an event running
@@ -2779,6 +2778,12 @@ void generateRemoteSensorEvents(thermostatId,postData='false') {
 				}
 				remoteData << data.thermostatList[0].remoteSensors[i]  // to be transformed into Json later
 			} 
+			if (!data.thermostatList[0].remoteSensors[i].capability) {
+				if (settings.trace) {
+					log.debug "generateRemoteSensorEvents>looping i=${i}, no capability values found..."
+				}
+				continue            
+			}            
 			for (j in 0..data.thermostatList[0].remoteSensors[i].capability.size()-1) {
 				if (settings.trace) {
 					log.debug "generateRemoteSensorEvents>looping i=${i},found ${data.thermostatList[0].remoteSensors[i].capability[j]} at j=${j}"
@@ -2919,7 +2924,7 @@ void getThermostatInfo(thermostatId=settings.thermostatId) {
 // returns true if intervalRevision or runtimeRevision has changed or false otherwise.
 
 def getThermostatRevision(tstatType, thermostatId) {
-	def runtimeRevision,intervalRevision
+	def runtimeRevision,intervalRevision,thermostatRevision
     
 	thermostatId = determine_tstat_id(thermostatId)
 	def ecobeeType = determine_ecobee_type_or_location(tstatType)
@@ -2929,24 +2934,32 @@ def getThermostatRevision(tstatType, thermostatId) {
 		def id = thermostatDetails[0]
 		def thermostatName = thermostatDetails[1]
 		def connected = thermostatDetails[2]
+		thermostatRevision = thermostatDetails[3]
 		runtimeRevision = thermostatDetails[5]
 		intervalRevision = thermostatDetails[6]
 		if ((thermostatId == id) && (connected=='true')) {
 			sendEvent name: "runtimeRevision", value: runtimeRevision
 			sendEvent name: "intervalRevision", value: intervalRevision
+			sendEvent name: "thermostatRevision", value: thermostatRevision
 			if (settings.trace) {	
-				log.debug "getThermostatRevision>done for ${thermostatId},intervalRevision=$intervalRevision,runtimeRevision=$runtimeRevision," +
-					"state?.intervalRevision=${state?.intervalRevision}, state?.runtimeRevision=${state?.runtimeRevision}"
+				log.debug "getThermostatRevision>done for ${thermostatId},intervalRevision=$intervalRevision,runtimeRevision=$runtimeRevision,thermostatRevision=$thermostatRevision," +
+					"state.intervalRevision=${state?.intervalRevision},state.runtimeRevision=${state?.runtimeRevision},state.thermostatRevision=${state?.thermostatRevision}"
 			}
-			if ((state?.runtimeRevision != runtimeRevision) ||
-				(state?.intervalRevision != intervalRevision)) {
+			if ((state?.runtimeRevision != runtimeRevision) || 
+				(state?.intervalRevision != intervalRevision) ||
+				(state?.thermostatRevision != thermostatRevision)) {
 				state?.intervalRevision=intervalRevision
 				state?.runtimeRevision=runtimeRevision
+				state?.thermostatRevision=thermostatRevision
 				return true
 			} else {
 				return false
 			}            
-		}            
+		} else if (connected=='false') {
+			if (settings.trace) {	
+				log.error "getThermostatRevision>thermostatId ${id} not connected" 
+			}
+		}        
 	}    
 	return false
 }
