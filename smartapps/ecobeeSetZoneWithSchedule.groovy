@@ -1142,7 +1142,7 @@ private def adjust_vent_settings_in_zone(indiceSchedule) {
 		desiredTemp = thermostat.currentHeatingSetpoint.toFloat().round(1)
 	} else if (mode=='cool') {    
 		desiredTemp = thermostat.currentCoolingSetpoint.toFloat().round(1)
-    } else {
+	} else {
 		desiredTemp = thermostat.currentThermostatSetpoint.toFloat().round(1)
 	}    
 	log.debug("adjust_vent_settings_in_zone>schedule ${scheduleName}, desiredTemp=${desiredTemp}")
