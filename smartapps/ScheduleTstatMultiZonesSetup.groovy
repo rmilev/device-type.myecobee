@@ -431,7 +431,7 @@ def schedulesSetup(params) {
 				options: zones,
  				multiple: true)
 		}
-		section("Schedule ${indiceSchedule} Day & Time of the desired Heating/Cooling settings for the selected zone(s)") {
+		section("Schedule ${indiceSchedule}- Day & Time of the desired Heating/Cooling settings for the selected zone(s)") {
 			input (name:"dayOfWeek${indiceSchedule}", type: "enum",
 				title: "Which day of the week to trigger the zoned heating/cooling settings?",
 				defaultValue:settings."dayOfWeek${indiceSchedule}",                 
