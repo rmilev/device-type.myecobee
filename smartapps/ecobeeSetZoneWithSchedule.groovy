@@ -43,7 +43,7 @@ def generalSetupPage() {
 	dynamicPage(name: "generalSetupPage", uninstall: true, nextPage: roomsSetupPage) {
 		section("About") {
 			paragraph "ecobeeSetZoneWithSchedule, the smartapp that enables Heating/Cooling Zoned Solutions based on your ecobee schedule(s)- coupled with z-wave vents (optional) for better temp settings control throughout your home"
-			paragraph "Version 0.9\n\n" +
+			paragraph "Version 0.9.1\n\n" +
 				"If you like this app, please support the developer via PayPal:\n\nyracine@yahoo.com\n\n" +
 				"Copyright©2015 Yves Racine"
 			href url: "http://github.com/yracine", style: "embedded", required: false, title: "More information...",
@@ -277,7 +277,7 @@ def schedulesSetup(params) {
 		enumModes << it.name
 	}    
     
-	def indiceSchedule=0
+	def indiceSchedule=1
 	// Assign params to indiceSchedule.  Sometimes parameters are double nested.
 	if (params?.indiceSchedule || params?.params?.indiceSchedule) {
 
