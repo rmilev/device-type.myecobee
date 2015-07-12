@@ -68,7 +68,7 @@ def selectMotionSensors() {
 	*/
 	try {
 		ecobee.generateRemoteSensorEvents("", 'false')
-    } catch (e) {
+	} catch (e) {
 		log.debug "selectMotionSensors>exception $e when getting list of motion Sensors, exiting..."
 		return sensors
 	}    
