@@ -29,7 +29,7 @@ preferences {
 	page(name: "selectThermostat", title: "Ecobee Thermostat", install: false, uninstall: true, nextPage: "selectMotionSensors") {
 		section("About") {
 			paragraph "ecobeeRemoteSensorsInit, the smartapp that creates individual ST sensors for your ecobee3's remote Sensors and polls them on a regular basis"
-			paragraph "Version 1.1.4\n\n" +
+			paragraph "Version 1.1.5\n\n" +
 				"If you like this app, please support the developer via PayPal:\n\nyracine@yahoo.com\n\n" +
 				"Copyright©2015 Yves Racine"
 			href url: "http://github.com/yracine", style: "embedded", required: false, title: "More information...",
@@ -63,11 +63,15 @@ preferences {
 
 def selectMotionSensors() {
 
+	def sensors = [: ]
 	/* Generate the list of all remote sensors available 
 	*/
-	ecobee.generateRemoteSensorEvents("", 'false')
-    
-	def sensors = [: ]
+	try {
+		ecobee.generateRemoteSensorEvents("", 'false')
+    } catch (e) {
+		log.debug "selectMotionSensors>exception $e when getting list of motion Sensors, exiting..."
+		return sensors
+	}    
 
 	/* Get only the list of all occupancy remote sensors available 
 	*/
@@ -76,7 +80,7 @@ def selectMotionSensors() {
 
 	log.debug "selectMotionSensors>ecobeeSensors= $ecobeeSensors"
 
-	if ((!ecobeeSensors)  || (ecobeeSensors.size() < 1)) {
+	if (!ecobeeSensors) {
 
 		log.debug "selectMotionSensors>no values found"
 		return sensors
@@ -115,10 +119,9 @@ def selectTempSensors() {
 	/* Get only the list of all temperature remote sensors available 
 	 */
 	def ecobeeSensors = ecobee.currentRemoteSensorTmpData.toString().split(",,")
-
 	log.debug "selectTempSensors>ecobeeSensors= $ecobeeSensors"
 
-	if ((!ecobeeSensors)  || (ecobeeSensors.size() < 1)) {
+	if (!ecobeeSensors) {
 
 		log.debug "selectTempSensors>no values found"
 		return sensors
@@ -348,7 +351,7 @@ private updateMotionSensors() {
 	def ecobeeSensors = ecobee.currentRemoteSensorOccData.toString().split(",,")
 	log.debug "updateTempSensors>ecobeeRemoteSensorOccData= $ecobeeSensors"
 
-	if (ecobeeSensors.size() < 1) {
+	if (!ecobeeSensors) {
 
 		log.debug "updateMotionSensors>no values found"
 		return
@@ -401,7 +404,7 @@ private updateTempSensors() {
 
 	log.debug "updateTempSensors>ecobeeRemoteSensorTmpData= $ecobeeSensors"
 
-	if (ecobeeSensors.size() < 1) {
+	if (!ecobeeSensors) {
 
 		log.debug "updateTempSensors>no values found"
 		return
