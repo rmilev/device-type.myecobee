@@ -2,7 +2,7 @@
  *  My Ecobee Device
  *  Copyright 2014 Yves Racine
  *  linkedIn profile: ca.linkedin.com/pub/yves-racine-m-sc-a/0/406/4b/
- *  Version 2.0.13
+ *  Version 2.1
  *  Code: https://github.com/yracine/device-type.myecobee
  *  Refer to readme file for installation instructions.
  *
@@ -649,11 +649,14 @@ void setHumidifierLevel(level) {
 	setThermostatSettings("", ['humidity': "${level}"])
 	sendEvent(name: 'humidifierLevel', value: level)
 }
+// Only valid for ecobee3 thermostats, not for EMS or Smart, Smart-SI thermostats)
 void followMeComfort(flag) {
 	flag = flag == 'true' ? 'true' : 'false'
 	setThermostatSettings("", ['followMeComfort': "${flag}"])
 	sendEvent(name: 'followMeComfort', value: flag)
 }
+// Only valid for ecobee3 thermostats, not for EMS or Smart, Smart-SI thermostats)
+
 void autoAway(flag) {
 	flag = flag == 'true' ? 'true' : 'false'
 	setThermostatSettings("", ['autoAway': "${flag}"])
@@ -743,7 +746,9 @@ def parse(String description) {
 
 }
 
-void poll() {
+void poll() 
+	throws groovyx.net.http.HttpResponseException,javax.net.ssl.SSLHandshakeException,
+    	IOException,java.net.UnknownHostException,java.net.NoRouteToHostException {
 	def tstatId,ecobeeType
     
 	def thermostatId= determine_tstat_id("") 	    
@@ -1107,7 +1112,9 @@ void resumeThisTstat() {
 	resumeProgram("") 
 	poll()
 }
-private void api(method, args, success = {}) {
+private void api(method, args, success = {}) 
+	throws javax.net.ssl.SSLHandshakeException, groovyx.net.http.HttpResponseException,IOException,
+    	java.net.UnknownHostException,java.net.NoRouteToHostException {
 	def MAX_EXCEPTION_COUNT=5
 	String URI_ROOT = "${get_URI_ROOT()}/1"
 	if (!isLoggedIn()) {
@@ -1180,7 +1187,9 @@ private void api(method, args, success = {}) {
 }
 
 // Need to be authenticated in before this is called. So don't call this. Call api.
-private void doRequest(uri, args, type, success) {
+private void doRequest(uri, args, type, success) 
+	throws javax.net.ssl.SSLHandshakeException,groovyx.net.http.HttpResponseException,IOException,
+    	java.net.UnknownHostException,java.net.NoRouteToHostException {
 	def params = [
 		uri: uri,
 		headers: [
@@ -2753,7 +2762,7 @@ void generateRemoteSensorEvents(thermostatId,postData='false') {
 	def remoteHumData = ""
 	def remoteOccData = ""
     
-	if (data.thermostatList[0].remoteSensors?.size() > 0) {
+	if (data.thermostatList[0].remoteSensors) {
 		for (i in 0..data.thermostatList[0].remoteSensors.size() - 1) {
 			if (settings.trace) {
 				log.debug "generateRemoteSensorEvents>found sensor ${data.thermostatList[0].remoteSensors[i]} at (${i})"
@@ -2766,25 +2775,18 @@ void generateRemoteSensorEvents(thermostatId,postData='false') {
  				// not a remote sensor
  				continue
 			}
- 			if (data.thermostatList[0].remoteSensors[i]?.capability?.size() <1) {
-				if (settings.trace) {
-					log.debug "generateRemoteSensorEvents>capability size is wrong (${data.thermostatList[0].remoteSensors[i]?.size()}) at (${i})"
-				}
-				// problem with the data
-				continue
-			}
-			if (postData == 'true') {
-				if (settings.trace) {
-					log.debug "generateRemoteSensorEvents>adding ${data.thermostatList[0].remoteSensors[i]} to remoteData"
-				}
-				remoteData << data.thermostatList[0].remoteSensors[i]  // to be transformed into Json later
-			} 
 			if (!data.thermostatList[0].remoteSensors[i].capability) {
 				if (settings.trace) {
 					log.debug "generateRemoteSensorEvents>looping i=${i}, no capability values found..."
 				}
 				continue            
 			}            
+			if (postData == 'true') {
+				if (settings.trace) {
+					log.debug "generateRemoteSensorEvents>adding ${data.thermostatList[0].remoteSensors[i]} to remoteData"
+				}
+				remoteData << data.thermostatList[0].remoteSensors[i]  // to be transformed into Json later
+			} 
 			for (j in 0..data.thermostatList[0].remoteSensors[i].capability.size()-1) {
 				if (settings.trace) {
 					log.debug "generateRemoteSensorEvents>looping i=${i},found ${data.thermostatList[0].remoteSensors[i].capability[j]} at j=${j}"
@@ -3018,7 +3020,10 @@ def getModelNumber() {
 	return ((data.thermostatList[0].identifier)? data.thermostatList[0].modelNumber: "")
 }
 
-private def refresh_tokens() {
+private def refresh_tokens() 
+	throws javax.net.ssl.SSLHandshakeException,groovyx.net.http.HttpResponseException,IOException,
+    	java.net.UnknownHostException,java.net.NoRouteToHostException {
+    
 	if (!isTokenExpired()) {
 
 		if (settings.trace) {
