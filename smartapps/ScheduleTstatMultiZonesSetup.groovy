@@ -646,9 +646,6 @@ def setZoneSettings() {
 		String startInLocalTime = startTimeToday.format("yyyy-MM-dd HH:mm", location.timeZone)
 		String endInLocalTime = endTimeToday.format("yyyy-MM-dd HH:mm", location.timeZone)
 		String nowInLocalTime = new Date().format("yyyy-MM-dd HH:mm", location.timeZone)
-		log.debug "setZoneSettings>found schedule ${scheduleName}, endTime=$endTime, startTime=$startTime, nowInLocalTime= ${nowInLocalTime},startInLocalTime=${startInLocalTime},endInLocalTime=${endInLocalTime}," +
-        		"currTime=${currTime},begintime=${startTimeToday.time},endTime=${endTimeToday.time},lastScheduleName=$state.lastScheduleName, lastStartTime=$state.lastStartTime"
-
 
 		Date startDate= new Date(startTimeToday.time)
 		Date endDate= new Date(endTimeToday.time)
@@ -661,6 +658,8 @@ def setZoneSettings() {
 				endTimeToday = endTimeToday - 1
 			}
 		}
+		log.debug "setZoneSettings>found schedule ${scheduleName}, startTime=$startTime,endTime=$endTime,nowInLocalTime= ${nowInLocalTime},startInLocalTime=${startInLocalTime},endInLocalTime=${endInLocalTime}," +
+        		"currTime=${currTime},begintime=${startTimeToday.time},endTime=${endTimeToday.time},lastScheduleName=$state.lastScheduleName, lastStartTime=$state.lastStartTime"
         
 		/* Poll the thermostat to get latest values */
         
