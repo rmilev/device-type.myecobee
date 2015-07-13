@@ -9,11 +9,15 @@
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
- *  Unless required by applicable law or	 agreed to in writing, software distributed under the License is distributed
+ *  Unless required by applicable law or agreed to in writing, software distributed under the License is distributed
  *  on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License
  *  for the specific language governing permissions and limitations under the License.
  *
  */
+ 
+ 
+import java.text.SimpleDateFormat
+
 definition(
 	name: "ScheduleTstatZones",
 	namespace: "yracine",
@@ -43,7 +47,7 @@ def generalSetupPage() {
 	dynamicPage(name: "generalSetupPage", uninstall: true, nextPage: roomsSetupPage) {
 		section("About") {
 			paragraph "ScheduleTstatZones, the smartapp that enables Heating/Cooling zoned settings at selected thermostat(s) coupled with z-wave vents (optional) for better temp settings control throughout your home"
-			paragraph "Version 0.9.3\n\n" +
+			paragraph "Version 0.9.4\n\n" +
 				"If you like this app, please support the developer via PayPal:\n\nyracine@yahoo.com\n\n" +
 				"Copyright©2015 Yves Racine"
 			href url: "http://github.com/yracine", style: "embedded", required: false, title: "More information...",
@@ -643,12 +647,9 @@ def setZoneSettings() {
 		def endTime = settings[key]
 		def endTimeToday = timeToday(endTime,location.timeZone)
 
-		String startInLocalTime = startTimeToday.format("yyyy-MM-dd HH:mm", location.timeZone)
-		String endInLocalTime = endTimeToday.format("yyyy-MM-dd HH:mm", location.timeZone)
-		String nowInLocalTime = new Date().format("yyyy-MM-dd HH:mm", location.timeZone)
-
-		Date startDate= new Date(startTimeToday.time)
-		Date endDate= new Date(endTimeToday.time)
+        
+		Date startDate= dateFormat(startTime)
+		Date endDate= dateFormat(endTime)
 		Calendar startCalendar = startDate.toCalendar()
 		Calendar endCalendar = endDate.toCalendar()
 		if (endCalendar.get(Calendar.DATE) != startCalendar.get(Calendar.DATE)) {
@@ -658,6 +659,10 @@ def setZoneSettings() {
 				endTimeToday = endTimeToday - 1
 			}
 		}
+		String startInLocalTime = startTimeToday.format("yyyy-MM-dd HH:mm", location.timeZone)
+		String endInLocalTime = endTimeToday.format("yyyy-MM-dd HH:mm", location.timeZone)
+		nowInLocalTime = new Date().format("yyyy-MM-dd HH:mm", location.timeZone)
+
 		log.debug "setZoneSettings>found schedule ${scheduleName}, startTime=$startTime,endTime=$endTime,nowInLocalTime= ${nowInLocalTime},startInLocalTime=${startInLocalTime},endInLocalTime=${endInLocalTime}," +
         		"currTime=${currTime},begintime=${startTimeToday.time},endTime=${endTimeToday.time},lastScheduleName=$state.lastScheduleName, lastStartTime=$state.lastStartTime"
         
@@ -741,6 +746,12 @@ def setZoneSettings() {
 	}
 	log.debug "End of Fcn"
 }
+
+private def dateFormat(dateString) {
+	Date newDate = Date.parse("yyyy-MM-dd'T'HH:mm:ss", dateString)
+	return newDate
+}
+
 
 private def isRoomOccupied(sensor, indiceRoom) {
 	def key = "residentsQuietThreshold$indiceRoom"
