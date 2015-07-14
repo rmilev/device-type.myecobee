@@ -43,7 +43,7 @@ def about() {
  	dynamicPage(name: "about", install: false, uninstall: true) {
  		section("About") {	
 			paragraph "My Ecobee Init, the smartapp that connects your Ecobee thermostat to SmartThings via cloud-to-cloud integration"
-			paragraph "Version 1.9.4\n\n" +
+			paragraph "Version 1.9.5\n\n" +
 			"If you like this app, please support the developer via PayPal:\n\nyracine@yahoo.com\n\n" +
 			"Copyright©2014 Yves Racine"
 			href url:"http://github.com/yracine/device-type.myecobee", style:"embedded", required:false, title:"More information...", 
@@ -422,8 +422,14 @@ def takeAction() {
 		log.debug "takeAction>Looping thru thermostats, found id $dni, about to poll"
 		try {        
 			d.poll()
-			// reset exception counter            
-			state?.exceptionCount=0       
+			def exceptionCheck = d.currentVerboseTrace
+			if (exceptionCheck.contains("exception")) {  // check if there is any exception reported in the verboseTrace associated to the device.
+				state.exceptionCount=state.exceptionCount+1    
+				log.error "found exception after polling, exceptionCount= ${state?.exceptionCount}: $exceptionCheck" 
+			} else {             
+				// reset exception counter            
+				state?.exceptionCount=0       
+			}                
 		} catch (e) {
 			state.exceptionCount=state.exceptionCount+1    
 			log.error "MyEcobeeInit>exception $e while trying to poll the device $d, exceptionCount= ${state?.exceptionCount}" 
@@ -623,3 +629,4 @@ def debugEvent(message, displayEvent) {
 	log.debug "Generating AppDebug Event: ${results}"
 	sendEvent (results)
 }
+
