@@ -43,7 +43,7 @@ def about() {
  	dynamicPage(name: "about", install: false, uninstall: true) {
  		section("About") {	
 			paragraph "My Ecobee Init, the smartapp that connects your Ecobee thermostat to SmartThings via cloud-to-cloud integration"
-			paragraph "Version 1.9.5\n\n" +
+			paragraph "Version 1.9.6\n\n" +
 			"If you like this app, please support the developer via PayPal:\n\nyracine@yahoo.com\n\n" +
 			"Copyright©2014 Yves Racine"
 			href url:"http://github.com/yracine/device-type.myecobee", style:"embedded", required:false, title:"More information...", 
@@ -423,7 +423,8 @@ def takeAction() {
 		try {        
 			d.poll()
 			def exceptionCheck = d.currentVerboseTrace
-			if (exceptionCheck.contains("exception")) {  // check if there is any exception reported in the verboseTrace associated to the device.
+			if ((exceptionCheck.contains("exception") && (!exceptionCheck.contains("Java.util.concurrent.TimeoutException")))) {  
+			// check if there is any exception reported in the verboseTrace associated to the device (except the ones linked to rate limiting).
 				state.exceptionCount=state.exceptionCount+1    
 				log.error "found exception after polling, exceptionCount= ${state?.exceptionCount}: $exceptionCheck" 
 			} else {             
