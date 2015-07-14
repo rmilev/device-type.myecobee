@@ -47,7 +47,7 @@ def generalSetupPage() {
 	dynamicPage(name: "generalSetupPage", uninstall: true, nextPage: roomsSetupPage) {
 		section("About") {
 			paragraph "ScheduleTstatZones, the smartapp that enables Heating/Cooling zoned settings at selected thermostat(s) coupled with z-wave vents (optional) for better temp settings control throughout your home"
-			paragraph "Version 0.9.4\n\n" +
+			paragraph "Version 0.9.5\n\n" +
 				"If you like this app, please support the developer via PayPal:\n\nyracine@yahoo.com\n\n" +
 				"Copyright©2015 Yves Racine"
 			href url: "http://github.com/yracine", style: "embedded", required: false, title: "More information...",
@@ -647,17 +647,12 @@ def setZoneSettings() {
 		def endTime = settings[key]
 		def endTimeToday = timeToday(endTime,location.timeZone)
 
-        
 		Date startDate= dateFormat(startTime)
 		Date endDate= dateFormat(endTime)
 		Calendar startCalendar = startDate.toCalendar()
 		Calendar endCalendar = endDate.toCalendar()
-		if (endCalendar.get(Calendar.DATE) != startCalendar.get(Calendar.DATE)) {
-			if (endTimeToday.time < startTimeToday.time) {
-				endTimeToday = endTimeToday + 1
-			} else {
-				endTimeToday = endTimeToday - 1
-			}
+		if (endCalendar.get(Calendar.HOUR_OF_DAY) < startCalendar.get(Calendar.HOUR_OF_DAY)) {
+			startTimeToday = startTimeToday - 1
 		}
 		String startInLocalTime = startTimeToday.format("yyyy-MM-dd HH:mm", location.timeZone)
 		String endInLocalTime = endTimeToday.format("yyyy-MM-dd HH:mm", location.timeZone)
