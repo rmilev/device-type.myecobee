@@ -424,7 +424,7 @@ def takeAction() {
 			d.poll()
 			def exceptionCheck = d.currentVerboseTrace
 			if ((exceptionCheck.contains("exception") || (exceptionCheck.contains("error")) && 
-            	(!exceptionCheck.contains("Java.util.concurrent.TimeoutException")))) {  
+				(!exceptionCheck.contains("Java.util.concurrent.TimeoutException")))) {  
 			// check if there is any exception or an error reported in the verboseTrace associated to the device (except the ones linked to rate limiting).
 				state.exceptionCount=state.exceptionCount+1    
 				log.error "found exception/error after polling, exceptionCount= ${state?.exceptionCount}: $exceptionCheck" 
