@@ -746,9 +746,7 @@ def parse(String description) {
 
 }
 
-void poll() 
-	throws groovyx.net.http.HttpResponseException,javax.net.ssl.SSLHandshakeException,
-    	IOException,java.net.UnknownHostException,java.net.NoRouteToHostException {
+void poll() {
 	def tstatId,ecobeeType
     
 	def thermostatId= determine_tstat_id("") 	    
@@ -1112,9 +1110,7 @@ void resumeThisTstat() {
 	resumeProgram("") 
 	poll()
 }
-private void api(method, args, success = {}) 
-	throws javax.net.ssl.SSLHandshakeException, groovyx.net.http.HttpResponseException,IOException,
-    	java.net.UnknownHostException,java.net.NoRouteToHostException {
+private void api(method, args, success = {}) {
 	def MAX_EXCEPTION_COUNT=5
 	String URI_ROOT = "${get_URI_ROOT()}/1"
 	if (!isLoggedIn()) {
@@ -1187,9 +1183,7 @@ private void api(method, args, success = {})
 }
 
 // Need to be authenticated in before this is called. So don't call this. Call api.
-private void doRequest(uri, args, type, success) 
-	throws javax.net.ssl.SSLHandshakeException,groovyx.net.http.HttpResponseException,IOException,
-    	java.net.UnknownHostException,java.net.NoRouteToHostException {
+private void doRequest(uri, args, type, success) {
 	def params = [
 		uri: uri,
 		headers: [
