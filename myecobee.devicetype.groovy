@@ -2,7 +2,7 @@
  *  My Ecobee Device
  *  Copyright 2014 Yves Racine
  *  linkedIn profile: ca.linkedin.com/pub/yves-racine-m-sc-a/0/406/4b/
- *  Version 2.1
+ *  Version 2.1.1
  *  Code: https://github.com/yracine/device-type.myecobee
  *  Refer to readme file for installation instructions.
  *
@@ -919,7 +919,7 @@ void poll() {
 		sendEvent(name: 'ventilatorMode', value: data.thermostatList[0].settings.vent)
 	}
        
-    
+	sendEvent name: "verboseTrace", value: "poll>done for thermostatId =${thermostatId}"
     
 }
 
