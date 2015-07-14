@@ -29,7 +29,7 @@ preferences {
 	page(name: "selectThermostat", title: "Ecobee Thermostat", install: false, uninstall: true, nextPage: "selectMotionSensors") {
 		section("About") {
 			paragraph "ecobeeRemoteSensorsInit, the smartapp that creates individual ST sensors for your ecobee3's remote Sensors and polls them on a regular basis"
-			paragraph "Version 1.1.5\n\n" +
+			paragraph "Version 1.1.6\n\n" +
 				"If you like this app, please support the developer via PayPal:\n\nyracine@yahoo.com\n\n" +
 				"Copyright©2015 Yves Racine"
 			href url: "http://github.com/yracine", style: "embedded", required: false, title: "More information...",
@@ -302,8 +302,16 @@ def takeAction() {
 	log.trace "takeAction>begin"
 	try {
 		ecobee.poll()
-		// reset exception counter            
-		state?.exceptionCount=0       
+		def exceptionCheck = ecobee.currentVerboseTrace
+		if ((exceptionCheck.contains("exception") || (exceptionCheck.contains("error")) && 
+			(!exceptionCheck.contains("Java.util.concurrent.TimeoutException")))) {  
+		// check if there is any exception or an error reported in the verboseTrace associated to the device (except the ones linked to rate limiting).
+			state.exceptionCount=state.exceptionCount+1    
+			log.error "found exception/error after polling, exceptionCount= ${state?.exceptionCount}: $exceptionCheck" 
+		} else {             
+			// reset exception counter            
+			state?.exceptionCount=0       
+		}                
 	} catch (e) {
 		state.exceptionCount=state.exceptionCount+1    
 		log.error "ecobee3RemoteSensorInit>exception $e while trying to poll $ecobee, exceptionCount= ${state?.exceptionCount}" 
