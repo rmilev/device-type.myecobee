@@ -76,7 +76,7 @@ def selectMotionSensors() {
 	/* Get only the list of all occupancy remote sensors available 
 	*/
 
-	def ecobeeSensors = ecobee.currentRemoteSensorOccData.toString().split(",,")
+	def ecobeeSensors = ecobee.currentRemoteSensorOccData.toString().minus('[').minus(']').split(",,")
 
 	log.debug "selectMotionSensors>ecobeeSensors= $ecobeeSensors"
 
@@ -118,7 +118,7 @@ def selectTempSensors() {
 	def sensors = [: ]
 	/* Get only the list of all temperature remote sensors available 
 	 */
-	def ecobeeSensors = ecobee.currentRemoteSensorTmpData.toString().split(",,")
+	def ecobeeSensors = ecobee.currentRemoteSensorTmpData.toString().minus('[').minus(']').split(",,")
 	log.debug "selectTempSensors>ecobeeSensors= $ecobeeSensors"
 
 	if (!ecobeeSensors) {
@@ -356,7 +356,7 @@ private updateMotionSensors(evt) {
 
 private updateMotionSensors() {
 
-	def ecobeeSensors = ecobee.currentRemoteSensorOccData.toString().split(",,")
+	def ecobeeSensors = ecobee.currentRemoteSensorOccData.toString().minus('[').minus(']').split(",,")
 	log.debug "updateTempSensors>ecobeeRemoteSensorOccData= $ecobeeSensors"
 
 	if (!ecobeeSensors) {
@@ -408,7 +408,7 @@ private updateTempSensors() {
 	def scale = getTemperatureScale()
     
 
-	def ecobeeSensors = ecobee.currentRemoteSensorTmpData.toString().split(",,")
+	def ecobeeSensors = ecobee.currentRemoteSensorTmpData.toString().minus('[').minus(']').split(",,")
 
 	log.debug "updateTempSensors>ecobeeRemoteSensorTmpData= $ecobeeSensors"
 
@@ -466,7 +466,7 @@ private updateHumiditySensors(evt) {
 private updateHumiditySensors() {
 
 
-	def ecobeeSensors = ecobee.currentRemoteSensorHumData.toString().split(",,")
+	def ecobeeSensors = ecobee.currentRemoteSensorHumData.toString().minus('[').minus(']').split(",,")
 
 	log.debug "updateHumiditySensors>ecobeeRemoteSensorHumData= $ecobeeSensors"
 
