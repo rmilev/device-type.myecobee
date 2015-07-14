@@ -15,9 +15,6 @@
  *
  */
  
- 
-import java.text.SimpleDateFormat
-
 definition(
 	name: "ScheduleTstatZones",
 	namespace: "yracine",
@@ -646,14 +643,9 @@ def setZoneSettings() {
 		key = "endtime$i"
 		def endTime = settings[key]
 		def endTimeToday = timeToday(endTime,location.timeZone)
-
-		Date startDate= dateFormat(startTime)
-		Date endDate= dateFormat(endTime)
-		Calendar startCalendar = startDate.toCalendar()
-		Calendar endCalendar = endDate.toCalendar()
-		if (endCalendar.get(Calendar.HOUR_OF_DAY) < startCalendar.get(Calendar.HOUR_OF_DAY)) {
-			startTimeToday = startTimeToday - 1
-		}
+		if (endTimeToday.time < startTimeToday.time) {
+			startTimeToday = startTimeToday -1        
+		}        
 		String startInLocalTime = startTimeToday.format("yyyy-MM-dd HH:mm", location.timeZone)
 		String endInLocalTime = endTimeToday.format("yyyy-MM-dd HH:mm", location.timeZone)
 		nowInLocalTime = new Date().format("yyyy-MM-dd HH:mm", location.timeZone)
@@ -740,11 +732,6 @@ def setZoneSettings() {
 		turn_off_all_other_vents(ventSwitchesOn)
 	}
 	log.debug "End of Fcn"
-}
-
-private def dateFormat(dateString) {
-	Date newDate = Date.parse("yyyy-MM-dd'T'HH:mm:ss", dateString)
-	return newDate
 }
 
 
