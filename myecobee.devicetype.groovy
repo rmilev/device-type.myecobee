@@ -772,6 +772,13 @@ void poll() {
 	}
 	getThermostatInfo(thermostatId)
 
+	def exceptionCheck = device.currentValue("verboseTrace")
+	if ((exceptionCheck.contains("exception")) || (exceptionCheck.contains("error"))) {  
+	// check if there is any exception or an error reported in the verboseTrace associated to the device 
+		log.error "poll>$exceptionCheck" 
+		return    
+	}
+
 	// determine if there is an event running
     
 	Integer indiceEvent = 0    
@@ -954,7 +961,7 @@ private void generateEvent(Map results) {
 
 // 			Temperature variable names contain 'temp' or 'setpoint' (not for display)           
 
-			} else if ((name.toUpperCase().contains("TEMP"))|| (name.toUpperCase().contains("SETPOINT"))) {  
+			} else if ((name.toUpperCase().contains("TEMP")) || (name.toUpperCase().contains("SETPOINT"))) {  
                                 
 				Double tempValue = getTemperature(value).toDouble().round(1)
 				String tempValueString = String.format('%2.1f', tempValue)
