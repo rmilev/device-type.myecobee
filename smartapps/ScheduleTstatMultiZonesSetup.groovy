@@ -613,7 +613,7 @@ def setZoneSettings() {
 
 	def currTime = now()
 	String startInLocalTime
-    Boolean foundSchedule=false
+	Boolean foundSchedule=false
 
 	def ventSwitchesOn = []
 	for (int i = 1;((i <= settings.schedulesCount) && (i <= 12)); i++) {
@@ -733,7 +733,7 @@ def setZoneSettings() {
 	} /* end for */
     
 	if (!foundSchedule) {
-    	if (detailedNotif == 'true') {
+		if (detailedNotif == 'true') {
 			send "ScheduleTstatZones>No schedule applicable at this time ${nowInLocalTime}"
 		}
 		log.debug "setZoneSettings>No schedule applicable at this time ${nowInLocalTime}"
@@ -743,8 +743,9 @@ def setZoneSettings() {
 		if (ventSwitchesOn != []) {
 			log.debug "setZoneSettings>list of Vents turned on= ${ventSwitchesOn}"
 			turn_off_all_other_vents(ventSwitchesOn)
-		}	
-    }
+		}
+		
+	}
 	log.debug "End of Fcn"
 }
 
