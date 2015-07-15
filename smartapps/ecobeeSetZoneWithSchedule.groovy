@@ -43,7 +43,7 @@ def generalSetupPage() {
 	dynamicPage(name: "generalSetupPage", uninstall: true, nextPage: roomsSetupPage) {
 		section("About") {
 			paragraph "ecobeeSetZoneWithSchedule, the smartapp that enables Heating/Cooling Zoned Solutions based on your ecobee schedule(s)- coupled with z-wave vents (optional) for better temp settings control throughout your home"
-			paragraph "Version 0.9.3\n\n" +
+			paragraph "Version 0.9.4\n\n" +
 				"If you like this app, please support the developer via PayPal:\n\nyracine@yahoo.com\n\n" +
 				"Copyright©2015 Yves Racine"
 			href url: "http://github.com/yracine", style: "embedded", required: false, title: "More information...",
@@ -412,8 +412,6 @@ def appTouch(evt) {
 
 def setZoneSettings() {
 
-	thermostat.poll()
-	def scheduleProgramName = thermostat.currentClimateName
     
 	if (powerSwitch?.currentSwitch == "off") {
 		if (detailedNotif == 'true') {
@@ -422,12 +420,14 @@ def setZoneSettings() {
 		return
 	}
 
-	def currTime = now()
+	thermostat.poll()
+	def scheduleProgramName = thermostat.currentClimateName
 
+	Boolean foundSchedule=false
+	String nowInLocalTime = new Date().format("yyyy-MM-dd HH:mm", location.timeZone)
 	def ventSwitchesOn = []
+
 	for (int i = 1;((i <= settings.schedulesCount) && (i <= 12)); i++) {
-        
-        
 		def key = "scheduleName$i"
 		def scheduleName = settings[key]
 		log.debug "setZoneSettings>found schedule=${scheduleName}, scheduled program at ecobee=$scheduleProgramName..."
@@ -455,6 +455,7 @@ def setZoneSettings() {
             
             
 			log.debug "setZoneSettings>now applying ${scheduleName}, scheduled program is now ${scheduleProgramName}"
+			foundSchedule=true   
 
 			state.lastScheduleName = scheduleName
                 
@@ -470,7 +471,8 @@ def setZoneSettings() {
  			ventSwitchesOn = ventSwitchesOn + ventSwitchesZoneSet              
 		} else if ((selectedClimate==scheduleProgramName) && (state?.lastScheduleName == scheduleName)) {
 			// We're in the middle of a schedule run
-        
+
+			foundSchedule=true   
 			def setAwayOrPresent = (setAwayOrPresentFlag)?:'false'
 			Boolean isResidentPresent=true
             
@@ -510,10 +512,20 @@ def setZoneSettings() {
 		}
 
 	} /* end for */ 	
-	if (ventSwitchesOn != []) {
-		log.debug "setZoneSettings>list of Vents turned on= ${ventSwitchesOn}"
-		turn_off_all_other_vents(ventSwitchesOn)
-	}
+    
+	if (!foundSchedule) {
+		if (detailedNotif == 'true') {
+			send "ecobeeSetZoneWithSchedule>No schedule applicable at this time ${nowInLocalTime}"
+		}
+		log.debug "setZoneSettings>No schedule applicable at this time ${nowInLocalTime}"
+        
+	} else {
+    
+		if (ventSwitchesOn != []) {
+			log.debug "setZoneSettings>list of Vents turned on= ${ventSwitchesOn}"
+			turn_off_all_other_vents(ventSwitchesOn)
+		}
+	}		    
 	log.debug "End of Fcn"
 }
 
