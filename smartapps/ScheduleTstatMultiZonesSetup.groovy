@@ -44,7 +44,7 @@ def generalSetupPage() {
 	dynamicPage(name: "generalSetupPage", uninstall: true, nextPage: roomsSetupPage) {
 		section("About") {
 			paragraph "ScheduleTstatZones, the smartapp that enables Heating/Cooling zoned settings at selected thermostat(s) coupled with z-wave vents (optional) for better temp settings control throughout your home"
-			paragraph "Version 0.9.5\n\n" +
+			paragraph "Version 0.9.6\n\n" +
 				"If you like this app, please support the developer via PayPal:\n\nyracine@yahoo.com\n\n" +
 				"Copyright©2015 Yves Racine"
 			href url: "http://github.com/yracine", style: "embedded", required: false, title: "More information...",
@@ -603,7 +603,7 @@ def appTouch(evt) {
 
 def setZoneSettings() {
 
-
+    
 	if (powerSwitch?.currentSwitch == "off") {
 		if (detailedNotif == 'true') {
 			send("ScheduleTstatZones>${powerSwitch.name} is off, schedule processing on hold...")
@@ -612,6 +612,8 @@ def setZoneSettings() {
 	}
 
 	def currTime = now()
+	String startInLocalTime
+    Boolean foundSchedule=false
 
 	def ventSwitchesOn = []
 	for (int i = 1;((i <= settings.schedulesCount) && (i <= 12)); i++) {
@@ -646,7 +648,7 @@ def setZoneSettings() {
 		if (endTimeToday.time < startTimeToday.time) {
 			startTimeToday = startTimeToday -1        
 		}        
-		String startInLocalTime = startTimeToday.format("yyyy-MM-dd HH:mm", location.timeZone)
+		startInLocalTime = startTimeToday.format("yyyy-MM-dd HH:mm", location.timeZone)
 		String endInLocalTime = endTimeToday.format("yyyy-MM-dd HH:mm", location.timeZone)
 		nowInLocalTime = new Date().format("yyyy-MM-dd HH:mm", location.timeZone)
 
@@ -669,7 +671,8 @@ def setZoneSettings() {
 			// If we have hit the condition to schedule this then let's do it
 
 			if (doChange) {
-
+            
+				foundSchedule=true
 				state.lastScheduleName = scheduleName
 				state.lastStartTime = startTimeToday.time
                 
@@ -693,6 +696,7 @@ def setZoneSettings() {
 		else if ((state.lastScheduleName == scheduleName) && (currTime >= startTimeToday.time) && (currTime <= endTimeToday.time)) {
 			// We're in the middle of a schedule run
         
+			foundSchedule=true
 			def setAwayOrPresent = (setAwayOrPresentFlag)?:'false'
 			Boolean isResidentPresent=true
             
@@ -726,11 +730,21 @@ def setZoneSettings() {
 			adjust_vent_settings_in_zone(i)
 		}
 
-	} /* end for */ 	
-	if (ventSwitchesOn != []) {
-		log.debug "setZoneSettings>list of Vents turned on= ${ventSwitchesOn}"
-		turn_off_all_other_vents(ventSwitchesOn)
-	}
+	} /* end for */
+    
+	if (!foundSchedule) {
+    	if (detailedNotif == 'true') {
+			send "ScheduleTstatZones>No schedule applicable at this time ${nowInLocalTime}"
+		}
+		log.debug "setZoneSettings>No schedule applicable at this time ${nowInLocalTime}"
+        
+	} else {
+    
+		if (ventSwitchesOn != []) {
+			log.debug "setZoneSettings>list of Vents turned on= ${ventSwitchesOn}"
+			turn_off_all_other_vents(ventSwitchesOn)
+		}	
+    }
 	log.debug "End of Fcn"
 }
 
