@@ -44,7 +44,7 @@ def generalSetupPage() {
 	dynamicPage(name: "generalSetupPage", uninstall: true, nextPage: roomsSetupPage) {
 		section("About") {
 			paragraph "ScheduleTstatZones, the smartapp that enables Heating/Cooling zoned settings at selected thermostat(s) coupled with z-wave vents (optional) for better temp settings control throughout your home"
-			paragraph "Version 0.9.6\n\n" +
+			paragraph "Version 0.9.7\n\n" +
 				"If you like this app, please support the developer via PayPal:\n\nyracine@yahoo.com\n\n" +
 				"Copyright©2015 Yves Racine"
 			href url: "http://github.com/yracine", style: "embedded", required: false, title: "More information...",
@@ -615,6 +615,9 @@ def setZoneSettings() {
 	String startInLocalTime
 	Boolean foundSchedule=false
 
+	/* Poll the thermostat to get latest values */
+	thermostat.poll()
+
 	def ventSwitchesOn = []
 	for (int i = 1;((i <= settings.schedulesCount) && (i <= 12)); i++) {
         
@@ -655,10 +658,6 @@ def setZoneSettings() {
 		log.debug "setZoneSettings>found schedule ${scheduleName}, startTime=$startTime,endTime=$endTime,nowInLocalTime= ${nowInLocalTime},startInLocalTime=${startInLocalTime},endInLocalTime=${endInLocalTime}," +
         		"currTime=${currTime},begintime=${startTimeToday.time},endTime=${endTimeToday.time},lastScheduleName=$state.lastScheduleName, lastStartTime=$state.lastStartTime"
         
-		/* Poll the thermostat to get latest values */
-        
-		thermostat.poll()
-
 		if ((currTime >= startTimeToday.time) && (currTime <= endTimeToday.time) && (state.lastStartTime != startTimeToday.time)) {
         
 			// let's set the given schedule
