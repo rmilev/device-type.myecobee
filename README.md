@@ -38,7 +38,7 @@ b) Hit the "+New Device Type" at the top right corner
 c) Hit the "From Code" tab on the left corner
 
 d) Copy and paste the code from ecobee.devicetype.groovy
-under http://github.com/yracine/device-type.myecobee
+under http://github.com/yracine/devicetypes/device-type.myecobee
 
 e) Hit the create button at the bottom
 
